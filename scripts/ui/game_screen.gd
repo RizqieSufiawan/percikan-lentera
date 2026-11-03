@@ -54,6 +54,7 @@ func _ready() -> void:
 	map.set_selected(sim.start_province)
 	sim.auto_build_focus = sim.start_province
 	_build_reveal()
+	_welfare_row()
 	_refresh()
 	if Game.just_loaded:
 		Game.just_loaded = false
@@ -162,22 +163,37 @@ func _refresh_tooltips() -> void:
 	var per_month := 4.33 / maxf(1.0, float(sim.weeks_of(1)))
 	var b := sim.income_breakdown()
 	var p_total: float = (b["p_kkn"] + b["p_desa"] + b["p_komunitas"]) * per_month
-	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, $StatsPanel/VBox/WelfareRow,
-			$StatsPanel/VBox/CommunityRow, $TopPanel/VBox/ResRow, access_bar]:
+	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, _welfare_row(),
+			$TopPanel/VBox/ResRow, access_bar]:
 		row.mouse_filter = Control.MOUSE_FILTER_PASS
 	var m_total: float = (b["m_dasar"] + b["m_mandiri"]) * per_month
 	# Pemasukan per bulan langsung terlihat di HUD; kursor "?" menandakan ada penjelasan.
 	%PointsLabel.text = "Poin Dukungan: %d  (+%s/bln)" % [int(sim.points), ("%.1f" % p_total).replace(".", ",")]
 	$StatsPanel/VBox/MoneyRow/Label.text = "Ekonomi +%s/bln" % ("%.1f" % m_total).replace(".", ",")
-	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, $StatsPanel/VBox/WelfareRow, $StatsPanel/VBox/CommunityRow]:
+	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, _welfare_row()]:
 		row.mouse_default_cursor_shape = Control.CURSOR_HELP
 	$StatsPanel/VBox/PointsRow.tooltip_text = "Poin +%.1f/bln dari %s.\nUntuk upgrade & warga membangun." % [p_total, "tim KKN" if sim.kkn_active else "desa bersih & Komunitas"]
 	$StatsPanel/VBox/MoneyRow.tooltip_text = "Ekonomi +%.1f/bln. Untuk upgrade mahal.\nNol terlalu lama = kalah." % m_total
-	$StatsPanel/VBox/WelfareRow.tooltip_text = "Naik saat desa dapat listrik.\nHabis = kalah."
-	$StatsPanel/VBox/CommunityRow.tooltip_text = "%d: warga membangun sendiri.\n%d: desa jadi Mandiri." % [int(cfg.auto_build_min_community), int(cfg.independence_threshold)]
+	_welfare_row().tooltip_text = "Kesejahteraan warga. Naik saat desa dapat listrik.\nHabis = kalah."
 	$TopPanel/VBox/ResRow.tooltip_text = "Biru: Ragu Warga %d.  Merah: Kepentingan Lama %d.\n100%% = kalah." % [int(sim.blue), int(sim.red)]
 	resistance_bar.tooltip_text = $TopPanel/VBox/ResRow.tooltip_text
 	access_bar.tooltip_text = "Hijau Mandiri, kuning Rapuh, coklat Fosil, nila Gelap.\nMenang: semua desa bersih sebelum %d." % cfg.deadline_year
+
+
+## Kesejahteraan dipindah ke panel atas, di bawah Resistensi: dua-duanya syarat kalah.
+func _welfare_row() -> HBoxContainer:
+	var row: HBoxContainer = get_node_or_null("TopPanel/VBox/WelfareRow")
+	if row == null:
+		row = $StatsPanel/VBox/WelfareRow
+		row.reparent($TopPanel/VBox, false)
+		$TopPanel/VBox.move_child(row, $TopPanel/VBox/ResRow.get_index() + 1)
+		var label: Label = row.get_node("Label")
+		label.text = "Kesejahteraan"
+		label.custom_minimum_size.x = 0
+		row.get_node("Icon").custom_minimum_size = Vector2(16, 16)
+		var bar: ProgressBar = row.get_node("WelfareBar")
+		bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	return row
 
 
 func _stage_name(stage: int) -> String:
@@ -563,7 +579,7 @@ func _update_reveal() -> void:
 		Audio.sfx(&"point")
 		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")
 	if _reveal_ready and post and not _reveal_post_kkn:
-		toast("Panel baru: Kesejahteraan (kiri) dan Resistensi (atas) = Ragu Warga + Kepentingan Lama. 100% = kalah.", Palette.INDEPENDENT)
+		toast("Panel baru di atas: Resistensi (100% = kalah) dan Kesejahteraan (habis = kalah).", Palette.INDEPENDENT)
 	_reveal_ready = true
 	_reveal_lit = lit
 	_reveal_post_kkn = post
@@ -583,9 +599,9 @@ func _apply_reveal() -> void:
 	for n: Control in [%IndepLabel, %LitLabel, %FossilLabel, %DarkLabel, access_bar]:
 		n.visible = lit
 	_simple_label.visible = not lit
-	var stats_open: bool = not $StatsPanel.get_meta("collapsed", false)
-	$StatsPanel/VBox/CommunityRow.visible = lit and stats_open
-	$StatsPanel/VBox/WelfareRow.visible = post and stats_open
+	# Komunitas tampil per wilayah di peta (bar kecil di bawah label), bukan di panel kiri.
+	$StatsPanel/VBox/CommunityRow.visible = false
+	_welfare_row().visible = post
 	feed.visible = lit
 	if _auto_btn:
 		_auto_btn.visible = lit
@@ -807,7 +823,8 @@ func _update_spotlight() -> void:
 			var below: Node = get_node_or_null("UpgradeDim")
 			_place_before(_hint_stack, below if below else modal)
 			_place_before(_spotlight, _hint_stack)
-	_hint_stack.offset_top = 4.0 if up_open else 132.0
+	# Tepat di bawah panel atas (yang tingginya berubah saat baris baru muncul).
+	_hint_stack.offset_top = 4.0 if up_open else $TopPanel.offset_bottom + 8.0
 	# Notifikasi kecil disembunyikan selama Pohon Upgrade terbuka supaya tidak menutupi judulnya.
 	if _toast_box:
 		_toast_box.visible = not up_open

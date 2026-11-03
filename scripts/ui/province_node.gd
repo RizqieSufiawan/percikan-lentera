@@ -14,10 +14,18 @@ var _uses_region: bool = false
 @onready var name_label: Label = $NameLabel
 @onready var count_label: Label = $CountLabel
 @onready var internet_mark: Label = $InternetMark
+var _community_bar: CommunityMeter
+var _selected := false
+var _hovered := false
 
 
 func _ready() -> void:
 	button.pressed.connect(func(): pressed.emit(province_id))
+	# Bar Komunitas kecil di bawah persen: tanda di 20 (warga membangun) dan 45 (Mandiri).
+	_community_bar = CommunityMeter.new()
+	_community_bar.position = Vector2(size.x / 2.0 - 18, 61)
+	_community_bar.size = Vector2(36, 5)
+	add_child(_community_bar)
 	pivot_offset = Vector2(size.x / 2.0, 16)
 
 
@@ -45,6 +53,9 @@ func refresh(state: Simulation.ProvinceState, ui: UiAssets, reachable: bool) -> 
 	# Persen desa nyata yang sudah memakai energi bersih.
 	count_label.text = "%d%%" % roundi(100.0 * state.on_desa() / maxf(1.0, state.total_desa()))
 	internet_mark.visible = state.internet
+	# Supaya peta tidak penuh: bar Komunitas hanya tampil saat wilayah dipilih atau disorot mouse.
+	_community_bar.set_value(state.community)
+	_update_bar()
 	button.modulate = Color.WHITE if reachable or state.on() > 0 else Color(0.75, 0.75, 0.8)
 	if _last_on >= 0 and (state.on() != _last_on or state.independent != _last_independent):
 		pulse()
@@ -54,6 +65,18 @@ func refresh(state: Simulation.ProvinceState, ui: UiAssets, reachable: bool) -> 
 
 func set_selected(value: bool) -> void:
 	selected_ring.visible = value and not _uses_region
+	_selected = value
+	_update_bar()
+
+
+func set_hovered(value: bool) -> void:
+	_hovered = value
+	_update_bar()
+
+
+func _update_bar() -> void:
+	if _community_bar:
+		_community_bar.visible = _selected or _hovered
 
 
 func pulse() -> void:

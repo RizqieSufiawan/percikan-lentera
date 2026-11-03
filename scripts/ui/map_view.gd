@@ -408,7 +408,11 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var id := province_at(event.position)
 		if id != hovered:
+			if nodes.has(hovered):
+				nodes[hovered].set_hovered(false)
 			hovered = id
+			if nodes.has(id):
+				nodes[id].set_hovered(true)
 			mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if id != &"" else Control.CURSOR_ARROW
 			_update_region_styles()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -435,9 +439,13 @@ func _get_tooltip(at_position: Vector2) -> String:
 		return ""
 	var s: Simulation.ProvinceState = Game.sim.provinces[id]
 	var members := s.data.members_text()
-	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\nKomunitas %d" % [s.data.display_name,
+	var cfg := Game.db.config
+	var stage := "macet, warga belum membangun sendiri" if s.community < cfg.auto_build_min_community \
+		else ("warga membangun sendiri" if s.community < cfg.independence_threshold else "desa bisa Mandiri")
+	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\n\nBar di bawah nama = Komunitas %d%% (%s).\nGaris putih: %d = warga membangun sendiri, %d = desa jadi Mandiri." % [s.data.display_name,
 		("\nProvinsi: " + members) if members != "" else "", Simulation.ribu(s.total_desa()), Simulation.ribu(s.independent_desa),
-		Simulation.ribu(s.lit_desa), Simulation.ribu(s.fossil_desa), Simulation.ribu(s.dark_desa), int(s.community)]
+		Simulation.ribu(s.lit_desa), Simulation.ribu(s.fossil_desa), Simulation.ribu(s.dark_desa), int(s.community), stage,
+		int(cfg.auto_build_min_community), int(cfg.independence_threshold)]
 	var cell := cell_at(at_position)
 	if not cell.is_empty() and cell[0] == id:
 		var v: Simulation.VillageState = s.villages[cell[1]]
