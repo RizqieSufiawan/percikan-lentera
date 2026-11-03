@@ -54,6 +54,14 @@ func _run() -> void:
 	Game.goto("setup")
 	await _wait(0.5)
 	await _shot("02_setup")
+	var setup := get_tree().current_scene
+	setup._pick_province(&"jatim", false)
+	var pick: OptionButton = setup.get_node_or_null("%VillagePick")
+	if pick:
+		pick.show_popup()
+		await _wait(0.3)
+		await _shot("02b_setup_kloter_list")
+		pick.get_popup().hide()
 
 	Game.chosen_province = &"ntt"
 	Game.chosen_energy = &"plts"

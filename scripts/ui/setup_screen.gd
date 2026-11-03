@@ -30,6 +30,8 @@ func _ready() -> void:
 		%EnergyList.add_child(b)
 		_energy_buttons[e.id] = b
 	%VillagePick.item_selected.connect(_pick_village)
+	# Daftar kloter panjang: popup dibatasi ±6 baris lalu bisa di-scroll.
+	%VillagePick.get_popup().max_size = Vector2i(100000, 200)
 	%NameEdit.text = Game.chosen_name
 	%StartBtn.pressed.connect(_on_start)
 	%BackBtn.pressed.connect(func(): Game.goto("title"))

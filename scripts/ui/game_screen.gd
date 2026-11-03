@@ -598,6 +598,11 @@ func _build_toasts() -> void:
 	stack.offset_right = 260.0
 	stack.offset_top = 132.0
 	stack.offset_bottom = 132.0
+	_hint_stack = stack
+	_spotlight = Spotlight.new()
+	_spotlight.visible = false
+	add_child(_spotlight)
+	move_child(_spotlight, stack.get_index())
 	_build_hints(stack)
 	_toast_box = VBoxContainer.new()
 	_toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -608,6 +613,8 @@ func _build_toasts() -> void:
 # ---------------------------------------------------------------- petunjuk menit pertama
 
 var _hint_panel: PanelContainer
+var _hint_stack: VBoxContainer
+var _spotlight: Spotlight
 var _hint_label: Label
 var _hint_step: int = 0
 var _hint_timer: float = 0.0
@@ -618,17 +625,17 @@ var _hint_check: float = 0.0
 func _hint_steps() -> Array:
 	var sim := Game.sim
 	return [
-		["Langkah 1/6: Pembangkit pertama sedang dibangun (2–4 bulan). Klik wilayahmu di peta (yang bergaris terang) untuk melihat isinya.",
+		["1/6  Klik wilayahmu yang disorot di peta.",
 			func(): return province_panel.visible],
-		["Langkah 2/6: Panel kanan berisi kloter desa di wilayah ini. Klik satu kloter untuk melihat ciri alam dan energi yang cocok.",
+		["2/6  Klik satu kloter untuk melihat energi yang cocok.",
 			func(): return province_panel.village_index >= 0 or _hint_timer > 12.0],
-		["Langkah 3/6: Buka Pohon Upgrade (U, tombol yang berkedip di bawah). Tab Edukasi & Warga mempercepat Kekuatan Komunitas.",
+		["3/6  Buka Pohon Upgrade (U) dan beli satu upgrade.",
 			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1],
-		["Langkah 4/6: Di tab Sumber Energi, tiap energi punya cabang sendiri: Output Listrik, Material Bangunan, lalu Teknisi Warga. Perkuat energi yang kamu pakai.",
+		["4/6  Tab Sumber Energi: perkuat energi yang kamu pakai.",
 			func(): return _owns_energy_branch() or int(sim.counters.get(&"upgrades_bought", 0)) >= 3],
-		["Langkah 5/6: Setelah desa pertama menyala, tombol Otomatis (B) muncul di bawah. Saat nyala, warga membangun kloter berikutnya sendiri jika Komunitas wilayah minimal %d." % int(Game.db.config.auto_build_min_community),
+		["5/6  Otomatis (B): warga membangun kloter berikutnya sendiri.",
 			func(): return _reveal_lit and _hint_timer > 10.0],
-		["Langkah 6/6: Klik gelembung yang muncul di peta untuk Poin tambahan. Arahkan mouse ke wilayah lain untuk melihat ciri desanya.",
+		["6/6  Klik gelembung di peta untuk Poin tambahan.",
 			func(): return _hint_timer > 14.0],
 	]
 
@@ -686,6 +693,7 @@ func _show_hint() -> void:
 
 
 func _update_hints(delta: float) -> void:
+	_update_spotlight()
 	if _hint_panel == null:
 		return
 	_hint_check += delta
@@ -704,6 +712,70 @@ func _update_hints(delta: float) -> void:
 	if advanced:
 		Audio.sfx(&"point")
 		_show_hint()
+
+
+## Sorotan tutorial: redupkan layar kecuali hal yang dituju langkah petunjuk sekarang.
+## Saat Pohon Upgrade terbuka, petunjuk dipindah ke atas panel itu supaya tetap terbaca.
+func _update_spotlight() -> void:
+	if _hint_stack == null:
+		return
+	var up_open := upgrade_panel.visible
+	var busy: bool = modal.is_busy()
+	# Urutan lapisan: HUD < sorotan < petunjuk < (panel upgrade) < kartu popup.
+	# Saat panel upgrade terbuka: panel upgrade < sorotan < petunjuk < kartu popup.
+	if up_open != _hint_layer_up:
+		_hint_layer_up = up_open
+		if up_open:
+			_place_after(_spotlight, upgrade_panel)
+			_place_after(_hint_stack, _spotlight)
+		else:
+			var below: Node = get_node_or_null("UpgradeDim")
+			_place_before(_hint_stack, below if below else modal)
+			_place_before(_spotlight, _hint_stack)
+	_hint_stack.offset_top = 4.0 if up_open else 132.0
+	# Notifikasi kecil disembunyikan selama Pohon Upgrade terbuka supaya tidak menutupi judulnya.
+	if _toast_box:
+		_toast_box.visible = not up_open
+	_hint_stack.offset_bottom = _hint_stack.offset_top
+	if _hint_panel == null or busy:
+		_spotlight.set_hole(Rect2())
+		return
+	_spotlight.set_hole(_hint_target(up_open))
+
+
+var _hint_layer_up := false
+
+
+func _place_after(node: Node, ref: Node) -> void:
+	var i := ref.get_index()
+	move_child(node, i if node.get_index() < i else i + 1)
+
+
+func _place_before(node: Node, ref: Node) -> void:
+	var i := ref.get_index()
+	move_child(node, i - 1 if node.get_index() < i else i)
+
+
+func _hint_target(up_open: bool) -> Rect2:
+	match _hint_step:
+		0:
+			return Rect2() if up_open else map.province_rect(Game.sim.start_province)
+		1:
+			return province_panel.get_global_rect() if province_panel.visible and not up_open else Rect2()
+		2:
+			return Rect2() if up_open else %UpgradeBtn.get_global_rect()
+		3:
+			if not up_open:
+				return %UpgradeBtn.get_global_rect()
+			var tabs: TabContainer = upgrade_panel.tabs
+			if tabs.current_tab == 0:
+				return Rect2()
+			var bar := tabs.get_tab_bar()
+			var r := bar.get_tab_rect(0)
+			return Rect2(bar.global_position + r.position, r.size)
+		4:
+			return _auto_btn.get_global_rect() if _auto_btn and _auto_btn.visible and not up_open else Rect2()
+	return Rect2()
 
 
 ## Notifikasi kecil yang tidak menjeda permainan, hilang sendiri setelah beberapa detik.

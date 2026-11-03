@@ -191,6 +191,20 @@ func to_screen(ref_pos: Vector2) -> Vector2:
 	return map_offset() + ref_pos * map_scale()
 
 
+## Kotak (koordinat global) yang memuat semua sel kloter satu wilayah. Dipakai sorotan tutorial.
+func province_rect(id: StringName) -> Rect2:
+	if not _cell_base.has(id):
+		return Rect2()
+	var p := Game.db.get_province(id)
+	var base: int = _cell_base[id]
+	var r := Rect2()
+	for k in range(base, base + p.village_list.size()):
+		var c := Rect2(_seed_pos[k], Vector2.ZERO).grow(maxf(4.0, _max_r[k] - 6.0))
+		r = c if r.size == Vector2.ZERO else r.merge(c)
+	var a := to_screen(r.position)
+	return Rect2(global_position + a, r.size * map_scale())
+
+
 func to_ref(screen_pos: Vector2) -> Vector2:
 	return (screen_pos - map_offset()) / map_scale()
 
