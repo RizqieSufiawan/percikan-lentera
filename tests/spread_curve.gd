@@ -14,11 +14,13 @@ func _init() -> void:
 		var line := "seed %d:" % seed_value
 		while not sim.game_over and sim.tick_count < 2000:
 			sim.tick()
+			if a.has("diam"):
+				continue
 			for u in db.upgrades:
 				if sim.upgrade_state(u) == "" and sim.points > sim.upgrade_cost(u) + 6:
 					sim.buy_upgrade(u)
 					break
 			if sim.tick_count % 104 == 0:
 				line += " %d:%d%%" % [db.config.start_year + sim.tick_count / 52, int(sim.access_ratio() * 100)]
-		print(line, "  -> ", sim.result if "result" in sim else "", " tik ", sim.tick_count)
+		print(line, "  -> ", sim.result, " tik ", sim.tick_count, " resist ", int(sim.total_resistance()), " upg ", sim.owned_upgrades.size())
 	quit()

@@ -43,6 +43,9 @@ const MODIFIER_KEYS := [
 ## Batas waktu opsional dalam tik. 0 = tanpa batas: permainan hanya berakhir jika kalah atau
 ## semua desa sudah memakai energi bersih.
 @export var max_ticks: int = 0
+## Batas cerita: jika sampai tahun ini belum semua desa berenergi bersih, permainan berakhir
+## (kalah karena waktu). 0 = tanpa batas. 2085 = dua generasi setelah KKN.
+@export var deadline_year: int = 2085
 ## FALLBACK: matikan waktu real-time, ganti dengan tombol "Berikutnya".
 @export var turn_based_mode: bool = false
 ## Tik per klik "Berikutnya" (4 = 1 bulan).
@@ -153,7 +156,11 @@ const MODIFIER_KEYS := [
 @export var blue_decay_per_independent: float = 0.002
 @export var red_base: float = 0.006
 @export var red_per_clean: float = 0.03
-@export var red_max: float = 60.0
+## Tekanan waktu (seperti "obat" di Plague Inc): Kepentingan Lama makin mengakar setiap tahun
+## setelah KKN. Pertumbuhan merah per tik bertambah sekian untuk setiap tahun yang lewat.
+## Pemain yang pasif lama-lama kalah; upgrade penahan merah memperlambatnya.
+@export var red_per_year: float = 0.003
+@export var red_max: float = 100.0
 ## Resistensi biru tambahan saat membangun di provinsi berkomunitas rendah.
 @export var build_blue_outsider: float = 1.0
 

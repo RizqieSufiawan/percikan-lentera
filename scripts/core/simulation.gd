@@ -561,7 +561,8 @@ func _resistance() -> void:
 	blue += blue_growth - cfg.blue_decay_per_independent * total_independent() + mod("blue_per_tick")
 	blue = clampf(blue, 0.0, 100.0)
 	if cfg.enable_red_resistance and (stage >= 3 or access_ratio() > 0.05):
-		var red_growth := (cfg.red_base + cfg.red_per_clean * access_ratio()) * mult("red_growth_mult")
+		var years := maxf(0.0, float(tick_count - cfg.kkn_ticks) / 52.0)
+		var red_growth := (cfg.red_base + cfg.red_per_clean * access_ratio() + cfg.red_per_year * years) * mult("red_growth_mult")
 		red = clampf(red + red_growth, 0.0, cfg.red_max)
 		if red > 30.0:
 			_news_once(&"red_high", null)
@@ -840,8 +841,51 @@ func event_origin_name(e: EventData) -> String:
 	return s.villages[t[1]].origin() if s else ""
 
 
+## Kesiapan menghadapi event otomatis (0..1): Komunitas wilayah sasaran + upgrade yang relevan.
+## Bencana: upgrade pengurang krisis (Peta Risiko, Sensor, dll.) dan Teknisi Warga energi yang rentan.
+## Tekanan Kepentingan Lama: upgrade penahan resistensi merah. Lainnya: penahan resistensi biru.
+func event_readiness(e: EventData, province_id: StringName) -> float:
+	var s: ProvinceState = provinces.get(province_id)
+	var comm := (s.community if s else community_average()) / 100.0
+	var r := 0.15 + 0.3 * comm
+	if e.is_disaster:
+		r += -mod("crisis_mult") * 0.6
+	elif e.opposition:
+		r += -mod("red_growth_mult") * 0.9 - mod("blue_growth_mult") * 0.2
+	else:
+		r += -mod("blue_growth_mult") * 0.6 - mod("crisis_mult") * 0.2
+	for en in e.vulnerable_energies:
+		if owned_upgrades.has(StringName("%s_teknisi" % en)):
+			r += 0.15
+	return clampf(r, 0.05, 0.95)
+
+
+## Nama upgrade yang belum dimiliki dan akan menaikkan Kesiapan untuk event ini (untuk kartu hasil).
+func event_helpers(e: EventData, limit: int = 2) -> Array[String]:
+	var key: StringName = &"crisis_mult" if e.is_disaster else (&"red_growth_mult" if e.opposition else &"blue_growth_mult")
+	var out: Array[String] = []
+	for en in e.vulnerable_energies:
+		var t := db.get_upgrade(StringName("%s_teknisi" % en))
+		if t and energies.has(en) and not owned_upgrades.has(t.id) and out.size() < limit:
+			out.append("%s (%s)" % [t.display_name, db.get_energy(en).display_name])
+	for u in db.upgrades:
+		if out.size() >= limit:
+			break
+		if not owned_upgrades.has(u.id) and u.modifiers.get(key, 0.0) < 0.0:
+			out.append(u.display_name)
+	return out
+
+
+## Event otomatis: Kesiapan menentukan hasilnya. Mengembalikan {ready, success, text}.
+func resolve_event(e: EventData, province_id: StringName) -> Dictionary:
+	var ready := event_readiness(e, province_id)
+	var success := rng.randf() < ready
+	var text := answer_event(e, province_id, 0 if success else 1, true)
+	return {"ready": ready, "success": success, "text": text}
+
+
 ## Dipanggil UI saat pemain memilih. Mengembalikan teks hasil.
-func answer_event(event: EventData, province_id: StringName, option_index: int) -> String:
+func answer_event(event: EventData, province_id: StringName, option_index: int, brief: bool = false) -> String:
 	var opt: EventOption = event.option_a if option_index == 0 else event.option_b
 	var s: ProvinceState = provinces.get(province_id)
 	var v: VillageState = null
@@ -854,12 +898,12 @@ func answer_event(event: EventData, province_id: StringName, option_index: int) 
 	if opt.crisis_severity > 0.0 and s != null:
 		var lost := _apply_crisis(s, opt.crisis_severity, event)
 		if lost[0] + lost[1] > 0:
-			text += "\n\nAkibat krisis: %s desa gagal (kembali ke fosil/gelap), %s desa mandiri turun menjadi rapuh." % [ribu(lost[0]), ribu(lost[1])]
-		else:
+			text += ("\n%s desa padam, %s desa mandiri turun jadi rapuh." if brief else "\n\nAkibat krisis: %s desa gagal (kembali ke fosil/gelap), %s desa mandiri turun menjadi rapuh.") % [ribu(lost[0]), ribu(lost[1])]
+		elif not brief:
 			text += "\n\nKomunitas cukup kuat: tidak ada desa yang gagal."
 		if lost[2] > 0:
 			text += "\nPembangunan di %d kloter tertunda hingga %d minggu." % [lost[2], lost[3]]
-		if not event.vulnerable_energies.is_empty():
+		if not event.vulnerable_energies.is_empty() and not brief:
 			var names: Array[String] = []
 			for eid in event.vulnerable_energies:
 				var en := db.get_energy(eid)
@@ -1203,7 +1247,7 @@ func _check_end() -> void:
 	elif desa_dark() + desa_fossil() == 0:
 		# Semua desa di Indonesia sudah memakai energi bersih.
 		_end(&"win")
-	elif cfg.max_ticks > 0 and tick_count >= cfg.max_ticks:
+	elif (cfg.max_ticks > 0 and tick_count >= cfg.max_ticks) or (cfg.deadline_year > 0 and current_year() >= cfg.deadline_year):
 		_end(&"timeout")
 
 
@@ -1259,7 +1303,7 @@ func ending_reason() -> String:
 		&"lose_welfare": return "Kesejahteraan warga runtuh."
 		&"lose_economy": return "Ekonomi habis terlalu lama. Program tidak bisa dibiayai."
 		&"lose_dark": return "Semua pembangkit energi bersih padam setelah tim KKN pulang. Tidak ada yang merawat."
-		&"timeout": return "Batas waktu cerita tercapai sebelum semua desa memakai energi bersih."
+		&"timeout": return "Tahun %d tiba, tapi belum semua desa memakai energi bersih. Kepentingan lama sempat mengakar terlalu dalam." % cfg.deadline_year
 	return ""
 
 

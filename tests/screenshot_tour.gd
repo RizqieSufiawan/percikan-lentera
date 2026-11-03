@@ -147,8 +147,12 @@ func _run() -> void:
 	sim.trigger_event(disaster, sim.start_province)
 	await _wait(0.3)
 	await _shot("07_event_card")
-	await _press_modal(1)
-	await _shot("08_event_result")
+	await _press_modal(0)
+	for e in db.events:
+		if not e.auto_resolve:
+			sim.trigger_event(e, &"papua")
+	await _wait(0.3)
+	await _shot("08_event_kerja_sama")
 	await _press_modal(0)
 	while _modal().is_busy():
 		await _press_modal(0)

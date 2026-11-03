@@ -1,6 +1,7 @@
 class_name EventData
 extends Resource
-## Kartu event dengan dua pilihan.
+## Kartu event. Kebanyakan event berjalan otomatis: hasilnya (pilihan A = siap, B = tidak siap)
+## ditentukan Kesiapan dari upgrade & Komunitas. Hanya event kerja sama yang meminta keputusan pemain.
 
 @export var id: StringName
 @export var title: String
@@ -23,5 +24,7 @@ extends Resource
 @export var target_traits: Array[StringName] = []
 ## Desa yang memakai energi ini rusak lebih parah saat krisis event ini.
 @export var vulnerable_energies: Array[StringName] = []
+## false = pemain memilih sendiri (event kerja sama, mis. tawaran investor).
+@export var auto_resolve: bool = true
 @export var option_a: EventOption
 @export var option_b: EventOption

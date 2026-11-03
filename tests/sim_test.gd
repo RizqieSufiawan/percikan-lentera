@@ -69,14 +69,17 @@ func _play(db: GameDatabase, strategy: String, seed_value: int, province: String
 			sim.collect_bubble()
 		if not _pending_event.is_empty():
 			var e: EventData = _pending_event[0]
-			var choice := 0 if strategy in ["seimbang", "asal_pilih"] else 1
-			sim.answer_event(e, _pending_event[1], choice)
+			if e.auto_resolve:
+				sim.resolve_event(e, _pending_event[1])
+			else:
+				var choice := 0 if strategy in ["seimbang", "asal_pilih"] else 1
+				sim.answer_event(e, _pending_event[1], choice)
 			_pending_event = []
 		if _pending_offer:
 			var accept := strategy == "ngebut" or _pending_offer.tier != &"rapuh"
 			sim.answer_offer(_pending_offer, accept)
 			_pending_offer = null
-		if strategy != "pasif" or sim.tick_count % 8 == 0:
+		if strategy != "pasif" or sim.tick_count % 26 == 0:
 			_bot_turn(sim, db, strategy)
 	return {
 		"result": sim.result if sim.game_over else &"cap", "tick": sim.tick_count, "year": sim.current_year(), "minutes": seconds / 60.0,
@@ -86,9 +89,13 @@ func _play(db: GameDatabase, strategy: String, seed_value: int, province: String
 
 
 func _bot_turn(sim: Simulation, db: GameDatabase, strategy: String) -> void:
-	# Upgrade termurah yang bisa dibeli.
+	# Upgrade termurah yang bisa dibeli. "ngebut" mendahulukan upgrade penyebar/pembangun
+	# (sebaran, waktu bangun, output) dan baru membeli yang lain bila tidak ada.
 	var best: UpgradeData = null
+	var rush_only := strategy == "ngebut" and _has_rush(sim, db)
 	for u in db.upgrades:
+		if rush_only and not _is_rush(u):
+			continue
 		if sim.upgrade_state(u) == "" and (best == null or u.cost_points < best.cost_points):
 			if u.unlock_energy != &"" and strategy in ["seimbang", "asal_pilih"] and sim.energies.size() >= 3:
 				# Pemain yang membaca ciri desa tetap membuka energi baru jika lebih cocok
@@ -106,6 +113,23 @@ func _bot_turn(sim: Simulation, db: GameDatabase, strategy: String) -> void:
 			focus = s
 	if focus:
 		sim.auto_build_focus = focus.data.id
+
+
+func _is_rush(u: UpgradeData) -> bool:
+	if u.unlock_energy != &"":
+		return true
+	for k in u.modifiers:
+		var key := String(k)
+		if key in ["spread_mult", "build_time_mult"] or key.begins_with("output:") or key.begins_with("build:"):
+			return true
+	return false
+
+
+func _has_rush(sim: Simulation, db: GameDatabase) -> bool:
+	for u in db.upgrades:
+		if _is_rush(u) and sim.upgrade_state(u) in ["", "Poin Dukungan kurang", "Ekonomi kurang"]:
+			return true
+	return false
 
 
 ## Seberapa cocok energi ini untuk semua desa yang belum bersih di provinsi yang sudah terjangkau.

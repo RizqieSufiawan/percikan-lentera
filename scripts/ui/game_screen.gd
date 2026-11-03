@@ -339,6 +339,17 @@ func _on_event(e: EventData, province_id: StringName) -> void:
 			province_panel.select_village(t[1])
 	var title := ("BENCANA: " if e.is_disaster else "") + e.title
 	feed.push(e.image, title, "%s, %s  |  %s" % [ctx["village"], ctx["province"], Game.sim.date_text()], e.body.format(ctx))
+	if e.auto_resolve:
+		# Tanpa pilihan: Kesiapan (upgrade + Komunitas) menentukan hasilnya.
+		var r: Dictionary = Game.sim.resolve_event(e, province_id)
+		var body: String = e.body.format(ctx) + "\n\n"
+		body += ("SIAP" if r["success"] else "TIDAK SIAP") + " (kesiapan %d%%). " % int(r["ready"] * 100.0) + r["text"]
+		if not r["success"]:
+			var helps: Array[String] = Game.sim.event_helpers(e)
+			if not helps.is_empty():
+				body += "\nBantu lain kali: %s." % ", ".join(helps)
+		modal.show_card(title, e.image, body, e.fact, ["Lanjut"])
+		return
 	modal.show_card(title, e.image, e.body.format(ctx), e.fact, [e.option_a.label, e.option_b.label],
 		func(i: int):
 			var result := Game.sim.answer_event(e, province_id, i)
@@ -815,7 +826,7 @@ func _on_kkn_ended(lost: int) -> void:
 	else:
 		text += "Semua desa tetap menyala. Warga yang kamu latih mulai mengambil alih.\n\n"
 	text += "Desa kuning sekarang berstatus RAPUH: berlistrik, tapi belum ada warga yang mampu merawatnya. Desa menjadi MANDIRI (hijau) saat Komunitas wilayahnya mencapai 45. Komunitas tumbuh sendiri di wilayah berenergi bersih, dan lebih cepat dengan upgrade Edukasi & Warga.\n\n"
-	text += "Mulai sekarang Poin Dukungan hanya datang dari komunitas warga."
+	text += "Mulai sekarang Poin Dukungan hanya datang dari komunitas warga.\n\nTarget: semua desa berenergi bersih sebelum %d. Kepentingan lama makin kuat setiap tahun." % Game.db.config.deadline_year
 	var n: NewsData = _news_by_trigger.get(&"kkn_end")
 	if n and n.image:
 		feed.push(n.image, "KKN selesai, tim pulang" + (" (%s desa padam)" % Simulation.ribu(lost) if lost > 0 else ""), "Nusantara  |  " + Game.sim.date_text(), text)

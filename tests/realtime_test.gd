@@ -54,7 +54,11 @@ func _run() -> void:
 	await _wait(1.0)
 	_check(sim.tick_count == t1, "tombol jeda menghentikan waktu")
 	Game.set_speed(3)
-	sim.trigger_event(Game.db.events[1], &"papua")
+	var coop: EventData = null
+	for e in Game.db.events:
+		if not e.auto_resolve:
+			coop = e
+	sim.trigger_event(coop, &"papua")
 	var t2 := sim.tick_count
 	await _wait(1.0)
 	_check(sim.tick_count == t2, "kartu event menjeda waktu")

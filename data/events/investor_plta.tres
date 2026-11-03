@@ -33,5 +33,6 @@ body = "Investor menawarkan PLTA besar di dekat {village}, {province}, tapi loka
 fact = "Putusan Mahkamah Konstitusi No. 35/PUU-X/2012 menegaskan hutan adat berada di wilayah adat dan bukan lagi hutan negara. Karena itu, masyarakat adat perlu dilibatkan sejak awal. (Sumber: Putusan MK No. 35/PUU-X/2012)"
 image = ExtResource("1_wstfn")
 island_tags = Array[StringName]([&"papua", &"kalimantan", &"sulawesi"])
+auto_resolve = false
 option_a = SubResource("Resource_rcr8i")
 option_b = SubResource("Resource_7w0it")

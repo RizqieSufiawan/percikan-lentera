@@ -1,8 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://hd0taed4e770"]
 
-[ext_resource type="Script" path="res://scripts/ui/slides_screen.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://d4g6bu23ue63c" path="res://scripts/ui/slides_screen.gd" id="1_script"]
 
-[node name="Slides" type="Control"]
+[node name="Slides" type="Control" unique_id=812056753]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Bg" type="ColorRect" parent="."]
+[node name="Bg" type="ColorRect" parent="." unique_id=1404560405]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.086, 0.102, 0.227, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=333920522]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,12 +28,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=1193245415]
 custom_minimum_size = Vector2(700, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="SlideImage" type="TextureRect" parent="Center/VBox"]
+[node name="SlideImage" type="TextureRect" parent="Center/VBox" unique_id=1069657294]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(640, 360)
 layout_mode = 2
@@ -41,43 +41,43 @@ size_flags_horizontal = 4
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SlideTitle" type="Label" parent="Center/VBox"]
+[node name="SlideTitle" type="Label" parent="Center/VBox" unique_id=1373367661]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 horizontal_alignment = 1
 
-[node name="SlideText" type="Label" parent="Center/VBox"]
+[node name="SlideText" type="Label" parent="Center/VBox" unique_id=568808286]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(700, 90)
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Buttons" type="HBoxContainer" parent="Center/VBox"]
+[node name="Buttons" type="HBoxContainer" parent="Center/VBox" unique_id=1589871900]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 12
+alignment = 1
 
-[node name="PrevBtn" type="Button" parent="Center/VBox/Buttons"]
+[node name="PrevBtn" type="Button" parent="Center/VBox/Buttons" unique_id=1017555052]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 text = "Kembali"
 
-[node name="Counter" type="Label" parent="Center/VBox/Buttons"]
+[node name="Counter" type="Label" parent="Center/VBox/Buttons" unique_id=1980134610]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="NextBtn" type="Button" parent="Center/VBox/Buttons"]
+[node name="NextBtn" type="Button" parent="Center/VBox/Buttons" unique_id=1425404580]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
 text = "Lanjut"
 
-[node name="SkipBtn" type="Button" parent="Center/VBox/Buttons"]
+[node name="SkipBtn" type="Button" parent="Center/VBox/Buttons" unique_id=973996642]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 40)
 layout_mode = 2
