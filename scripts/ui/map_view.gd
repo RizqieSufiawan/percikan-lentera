@@ -265,6 +265,13 @@ func refresh() -> void:
 	_overlay.queue_redraw()
 
 
+## Posisi titik kloter di layar (koordinat lokal peta).
+func village_center(id: StringName, index: int) -> Vector2:
+	if not _cell_base.has(id):
+		return node_center(id)
+	return to_screen(_seed_pos[_cell_base[id] + index])
+
+
 func node_center(id: StringName) -> Vector2:
 	return to_screen(Game.db.get_province(id).map_position)
 

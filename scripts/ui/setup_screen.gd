@@ -14,6 +14,11 @@ func _ready() -> void:
 	map.build()
 	map.set_preview()
 	map.province_clicked.connect(_pick_province)
+	# Klik kloter di peta juga memilihnya.
+	map.village_clicked.connect(func(pid: StringName, idx: int):
+		if pid == Game.chosen_province:
+			Audio.sfx(&"click")
+			_select_village_item(idx))
 	var egroup := ButtonGroup.new()
 	for e in Game.db.energies:
 		if not e.kkn_available:
@@ -68,12 +73,10 @@ func _pick_province(id: StringName, sound: bool = true) -> void:
 		Simulation.ribu(fossil), Simulation.ribu(n - fossil), p.note, Game.db.trait_summary(p)]
 
 
-## Daftar kloter wilayah ini. Item pertama: biarkan tim memilih kloter yang paling cocok.
+## Daftar kloter wilayah ini. Tidak ada pilihan otomatis: pemain harus membaca ciri desa dan memilih.
 func _fill_villages(p: ProvinceData) -> void:
 	var pick: OptionButton = %VillagePick
 	pick.clear()
-	pick.add_item("Otomatis (paling cocok dengan energi)", 0)
-	pick.set_item_metadata(0, -1)
 	for i in p.village_list.size():
 		var v: VillageData = p.village_list[i]
 		var traits: Array[String] = []
@@ -82,11 +85,13 @@ func _fill_villages(p: ProvinceData) -> void:
 			traits.append(td.display_name if td else String(t))
 		var text := "%s · %s · %s desa%s" % [v.display_name, ", ".join(traits), Simulation.ribu(v.size),
 			"" if v.start_fossil else " (gelap)"]
-		pick.add_item(text, i + 1)
+		pick.add_item(text, i)
 		pick.set_item_metadata(pick.item_count - 1, i)
-	pick.select(0)
+	pick.select(-1)
+	pick.text = "Pilih kloter (daftar atau klik di peta)"
 	Game.chosen_village = -1
 	map.set_selected_village(p.id, -1)
+	_update_start()
 
 
 func _select_village_item(index: int) -> void:
@@ -96,6 +101,8 @@ func _select_village_item(index: int) -> void:
 			pick.select(i)
 			Game.chosen_village = index
 			map.set_selected_village(Game.chosen_province, index)
+			pick.tooltip_text = pick.get_item_text(i)
+			_update_start()
 			return
 
 
@@ -104,6 +111,14 @@ func _pick_village(item: int) -> void:
 	Game.chosen_village = %VillagePick.get_item_metadata(item)
 	map.set_selected_village(Game.chosen_province, Game.chosen_village)
 	%VillagePick.tooltip_text = %VillagePick.get_item_text(item)
+	_update_start()
+
+
+## Tombol Mulai baru aktif setelah kloter pertama dipilih.
+func _update_start() -> void:
+	var ok := Game.chosen_village >= 0
+	%StartBtn.disabled = not ok
+	%StartBtn.tooltip_text = "" if ok else "Pilih kloter pertama dulu."
 
 
 func _pick_energy(id: StringName, sound: bool = true) -> void:
@@ -115,6 +130,8 @@ func _pick_energy(id: StringName, sound: bool = true) -> void:
 
 
 func _on_start() -> void:
+	if Game.chosen_village < 0:
+		return
 	Audio.sfx(&"click")
 	Game.chosen_name = %NameEdit.text.strip_edges()
 	Game.new_game()

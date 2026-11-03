@@ -151,10 +151,50 @@ func _refresh_village_rows(s: Simulation.ProvinceState) -> void:
 				var td := Game.db.get_trait(t)
 				traits.append(td.display_name.to_lower() if td else String(t))
 		b.text = "%s · %s · %s" % [v.name(), v.origin(), ", ".join(traits)]
+		_style_building_row(b, v)
 		if v.is_building():
-			b.text = "[dibangun %d mgg] %s" % [Game.sim.weeks_of(v.build_left), b.text]
+			b.text = "MEMBANGUN %d mgg · %s" % [Game.sim.weeks_of(v.build_left), b.text]
 		b.tooltip_text = "%s dan %s desa sekitarnya (%s)\nStatus: %s" % [v.name(), Simulation.ribu(v.size() - 1), v.origin(), STATUS_NAMES[v.status]]
 		b.set_pressed_no_signal(v.index == village_index)
+
+
+## Kloter yang sedang dibangun tampil beda: latar gelap, garis tepi warna energinya,
+## teks berwarna, dan bilah kemajuan di bawah tombol.
+func _style_building_row(b: Button, v: Simulation.VillageState) -> void:
+	var prog: ColorRect = b.get_node_or_null("Prog")
+	if not v.is_building():
+		for st in ["normal", "hover", "pressed", "hover_pressed"]:
+			b.remove_theme_stylebox_override(st)
+		b.remove_theme_color_override("font_color")
+		b.remove_theme_color_override("font_hover_color")
+		if prog:
+			prog.hide()
+		return
+	var e := Game.db.get_energy(v.build_energy)
+	var col: Color = e.color if e else Palette.LIT
+	var selected := v.index == village_index
+	for st in ["normal", "hover", "pressed", "hover_pressed"]:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = col.darkened(0.55 if selected or st.begins_with("hover") else 0.72)
+		sb.border_color = Color.WHITE if selected else col
+		sb.set_border_width_all(2)
+		sb.border_width_left = 6
+		sb.set_corner_radius_all(3)
+		sb.set_content_margin_all(4)
+		sb.content_margin_left = 10
+		b.add_theme_stylebox_override(st, sb)
+	b.add_theme_color_override("font_color", col.lightened(0.45))
+	b.add_theme_color_override("font_hover_color", Color.WHITE)
+	if prog == null:
+		prog = ColorRect.new()
+		prog.name = "Prog"
+		prog.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(prog)
+	prog.show()
+	prog.color = col
+	var frac := clampf(float(v.build_total - v.build_left) / maxf(1.0, float(v.build_total)), 0.0, 1.0)
+	prog.position = Vector2(6, b.size.y - 4)
+	prog.size = Vector2(maxf(2.0, (b.size.x - 8) * frac), 2)
 
 
 func _refresh_detail(s: Simulation.ProvinceState) -> void:

@@ -461,6 +461,15 @@ def main():
     actions = {"build": sym_wrench, "dialog": sym_speech, "internet": sym_wifi, "train": sym_book}
     for k, sym in actions.items():
         save("assets/icons/actions/%s.png" % k, simple(sym, (240, 186, 64)).out(32))
+    # Gelembung poin di peta: lentera (biasa), ide warga (Komunitas), bintang emas (langka).
+    for name, sym, col in (("lentera", sym_lantern, (255, 214, 92)), ("ide", sym_people, (120, 220, 200)),
+                           ("emas", sym_star, (255, 236, 120))):
+        b = Icon(16)
+        b.E(0, 0, 15, 15, dark(col, 0.45))
+        b.E(1, 1, 14, 14, col)
+        b.E(3, 2, 6, 4, (255, 255, 240))
+        sym(b, INK if name != "lentera" else (60, 40, 30))
+        save("assets/map/bubble_%s.png" % name, b.out(32))
     app = Icon(16)
     app.badge((40, 46, 96))
     sym_lantern(app)

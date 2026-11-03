@@ -1143,9 +1143,16 @@ func is_reachable(s: ProvinceState) -> bool:
 	return air_islands.has(s.data.island.id)
 
 
-func collect_bubble() -> void:
-	points += cfg.bubble_points
+## kind: "lentera" = Poin biasa, "ide" = Komunitas wilayah naik, "emas" = Poin 3x.
+func collect_bubble(kind: String = "lentera", province_id: StringName = &"", combo: int = 1) -> float:
+	var gain := cfg.bubble_points * (3.0 if kind == "emas" else (0.5 if kind == "ide" else 1.0))
+	gain *= 1.0 + 0.25 * float(mini(combo, 5) - 1)
+	points += gain
+	if kind == "ide" and provinces.has(province_id):
+		var s: ProvinceState = provinces[province_id]
+		s.community = minf(100.0, s.community + 4.0)
 	changed.emit()
+	return gain
 
 
 # ---------------------------------------------------------------- upgrade

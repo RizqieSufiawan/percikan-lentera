@@ -74,6 +74,7 @@ func _show_start_card() -> void:
 
 func _process(delta: float) -> void:
 	_update_hints(delta)
+	_combo_time = maxf(0.0, _combo_time - delta)
 	_fit_panels()
 	_sync_map_village()
 	if not Game.is_running():
@@ -874,34 +875,101 @@ func _on_game_ended(_result: StringName) -> void:
 
 # ---------------------------------------------------------------- gelembung aksi
 
+const BUBBLE_TEX := {
+	"lentera": preload("res://assets/map/bubble_lentera.png"),
+	"ide": preload("res://assets/map/bubble_ide.png"),
+	"emas": preload("res://assets/map/bubble_emas.png"),
+}
+var _combo := 0
+var _combo_time := 0.0
+
+
+## Gelembung muncul di atas kloter yang sudah berenergi bersih (warga desa itu ingin terlibat).
+## Tiga jenis: lentera (Poin), ide warga (Komunitas wilayah naik), bintang emas (langka, Poin 3x,
+## melayang lebih cepat). Klik beruntun dalam beberapa detik memberi combo.
 func _spawn_bubble() -> void:
 	var sim := Game.sim
-	var candidates: Array[StringName] = []
+	var spots: Array = []
 	for id in sim.provinces:
 		var s: Simulation.ProvinceState = sim.provinces[id]
-		if s.on() > 0 or sim.is_reachable(s):
-			candidates.append(id)
-	if candidates.is_empty():
+		for v in s.villages:
+			if v.is_clean() or v.is_building():
+				spots.append([id, v])
+	if spots.is_empty():
+		for id in sim.provinces:
+			if sim.is_reachable(sim.provinces[id]):
+				spots.append([id, null])
+	if spots.is_empty():
 		return
-	var id: StringName = candidates[randi() % candidates.size()]
+	var spot: Array = spots[randi() % spots.size()]
+	var id: StringName = spot[0]
+	var v: Simulation.VillageState = spot[1]
+	var roll := randf()
+	var kind := "emas" if roll < 0.08 else ("ide" if roll < 0.3 else "lentera")
 	var b := TextureButton.new()
-	b.texture_normal = Game.db.ui.bubble
+	b.texture_normal = BUBBLE_TEX[kind]
 	b.ignore_texture_size = true
 	b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	b.custom_minimum_size = Vector2(28, 28)
-	b.size = Vector2(28, 28)
-	b.tooltip_text = "Warga ingin terlibat! Klik untuk Poin Dukungan."
-	b.position = map.node_center(id) + Vector2(randf_range(-30, 30), randf_range(-46, -28))
+	b.custom_minimum_size = Vector2(30, 30)
+	b.size = Vector2(30, 30)
+	b.pivot_offset = Vector2(15, 15)
+	var where := v.name() if v else Game.db.get_province(id).display_name
+	b.tooltip_text = {"lentera": "Warga %s ingin terlibat! Klik untuk Poin.",
+		"ide": "Ide warga %s! Klik: Komunitas wilayah naik.",
+		"emas": "Bintang emas di %s! Poin 3x, cepat hilang."}[kind] % where
+	var base := (map.village_center(id, v.index) if v else map.node_center(id)) + Vector2(-15, -34)
+	b.position = base
 	bubble_layer.add_child(b)
+	# Muncul dengan memantul, lalu melayang naik-turun.
+	b.scale = Vector2.ZERO
+	var pop := b.create_tween()
+	pop.tween_property(b, "scale", Vector2.ONE * 1.25, 0.18).set_trans(Tween.TRANS_BACK)
+	pop.tween_property(b, "scale", Vector2.ONE, 0.12)
+	var bob := b.create_tween().set_loops()
+	var amp := 6.0 if kind == "emas" else 3.0
+	var period := 0.45 if kind == "emas" else 0.9
+	bob.tween_property(b, "position:y", base.y - amp, period).set_trans(Tween.TRANS_SINE)
+	bob.tween_property(b, "position:y", base.y, period).set_trans(Tween.TRANS_SINE)
+	if kind == "emas":
+		var drift := b.create_tween()
+		drift.tween_property(b, "position:x", base.x + randf_range(-40, 40), 3.5).set_trans(Tween.TRANS_SINE)
 	b.pressed.connect(func():
-		Game.sim.collect_bubble()
+		_combo = _combo + 1 if _combo_time > 0.0 else 1
+		_combo_time = 4.0
+		var gain: float = Game.sim.collect_bubble(kind, id, _combo)
 		Audio.sfx(&"point")
-		_float_text("+%s P" % str(Game.db.config.bubble_points), b.position)
+		var label := "+%.1f P" % gain if kind != "ide" else "+Komunitas  +%.1f P" % gain
+		if _combo > 1:
+			label += "  combo x%d" % _combo
+		_float_text(label, b.position)
+		_sparkle(b.position + Vector2(15, 15), kind)
 		b.queue_free())
+	# Berkedip sebelum hilang.
+	var life: float = Game.db.config.bubble_lifetime * (0.6 if kind == "emas" else 1.0)
 	var t := b.create_tween()
-	t.tween_interval(Game.db.config.bubble_lifetime)
-	t.tween_property(b, "modulate:a", 0.0, 0.5)
+	t.tween_interval(maxf(0.5, life - 1.5))
+	for k in 4:
+		t.tween_property(b, "modulate:a", 0.25, 0.18)
+		t.tween_property(b, "modulate:a", 1.0, 0.18)
+	t.tween_property(b, "modulate:a", 0.0, 0.2)
 	t.tween_callback(b.queue_free)
+
+
+## Percikan piksel kecil saat gelembung diklik.
+func _sparkle(center: Vector2, kind: String) -> void:
+	var col: Color = {"lentera": Palette.LIT, "ide": Color(0.47, 0.86, 0.78), "emas": Color(1, 0.93, 0.47)}[kind]
+	for k in 10:
+		var p := ColorRect.new()
+		p.color = col
+		p.size = Vector2(3, 3)
+		p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		p.position = center
+		bubble_layer.add_child(p)
+		var a := TAU * k / 10.0 + randf() * 0.3
+		var t := p.create_tween()
+		t.tween_property(p, "position", center + Vector2(cos(a), sin(a)) * randf_range(16, 30), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		t.parallel().tween_property(p, "modulate:a", 0.0, 0.35)
+		t.tween_callback(p.queue_free)
 
 
 func _float_text(text: String, pos: Vector2) -> void:
