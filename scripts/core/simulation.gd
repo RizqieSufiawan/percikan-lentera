@@ -209,13 +209,9 @@ func _init(database: GameDatabase, seed_value: int = -1) -> void:
 		rng.randomize()
 
 
-# ---------------------------------------------------------------- mulai
-
-## village_index: kloter awal yang langsung mulai dibangun (-1 = paling cocok, -2 = tidak ada).
-func start(province_id: StringName, energy_id: StringName, name: String = "", village_index: int = -2) -> void:
-	start_province = province_id
-	start_energy = energy_id
-	community_name = name if name.strip_edges() != "" else "Tim KKN Tematik"
+## Membuat keadaan awal semua wilayah dan kloter (dipakai start() dan load_save()).
+func _make_provinces() -> void:
+	provinces.clear()
 	for p in db.provinces:
 		var s := ProvinceState.new()
 		s.data = p
@@ -236,6 +232,95 @@ func start(province_id: StringName, energy_id: StringName, name: String = "", vi
 		s.recount()
 		provinces[p.id] = s
 	_load_links()
+
+
+# ---------------------------------------------------------------- simpan & muat
+
+const SAVE_VERSION := 1
+const _SAVE_FIELDS := ["community_name", "auto_build", "auto_build_focus", "start_province", "start_energy",
+	"tick_count", "stage", "kkn_active", "points", "money", "welfare", "blue", "red", "owned_upgrades", "flags",
+	"known_compat", "event_targets", "counters", "completed_missions", "event_cooldowns", "offers_made",
+	"offer_cooldown", "score_penalty", "milestone_reports", "celebrated_cities", "money_zero_ticks", "dark_ticks",
+	"game_over", "result", "_auto_cd"]
+
+
+## Seluruh keadaan permainan sebagai Dictionary biasa (disimpan biner dengan store_var).
+func to_save() -> Dictionary:
+	var d := {"version": SAVE_VERSION}
+	for f in _SAVE_FIELDS:
+		d[f] = get(f)
+	d["energies"] = Array(energies)
+	d["air_islands"] = Array(air_islands)
+	var ot := offer_target.duplicate()
+	if ot.has("offer"):
+		ot["offer"] = db.offers.find(ot["offer"])
+	d["offer_target"] = ot
+	d["rng_seed"] = rng.seed
+	d["rng_state"] = rng.state
+	var pv := {}
+	for id in provinces:
+		var st: ProvinceState = provinces[id]
+		var vs: Array = []
+		for v in st.villages:
+			vs.append([v.status, v.energy, v.build_left, v.build_total, v.build_energy, v.lit_age])
+		pv[id] = {"community": st.community, "internet": st.internet, "seed": st.seed, "built_once": st.built_once,
+			"spread_progress": st.spread_progress, "independence_progress": st.independence_progress, "villages": vs}
+	d["provinces"] = pv
+	return d
+
+
+## Memulihkan keadaan dari to_save(). Dipanggil pada Simulation baru (tanpa start()).
+func load_save(d: Dictionary) -> void:
+	_make_provinces()
+	for f in _SAVE_FIELDS:
+		if d.has(f):
+			set(f, d[f])
+	energies.assign(d.get("energies", []))
+	air_islands.assign(d.get("air_islands", []))
+	var ot: Dictionary = d.get("offer_target", {}).duplicate()
+	if ot.has("offer"):
+		var i: int = ot["offer"]
+		if i >= 0 and i < db.offers.size():
+			ot["offer"] = db.offers[i]
+		else:
+			ot = {}
+	offer_target = ot
+	rng.seed = d.get("rng_seed", 0)
+	rng.state = d.get("rng_state", 0)
+	var pv: Dictionary = d.get("provinces", {})
+	for id in pv:
+		if not provinces.has(id):
+			continue
+		var st: ProvinceState = provinces[id]
+		var src: Dictionary = pv[id]
+		st.community = src["community"]
+		st.internet = src["internet"]
+		st.seed = src["seed"]
+		st.built_once = src["built_once"]
+		st.spread_progress = src["spread_progress"]
+		st.independence_progress = src["independence_progress"]
+		var vs: Array = src["villages"]
+		for i in mini(vs.size(), st.villages.size()):
+			var v := st.villages[i]
+			v.status = vs[i][0]
+			v.energy = vs[i][1]
+			v.build_left = vs[i][2]
+			v.build_total = vs[i][3]
+			v.build_energy = vs[i][4]
+			v.lit_age = vs[i][5]
+		st.recount()
+	_recompute_mods()
+	_update_near(false)
+
+
+# ---------------------------------------------------------------- mulai
+
+## village_index: kloter awal yang langsung mulai dibangun (-1 = paling cocok, -2 = tidak ada).
+func start(province_id: StringName, energy_id: StringName, name: String = "", village_index: int = -2) -> void:
+	start_province = province_id
+	start_energy = energy_id
+	community_name = name if name.strip_edges() != "" else "Tim KKN Tematik"
+	_make_provinces()
 	energies = [energy_id]
 	for u in db.upgrades:
 		if u.unlock_energy == energy_id:
@@ -1575,7 +1660,7 @@ var _has_links := false
 
 
 ## Kloter "dekat" = paling jauh spread_max_hops langkah dari kloter yang sudah berenergi bersih.
-func _update_near() -> void:
+func _update_near(age: bool = true) -> void:
 	if not _has_links:
 		return
 	var dist: Dictionary = {}
@@ -1584,7 +1669,8 @@ func _update_near() -> void:
 		for v in s.villages:
 			v.near = false
 			if v.is_clean():
-				v.lit_age += 1
+				if age:
+					v.lit_age += 1
 				dist[v] = 0
 				frontier.append(v)
 	var hops := 0

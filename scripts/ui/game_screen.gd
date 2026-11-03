@@ -55,7 +55,11 @@ func _ready() -> void:
 	sim.auto_build_focus = sim.start_province
 	_build_reveal()
 	_refresh()
-	_show_start_card.call_deferred()
+	if Game.just_loaded:
+		Game.just_loaded = false
+		toast.call_deferred("Permainan dimuat: %s." % sim.date_text())
+	else:
+		_show_start_card.call_deferred()
 	# Tombol debug hanya aktif saat dijalankan dari editor / build debug.
 	if OS.is_debug_build():
 		add_child(preload("res://scripts/ui/debug_tools.gd").new())
@@ -137,7 +141,7 @@ func _refresh() -> void:
 	%ResistanceLabel.text = "%d%%" % int(sim.total_resistance())
 	%DateLabel.text = sim.date_text()
 	%StageLabel.text = "Tahap %d: %s" % [sim.stage, _stage_name(sim.stage)]
-	%PointsLabel.text = "Poin Dukungan: %d" % int(sim.points)
+	%PointsLabel.text = "Poin Dukungan: %d" % int(sim.points)  # angka per bulan ditambah di _refresh_tooltips()
 	%MoneyBar.value = sim.money
 	%WelfareBar.value = sim.welfare
 	%CommunityBar.value = sim.community_average()
@@ -162,6 +166,11 @@ func _refresh_tooltips() -> void:
 			$StatsPanel/VBox/CommunityRow, $TopPanel/VBox/ResRow, access_bar]:
 		row.mouse_filter = Control.MOUSE_FILTER_PASS
 	var m_total: float = (b["m_dasar"] + b["m_mandiri"]) * per_month
+	# Pemasukan per bulan langsung terlihat di HUD; kursor "?" menandakan ada penjelasan.
+	%PointsLabel.text = "Poin Dukungan: %d  (+%s/bln)" % [int(sim.points), ("%.1f" % p_total).replace(".", ",")]
+	$StatsPanel/VBox/MoneyRow/Label.text = "Ekonomi +%s/bln" % ("%.1f" % m_total).replace(".", ",")
+	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, $StatsPanel/VBox/WelfareRow, $StatsPanel/VBox/CommunityRow]:
+		row.mouse_default_cursor_shape = Control.CURSOR_HELP
 	$StatsPanel/VBox/PointsRow.tooltip_text = "Poin +%.1f/bln dari %s.\nUntuk upgrade & warga membangun." % [p_total, "tim KKN" if sim.kkn_active else "desa bersih & Komunitas"]
 	$StatsPanel/VBox/MoneyRow.tooltip_text = "Ekonomi +%.1f/bln. Untuk upgrade mahal.\nNol terlalu lama = kalah." % m_total
 	$StatsPanel/VBox/WelfareRow.tooltip_text = "Naik saat desa dapat listrik.\nHabis = kalah."
@@ -184,8 +193,14 @@ func _build_speed_buttons() -> void:
 		b.button_group = group
 		b.pressed.connect(func(): Game.set_speed(i))
 		b.visible = not Game.db.config.turn_based_mode
-	Game.speed_changed.connect(func(s): buttons[s].button_pressed = true)
+	# Metode (bukan lambda) supaya sambungan otomatis putus saat layar game ditutup.
+	Game.speed_changed.connect(_on_speed_changed)
 	buttons[Game.speed].button_pressed = true
+
+
+func _on_speed_changed(s: int) -> void:
+	var buttons := [%PauseBtn, %Speed1Btn, %Speed2Btn, %Speed3Btn]
+	buttons[s].button_pressed = true
 
 
 # ---------------------------------------------------------------- legenda warna peta
@@ -693,8 +708,17 @@ func _owns_energy_branch() -> bool:
 	return false
 
 
+## Langkah tutorial disimpan di sim.counters (ikut tersimpan), jadi memuat permainan tidak
+## mengulang tutorial: lanjut dari langkah terakhir, atau tidak muncul jika sudah selesai/ditutup.
+const TUTORIAL_KEY := &"tutorial_step"
+const TUTORIAL_DONE := 99
+
+
 func _build_hints(parent: Control) -> void:
 	if Game.sim == null or Game.sim.tick_count > Game.db.config.kkn_ticks:
+		return
+	var saved_step := int(Game.sim.counters.get(TUTORIAL_KEY, 0))
+	if saved_step >= _hint_steps().size():
 		return
 	_hint_panel = PanelContainer.new()
 	var style := StyleBoxFlat.new()
@@ -715,10 +739,13 @@ func _build_hints(parent: Control) -> void:
 	close.text = "x"
 	close.tooltip_text = "Tutup petunjuk"
 	close.focus_mode = Control.FOCUS_NONE
-	close.pressed.connect(func(): _hint_panel.queue_free(); _hint_panel = null)
+	close.pressed.connect(func():
+		Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
+		_hint_panel.queue_free()
+		_hint_panel = null)
 	row.add_child(close)
 	parent.add_child(_hint_panel)
-	_hint_step = 0
+	_hint_step = saved_step
 	_show_hint()
 
 
@@ -727,6 +754,7 @@ func _show_hint() -> void:
 	if _hint_panel == null:
 		return
 	if _hint_step >= steps.size():
+		Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
 		_hint_panel.queue_free()
 		_hint_panel = null
 		return
@@ -747,6 +775,7 @@ func _update_hints(delta: float) -> void:
 	var advanced := false
 	while _hint_step < steps.size() and steps[_hint_step][1].call():
 		_hint_step += 1
+		Game.sim.counters[TUTORIAL_KEY] = _hint_step
 		_hint_timer = 0.0
 		_hint_v0 = province_panel.village_index
 		advanced = true
@@ -868,6 +897,8 @@ func _on_kkn_ended(lost: int) -> void:
 
 
 func _on_game_ended(_result: StringName) -> void:
+	# Simpanan otomatis ditandai selesai supaya tombol Lanjutkan tidak membuka permainan yang sudah tamat.
+	Game.save_game(Game.AUTO_SLOT)
 	await get_tree().create_timer(1.2).timeout
 	upgrade_panel.close()
 	Game.goto("end")
@@ -989,23 +1020,36 @@ func _float_text(text: String, pos: Vector2) -> void:
 # ---------------------------------------------------------------- menu & panduan
 
 func _open_menu() -> void:
-	var popup_text := "Berita: Popup" if Game.news_popups_enabled else "Berita: Ticker"
-	var music_text := "Musik: Nyala" if Audio.music_volume_db > -60 else "Musik: Mati"
-	modal.show_card("Jeda", null, "Permainan dijeda.", "", ["Lanjut", "Panduan", popup_text, music_text, "Menu Utama"], _on_menu_choice)
+	modal.show_card("Jeda", null, "Permainan dijeda.", "", ["Lanjut", "Simpan", "Pengaturan", "Panduan", "Menu Utama"], _on_menu_choice)
 
 
 func _on_menu_choice(i: int) -> void:
 	if i == 1:
-		_open_guide()
+		_open_overlay(_make_save_panel())
 	elif i == 2:
-		Game.news_popups_enabled = not Game.news_popups_enabled
-		_open_menu()
+		_open_overlay(SettingsPanel.new())
 	elif i == 3:
-		Audio.set_music_volume(-80.0 if Audio.music_volume_db > -60 else -8.0)
-		_open_menu()
+		_open_guide()
 	elif i == 4:
+		# Simpan otomatis supaya bisa Lanjutkan dari layar judul.
+		Game.save_game(Game.AUTO_SLOT)
 		Game.sim = null
 		Game.goto("title")
+
+
+func _make_save_panel() -> LoadPanel:
+	var p := LoadPanel.new()
+	p.save_mode = true
+	return p
+
+
+## Panel di atas peta (Simpan / Pengaturan). Game tetap dijeda, lalu menu jeda dibuka lagi.
+func _open_overlay(panel: Control) -> void:
+	Game.hold(&"overlay")
+	add_child(panel)
+	panel.closed.connect(func():
+		Game.release(&"overlay")
+		_open_menu())
 
 
 func _open_guide(index: int = 0) -> void:
