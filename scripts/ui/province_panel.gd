@@ -194,7 +194,9 @@ func _refresh_detail(s: Simulation.ProvinceState) -> void:
 func _refresh_build_buttons(s: Simulation.ProvinceState, v: Simulation.VillageState) -> void:
 	for c in v_build_list.get_children():
 		c.queue_free()
-	if v.is_clean() or v.is_building():
+	# Pembangunan sepenuhnya otomatis: panel kanan hanya menampilkan informasi kloter.
+	v_build_list.visible = false
+	if v.is_clean() or v.is_building() or not v_build_list.visible:
 		return
 	var build: ActionData = null
 	for a in Game.db.actions:

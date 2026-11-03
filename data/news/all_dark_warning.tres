@@ -7,7 +7,7 @@
 [resource]
 script = ExtResource("3_script")
 trigger = &"all_dark_warning"
-headline = "Semua pembangkit bersih padam! Bangun lagi dalam 6 bulan (pilih kloter, lalu Bangun), atau gerakan ini berakhir."
+headline = "Semua pembangkit bersih padam! Warga bergotong royong membangun ulang satu pembangkit. Jika 6 bulan tetap padam, gerakan ini berakhir."
 important = true
 icon = ExtResource("1_warn")
 image = ExtResource("2_img")

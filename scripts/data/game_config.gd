@@ -30,6 +30,10 @@ const MODIFIER_KEYS := [
 @export var tick_seconds: float = 1.0
 ## Detik per tik selama KKN (diperlambat agar KKN 6 bulan ~ 2 menit).
 @export var kkn_tick_seconds: float = 4.5
+## Awal pasca-KKN dibuat pelan dulu: detik per tik mulai dari sini lalu turun ke tick_seconds
+## selama early_ramp_ticks tik (52 = setahun cerita).
+@export var early_tick_seconds: float = 2.2
+@export var early_ramp_ticks: int = 52
 ## Lama KKN dalam tik (26 = 6 bulan).
 @export var kkn_ticks: int = 26
 @export var start_year: int = 2026
@@ -213,3 +217,11 @@ const MODIFIER_KEYS := [
 @export var fast_win_ticks: int = 700
 ## Menang sebelum tahun ini = akhir "Cepat dan Tahan".
 @export var fast_win_year: int = 2055
+
+
+## Detik nyata per tik pada kecepatan 1x: KKN lambat, awal pasca-KKN melambat lalu makin cepat.
+func seconds_per_tick(kkn_active: bool, tick_count: int) -> float:
+	if kkn_active:
+		return kkn_tick_seconds
+	var t := clampf(float(tick_count - kkn_ticks) / maxf(1.0, float(early_ramp_ticks)), 0.0, 1.0)
+	return lerpf(early_tick_seconds, tick_seconds, t)

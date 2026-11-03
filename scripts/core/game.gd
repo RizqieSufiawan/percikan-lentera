@@ -52,7 +52,8 @@ func goto(scene_key: String) -> void:
 
 func new_game() -> void:
 	sim = Simulation.new(db)
-	sim.auto_build = auto_build
+	# Pembangunan sepenuhnya otomatis: warga membangun sendiri setelah hasilnya terbukti.
+	sim.auto_build = true
 	sim.start(chosen_province, chosen_energy, chosen_name, chosen_village)
 	_holds.clear()
 	_accumulator = 0.0
@@ -64,9 +65,11 @@ func _process(delta: float) -> void:
 		return
 	if db.config.turn_based_mode:
 		return
-	var interval: float = db.config.kkn_tick_seconds if sim.kkn_active else db.config.tick_seconds
 	_accumulator += delta * speed
-	while _accumulator >= interval and _holds.is_empty() and not sim.game_over:
+	while _holds.is_empty() and not sim.game_over:
+		var interval := db.config.seconds_per_tick(sim.kkn_active, sim.tick_count)
+		if _accumulator < interval:
+			break
 		_accumulator -= interval
 		sim.tick()
 

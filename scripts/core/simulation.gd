@@ -294,6 +294,16 @@ func _auto_build() -> void:
 	for s: ProvinceState in order:
 		if s.on() > 0 and s.community < cfg.auto_build_min_community:
 			continue
+		# Semua padam setelah KKN: warga bergotong royong membangun ulang satu kloter tanpa Poin,
+		# supaya pemain yang kehabisan Poin tidak langsung kalah (tidak ada tombol Bangun manual).
+		if not kkn_active and total_on() == 0 and total_building() == 0 and is_reachable(s):
+			var rv := _pick_auto_village(s)
+			if rv and _start_construction(s, rv.index, &"") != null:
+				s.built_once = true
+				_bump(&"built")
+				_bump(&"auto_built")
+				return
+			continue
 		if points < action_cost_points(build, s) + cfg.auto_build_reserve:
 			return
 		var v := _pick_auto_village(s, total_on() > 0)

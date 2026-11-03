@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_script")
 title = "Poin, Ekonomi, Pohon Upgrade"
-text = "Membangun memakai Poin + Ekonomi. Semua kemampuan lain ada di Pohon Upgrade (U) dan berlaku di semua wilayah.\nSumber Energi: tiap energi punya cabang sendiri (Output Listrik I–III, Material Bangunan I–III, Teknisi Warga, Pusat Pelatihan). Edukasi & Warga: Komunitas tumbuh lebih cepat, resistensi turun. Layanan Digital: internet otomatis di wilayah berenergi bersih."
+text = "Warga membangun memakai Poin + Ekonomi. Semua kemampuan ada di Pohon Upgrade (U) dan berlaku di semua wilayah.\nSumber Energi: tiap energi punya cabang sendiri (Output Listrik I–III, Material Bangunan I–III, Teknisi Warga, Pusat Pelatihan). Edukasi & Warga: Komunitas tumbuh lebih cepat, resistensi turun. Layanan Digital: internet otomatis di wilayah berenergi bersih."
 image = ExtResource("1_img")

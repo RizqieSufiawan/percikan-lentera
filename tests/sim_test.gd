@@ -58,10 +58,11 @@ func _play(db: GameDatabase, strategy: String, seed_value: int, province: String
 	_pending_offer = null
 	sim.event_triggered.connect(func(e, pid): _pending_event = [e, pid])
 	sim.offer_triggered.connect(func(o): _pending_offer = o)
-	sim.start(province, energy, "Tes")
+	sim.auto_build = true
+	sim.start(province, energy, "Tes", -1)
 	var seconds := 0.0
 	while not sim.game_over and sim.tick_count < TEST_CAP:
-		seconds += db.config.kkn_tick_seconds if sim.kkn_active else db.config.tick_seconds
+		seconds += db.config.seconds_per_tick(sim.kkn_active, sim.tick_count)
 		sim.tick()
 		# Pemain manusia sesekali mengklik gelembung.
 		if strategy != "pasif" and sim.tick_count % 12 == 0:
@@ -85,7 +86,6 @@ func _play(db: GameDatabase, strategy: String, seed_value: int, province: String
 
 
 func _bot_turn(sim: Simulation, db: GameDatabase, strategy: String) -> void:
-	var build: ActionData = db.actions[0]
 	# Upgrade termurah yang bisa dibeli.
 	var best: UpgradeData = null
 	for u in db.upgrades:
@@ -98,25 +98,14 @@ func _bot_turn(sim: Simulation, db: GameDatabase, strategy: String) -> void:
 			best = u
 	if best and (strategy == "ngebut" or sim.points > sim.upgrade_cost(best) + 4):
 		sim.buy_upgrade(best)
+	# Pembangunan sepenuhnya otomatis (tidak ada tombol Bangun): bot hanya memilih upgrade
+	# dan wilayah yang didahulukan (wilayah dengan komunitas tertinggi yang masih bisa dibangun).
+	var focus: Simulation.ProvinceState = null
 	for s: Simulation.ProvinceState in sim.provinces.values():
-		var id := s.data.id
-		if strategy == "asal_pilih":
-			# Sama seperti seimbang, tapi selalu membangun dengan energi pertama yang dimiliki,
-			# tanpa membaca ciri desa.
-			for v: Simulation.VillageState in s.villages:
-				if not v.is_clean() and sim.can_do_action(build, id, v.index, sim.energies[0]) == "" and (s.community >= 20 or s.on() == 0):
-					sim.do_action(build, id, v.index, sim.energies[0])
-					break
-		elif sim.can_do_action(build, id) == "" and (strategy == "ngebut" or s.community >= 20 or s.on() == 0):
-			sim.do_action(build, id)
-		elif sim.total_on() == 0 and sim.total_building() == 0 and sim.is_reachable(s) and s.unclean() > 0:
-			# Semua padam dan tidak ada desa yang cocok: bangun manual di kloter paling cocok.
-			var best_v: Simulation.VillageState = null
-			for v: Simulation.VillageState in s.villages:
-				if not v.is_clean() and (best_v == null or sim.best_village_compat(s, v) > sim.best_village_compat(s, best_v)):
-					best_v = v
-			if best_v:
-				sim.do_action(build, id, best_v.index, sim.best_energy_for(s, best_v))
+		if s.unclean() > 0 and sim.is_reachable(s) and (focus == null or s.community > focus.community):
+			focus = s
+	if focus:
+		sim.auto_build_focus = focus.data.id
 
 
 ## Seberapa cocok energi ini untuk semua desa yang belum bersih di provinsi yang sudah terjangkau.

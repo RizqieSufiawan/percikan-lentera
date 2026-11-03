@@ -374,7 +374,7 @@ layout_mode = 2
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
-text = "Kloter desa (klik untuk ciri & bangun)"
+text = "Kloter desa (klik untuk melihat ciri desa)"
 
 [node name="VillageScroll" type="ScrollContainer" parent="ProvincePanel/VBox"]
 custom_minimum_size = Vector2(0, 120)

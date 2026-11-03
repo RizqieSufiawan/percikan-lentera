@@ -42,7 +42,6 @@ func _ready() -> void:
 		if not province_panel.visible:
 			map.set_selected(&""))
 	_build_speed_buttons()
-	_build_auto_button()
 	_build_legend()
 	_build_missions()
 	%UpgradeBtn.pressed.connect(func(): Audio.sfx(&"click"); upgrade_panel.open())
@@ -69,8 +68,8 @@ func _show_start_card() -> void:
 	feed.push(Game.db.ui.feed_start, "Tim KKN tiba di %s" % p.display_name, "%s  |  %s" % [p.display_name, sim.date_text()],
 		"Tim %s membawa %s." % [sim.community_name, e.display_name])
 	modal.show_card("KKN Tematik Dimulai", null,
-		"Tim %s tiba di %s membawa %s.\n\nKamu punya %d minggu (6 bulan) sebelum tim pulang. Bangun pembangkit pertama bersama warga, selesaikan misi KKN di kiri layar, dan perkuat warga lewat Pohon Upgrade (U) agar desa tetap menyala setelah kalian pergi.\n\nPetunjuk di bagian atas layar akan menuntunmu di menit-menit pertama." % [sim.community_name, p.display_name, e.display_name, Game.db.config.kkn_ticks],
-		"Spasi = jeda, 1/2/3 = kecepatan, B = bangun otomatis, U = pohon upgrade, Tab = lipat/buka panel, Esc = menu & panduan.", ["Mulai"])
+		"Tim %s tiba di %s membawa %s.\n\nKamu punya %d minggu (6 bulan) sebelum tim pulang. Pembangkit pertama sedang dibangun bersama warga. Setelah terbukti menyala, warga sekitar akan ikut membangun sendiri. Selesaikan misi KKN di kiri layar, dan perkuat warga lewat Pohon Upgrade (U) agar desa tetap menyala setelah kalian pergi.\n\nPetunjuk di bagian atas layar akan menuntunmu di menit-menit pertama." % [sim.community_name, p.display_name, e.display_name, Game.db.config.kkn_ticks],
+		"Spasi = jeda, 1/2/3 = kecepatan, U = pohon upgrade, Tab = lipat/buka panel, Esc = menu & panduan.", ["Mulai"])
 
 
 func _process(delta: float) -> void:
@@ -99,8 +98,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			Game.set_speed(3)
 		KEY_TAB:
 			toggle_all_panels()
-		KEY_B:
-			toggle_auto_build()
 		KEY_U:
 			if upgrade_panel.visible:
 				upgrade_panel.close()
@@ -478,7 +475,7 @@ func toggle_all_panels() -> void:
 # ---------------------------------------------------------------- tampilan bertahap
 # Supaya awal permainan tidak penuh angka: panel dan angka muncul saat mulai relevan.
 #   Awal      : tanggal, Poin, Ekonomi, misi KKN, dan satu kalimat ringkas di panel atas.
-#   Desa pertama menyala : statistik desa, bar akses, Komunitas, kabar terbaru, tombol Otomatis.
+#   Desa pertama menyala : statistik desa, bar akses, Komunitas, kabar terbaru.
 #   KKN selesai          : Kesejahteraan dan Ketahanan (biru vs merah).
 
 var _reveal_ready := false
@@ -504,7 +501,7 @@ func _update_reveal() -> void:
 	var changed := not _reveal_ready or lit != _reveal_lit or post != _reveal_post_kkn
 	if _reveal_ready and lit and not _reveal_lit:
 		Audio.sfx(&"point")
-		toast("Desa pertama menyala! Angka desa, Komunitas, kabar terbaru, dan tombol Otomatis (B) sekarang terbuka.")
+		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")
 	if _reveal_ready and post and not _reveal_post_kkn:
 		toast("Panel baru: Kesejahteraan (kiri) dan Ketahanan biru lawan merah (atas). Jaga biru tetap unggul.", Palette.INDEPENDENT)
 	_reveal_ready = true
@@ -625,18 +622,16 @@ var _hint_check: float = 0.0
 func _hint_steps() -> Array:
 	var sim := Game.sim
 	return [
-		["1/6  Klik wilayahmu yang disorot di peta.",
+		["1/5  Klik wilayahmu yang disorot di peta.",
 			func(): return province_panel.visible],
-		["2/6  Klik kloter lain di panel kanan untuk membandingkan energinya.",
+		["2/5  Klik kloter lain di panel kanan untuk membandingkan energinya.",
 			# Klik wilayah di peta sudah memilih satu kloter, jadi langkah ini menunggu kloter LAIN.
 			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0],
-		["3/6  Buka Pohon Upgrade (U) dan beli satu upgrade.",
+		["3/5  Buka Pohon Upgrade (U) dan beli satu upgrade.",
 			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1],
-		["4/6  Tab Sumber Energi: perkuat energi yang kamu pakai.",
+		["4/5  Tab Sumber Energi: perkuat energi yang kamu pakai.",
 			func(): return _owns_energy_branch() or int(sim.counters.get(&"upgrades_bought", 0)) >= 3],
-		["5/6  Otomatis (B): warga membangun kloter berikutnya sendiri.",
-			func(): return _reveal_lit and _hint_timer > 10.0],
-		["6/6  Klik gelembung di peta untuk Poin tambahan.",
+		["5/5  Klik gelembung di peta untuk Poin tambahan.",
 			func(): return _hint_timer > 14.0],
 	]
 
@@ -698,9 +693,8 @@ func _update_hints(delta: float) -> void:
 	if _hint_panel == null:
 		return
 	_hint_check += delta
-	if _hint_step == 1 or _hint_step == 4 or _hint_step == 5:
-		if _hint_step != 4 or _reveal_lit:
-			_hint_timer += delta
+	if _hint_step == 1 or _hint_step == 4:
+		_hint_timer += delta
 	if _hint_check < 0.25:
 		return
 	_hint_check = 0.0
@@ -781,8 +775,6 @@ func _hint_target(up_open: bool) -> Rect2:
 			var bar := tabs.get_tab_bar()
 			var r := bar.get_tab_rect(0)
 			return Rect2(bar.global_position + r.position, r.size)
-		4:
-			return _auto_btn.get_global_rect() if _auto_btn and _auto_btn.visible and not up_open else Rect2()
 	return Rect2()
 
 
