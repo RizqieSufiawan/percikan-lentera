@@ -40,6 +40,10 @@ class VillageState:
 	var build_left: int = 0
 	var build_total: int = 0
 	var build_energy: StringName = &""
+	## Kloter tetangga di peta (data/kloter_links.json) dan apakah kloter ini cukup dekat
+	## (<= spread_max_hops) dengan kloter yang listrik bersihnya sudah terbukti.
+	var links: Array = []
+	var near: bool = true
 
 	func is_building() -> bool:
 		return build_left > 0
@@ -229,6 +233,7 @@ func start(province_id: StringName, energy_id: StringName, name: String = "", vi
 				s.villages.append(v)
 		s.recount()
 		provinces[p.id] = s
+	_load_links()
 	energies = [energy_id]
 	for u in db.upgrades:
 		if u.unlock_energy == energy_id:
@@ -274,6 +279,10 @@ func _auto_build() -> void:
 	var build := _build_action()
 	if build == null:
 		return
+	# Warga baru mau ikut setelah hasilnya terbukti: selama pembangkit pertama masih dibangun,
+	# tidak ada pembangunan otomatis.
+	if total_on() == 0 and total_building() > 0:
+		return
 	var order: Array = []
 	if provinces.has(auto_build_focus):
 		order.append(provinces[auto_build_focus])
@@ -287,8 +296,9 @@ func _auto_build() -> void:
 			continue
 		if points < action_cost_points(build, s) + cfg.auto_build_reserve:
 			return
-		if can_do_action(build, s.data.id) == "":
-			do_action(build, s.data.id)
+		var v := _pick_auto_village(s, total_on() > 0)
+		if v and can_do_action(build, s.data.id, v.index) == "":
+			do_action(build, s.data.id, v.index)
 			_bump(&"auto_built")
 			return
 
@@ -306,6 +316,7 @@ func tick() -> void:
 	_maintenance()
 	_construction()
 	_check_missions()
+	_update_near()
 	_auto_build()
 	_spread()
 	_internet_seeds()
@@ -438,6 +449,7 @@ func _maintenance() -> void:
 func _spread() -> void:
 	var gains: Dictionary = {}
 	var pools: Dictionary = {}  # id provinsi tujuan -> energi yang bisa ditiru
+	var by_air: Dictionary = {}  # id provinsi tujuan yang dijangkau rute pesawat
 	var spread_mult := 1.0 + mod("spread_mult")
 	for src: ProvinceState in provinces.values():
 		if src.on() == 0:
@@ -454,12 +466,16 @@ func _spread() -> void:
 			for dst: ProvinceState in provinces.values():
 				if dst.data.island.id != src.data.island.id and air_islands.has(dst.data.island.id):
 					_add_spread(gains, pools, src_pool, src_share, dst, spread_mult, cfg.air_factor / 4.0)
+					by_air[dst.data.id] = true
 	for id in gains:
 		var s: ProvinceState = provinces[id]
 		s.spread_progress += gains[id]
 		while s.spread_progress >= 1.0 and s.unclean() > 0:
 			s.spread_progress -= 1.0
-			if _light_village(s, true, -1, &"", pools[id]) == null:
+			# Desa hanya meniru tetangga dekat yang sudah terbukti; rute pesawat boleh membuka
+			# kloter pertama di pulau yang belum punya energi bersih.
+			var need_near := not (by_air.has(id) and s.on() == 0)
+			if _light_village(s, true, -1, &"", pools[id], need_near) == null:
 				s.spread_progress = 0.0  # tidak ada desa yang cocok dengan energi yang ditiru
 				break
 		if s.unclean() == 0:
@@ -1414,10 +1430,12 @@ func _start_construction(s: ProvinceState, village_index: int, energy: StringNam
 
 ## Kloter untuk bangun otomatis / Bangun tanpa memilih kloter: hanya desa yang cocok dengan
 ## energi yang sudah dibuka; desa gelap didahulukan, lalu yang paling cocok.
-func _pick_auto_village(s: ProvinceState) -> VillageState:
+func _pick_auto_village(s: ProvinceState, require_near: bool = false) -> VillageState:
 	var v: VillageState = null
 	for c in s.villages:
 		if c.is_clean() or c.is_building() or not is_eligible(s, c, energies):
+			continue
+		if require_near and not c.near:
 			continue
 		if v == null or (c.status == V_DARK and v.status != V_DARK) \
 				or (c.status == v.status and best_village_compat(s, c) > best_village_compat(s, v)):
@@ -1442,6 +1460,56 @@ func _construction() -> void:
 				_reveal_compat(s, lit)
 
 
+## Membaca tetangga antar-kloter. Tanpa file ini semua kloter dianggap dekat (aturan lama).
+func _load_links() -> void:
+	const PATH := "res://data/kloter_links.json"
+	if not FileAccess.file_exists(PATH):
+		return
+	var data = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+	if not data is Dictionary:
+		return
+	for id in provinces:
+		var s: ProvinceState = provinces[id]
+		var rows: Array = data.get(String(id), [])
+		for i in mini(rows.size(), s.villages.size()):
+			for key in rows[i]:
+				var parts: PackedStringArray = String(key).split(":")
+				var ns: ProvinceState = provinces.get(StringName(parts[0]))
+				var j := int(parts[1])
+				if ns and j < ns.villages.size():
+					s.villages[i].links.append(ns.villages[j])
+	_has_links = true
+
+
+var _has_links := false
+
+
+## Kloter "dekat" = paling jauh spread_max_hops langkah dari kloter yang sudah berenergi bersih.
+func _update_near() -> void:
+	if not _has_links:
+		return
+	var dist: Dictionary = {}
+	var frontier: Array = []
+	for s: ProvinceState in provinces.values():
+		for v in s.villages:
+			v.near = false
+			if v.is_clean():
+				dist[v] = 0
+				frontier.append(v)
+	var hops := 0
+	while not frontier.is_empty() and hops < cfg.spread_max_hops:
+		hops += 1
+		var next: Array = []
+		for v in frontier:
+			for n in v.links:
+				if not dist.has(n):
+					dist[n] = hops
+					next.append(n)
+		frontier = next
+	for v in dist:
+		v.near = true
+
+
 func total_building() -> int:
 	var n := 0
 	for s: ProvinceState in provinces.values():
@@ -1453,7 +1521,7 @@ func total_building() -> int:
 ## - Aksi pemain: desa & energi pilihan pemain; jika tidak diisi, desa gelap paling cocok didahulukan.
 ## - Sebaran: desa dipilih acak berbobot kecocokan; desa fosil lebih jarang beralih dan
 ##   menaikkan resistensi merah karena menyentuh kepentingan lama.
-func _light_village(s: ProvinceState, from_spread: bool = false, village_index: int = -1, energy: StringName = &"", pool: Array = []) -> VillageState:
+func _light_village(s: ProvinceState, from_spread: bool = false, village_index: int = -1, energy: StringName = &"", pool: Array = [], require_near: bool = false) -> VillageState:
 	var epool: Array[StringName] = []
 	epool.assign(pool if not pool.is_empty() else energies)
 	if s.unclean() == 0:
@@ -1466,7 +1534,7 @@ func _light_village(s: ProvinceState, from_spread: bool = false, village_index: 
 		var weights: Array[float] = []
 		for c in s.villages:
 			var w := 0.0
-			if not c.is_clean() and not c.is_building() and is_eligible(s, c, epool):
+			if not c.is_clean() and not c.is_building() and is_eligible(s, c, epool) and (c.near or not require_near):
 				w = (1.0 if c.status == V_DARK else cfg.fossil_convert_weight) * (0.3 + best_village_compat(s, c, epool))
 			weights.append(w)
 			total_w += w

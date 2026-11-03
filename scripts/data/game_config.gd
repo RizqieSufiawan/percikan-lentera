@@ -86,6 +86,9 @@ const MODIFIER_KEYS := [
 @export_group("Penyebaran")
 @export var spread_rate: float = 0.036
 @export var local_spread_rate: float = 0.036
+## Sebaran & bangun otomatis hanya ke kloter yang paling jauh sekian langkah (sel tetangga di peta)
+## dari kloter yang sudah berenergi bersih. Warga meniru tetangga yang hasilnya sudah terbukti.
+@export var spread_max_hops: int = 2
 ## Pengali sebar lewat rute pesawat.
 @export var air_factor: float = 0.6
 ## Peluang per tik per sumber ber-internet menanam benih di provinsi jauh.

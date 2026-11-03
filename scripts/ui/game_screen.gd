@@ -216,6 +216,7 @@ func _build_auto_button() -> void:
 	_auto_btn.custom_minimum_size = Vector2(0, 40)
 	_auto_btn.tooltip_text = ("Bangun otomatis (B): warga membangun kloter berikutnya sendiri saat Poin cukup.\n" +
 		"Hanya di wilayah yang Komunitasnya minimal %d, energi dipilih yang paling cocok dengan ciri desa.\n" +
+		"Warga hanya meniru tetangga dekat (paling jauh 2 kloter dari pembangkit yang sudah menyala).\n" +
 		"Wilayah yang sedang kamu pilih didahulukan. Matikan jika ingin menabung Poin untuk upgrade.") % int(Game.db.config.auto_build_min_community)
 	_auto_btn.toggled.connect(_set_auto_build)
 	var hbox: HBoxContainer = %UpgradeBtn.get_parent()
