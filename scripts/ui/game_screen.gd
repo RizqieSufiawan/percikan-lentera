@@ -70,6 +70,7 @@ func _show_start_card() -> void:
 
 func _process(delta: float) -> void:
 	_update_hints(delta)
+	_fit_panels()
 	_sync_map_village()
 	if not Game.is_running():
 		return
@@ -424,6 +425,8 @@ func _set_collapsed(panel: PanelContainer, collapsed: bool) -> void:
 	var vbox: VBoxContainer = panel.get_child(0)
 	for i in range(1, vbox.get_child_count()):
 		vbox.get_child(i).visible = not collapsed
+	if not collapsed:
+		_apply_reveal()
 	var btn: Button = panel.get_meta("toggle")
 	btn.text = "+" if collapsed else "-"
 	var full: Vector4 = panel.get_meta("full_offsets")
@@ -504,31 +507,45 @@ func _update_reveal() -> void:
 	var total := sim.desa_independent() + sim.desa_lit() + sim.desa_fossil() + sim.desa_dark()
 	_simple_label.text = "0 dari %s desa memakai energi bersih" % Simulation.ribu(total)
 	_update_upgrade_pulse()
-	if not changed:
+	if changed:
+		_apply_reveal()
+
+
+## Menyembunyikan/menampilkan baris sesuai tahap. Baris di panel yang sedang dilipat tetap tersembunyi.
+func _apply_reveal() -> void:
+	if not _reveal_ready:
 		return
+	var lit := _reveal_lit
+	var post := _reveal_post_kkn
 	for n: Control in [%IndepLabel, %LitLabel, %FossilLabel, %DarkLabel, access_bar]:
 		n.visible = lit
 	_simple_label.visible = not lit
-	$StatsPanel/VBox/CommunityRow.visible = lit
+	var stats_open: bool = not $StatsPanel.get_meta("collapsed", false)
+	$StatsPanel/VBox/CommunityRow.visible = lit and stats_open
+	$StatsPanel/VBox/WelfareRow.visible = post and stats_open
 	feed.visible = lit
 	if _auto_btn:
 		_auto_btn.visible = lit
-	$StatsPanel/VBox/WelfareRow.visible = post
 	$TopPanel/VBox/ResRow.visible = post
-	_fit_panels.call_deferred()
 
 
-## Panel statistik dan panel atas menyusut/membesar mengikuti baris yang tampil.
+## Panel statistik dan panel atas selalu setinggi isinya (baris bisa muncul/hilang kapan saja),
+## lalu panel Misi ditempel tepat di bawah panel statistik. Dipanggil tiap frame; murah.
 func _fit_panels() -> void:
 	var stats: PanelContainer = $StatsPanel
-	if not stats.get_meta("collapsed", false):
-		stats.offset_bottom = stats.offset_top + stats.get_combined_minimum_size().y
-		if stats.has_meta("full_offsets"):
+	var bottom := stats.offset_top + stats.get_combined_minimum_size().y
+	if not is_equal_approx(stats.offset_bottom, bottom):
+		stats.offset_bottom = bottom
+		if stats.has_meta("full_offsets") and not stats.get_meta("collapsed", false):
 			var full: Vector4 = stats.get_meta("full_offsets")
-			stats.set_meta("full_offsets", Vector4(full.x, full.y, full.z, stats.offset_bottom))
+			stats.set_meta("full_offsets", Vector4(full.x, full.y, full.z, bottom))
 	var top: PanelContainer = $TopPanel
-	top.offset_bottom = top.offset_top + top.get_combined_minimum_size().y
-	_relayout_left()
+	var top_bottom := top.offset_top + top.get_combined_minimum_size().y
+	if not is_equal_approx(top.offset_bottom, top_bottom):
+		top.offset_bottom = top_bottom
+	var mission: PanelContainer = $MissionPanel
+	if not is_equal_approx(mission.offset_top, bottom + 8.0):
+		_relayout_left()
 
 
 ## Tombol Pohon Upgrade berkedip selama pemain belum pernah membeli upgrade padahal sudah mampu.

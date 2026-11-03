@@ -101,6 +101,8 @@ func _run() -> void:
 	await _wait(0.3)
 	await _shot("04d_panels_collapsed")
 	get_tree().current_scene.toggle_all_panels()
+	await _wait(0.3)
+	await _shot("04e_panels_reopened")
 
 	var upg := get_tree().current_scene.get_node("%UpgradePanel")
 	upg.open()
