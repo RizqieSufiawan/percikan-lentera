@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/panas_bumi_output2.png" id="1_6g8k7"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_dsr3k"]
+
+[resource]
+script = ExtResource("2_dsr3k")
+id = &"panas_bumi_output2"
+display_name = "Output Listrik II"
+description = "Siklus biner: air panas bersuhu rendah pun bisa dipakai."
+icon = ExtResource("1_6g8k7")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"panas_bumi_output1"])
+modifiers = Dictionary[StringName, float]({
+&"fit:panas_bumi": 0.05,
+&"output:panas_bumi": 0.3
+})

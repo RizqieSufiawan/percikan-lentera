@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/panas_bumi_pusat.png" id="1_xlwp2"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_2i6di"]
+
+[resource]
+script = ExtResource("2_2i6di")
+id = &"panas_bumi_pusat"
+display_name = "Pusat Pelatihan"
+description = "Pusat Pelatihan Panas Bumi: operator lokal melatih operator baru.
+Rugi: mahal."
+icon = ExtResource("1_xlwp2")
+cost_points = 15
+cost_money = 15
+requires = Array[StringName]([&"panas_bumi_teknisi"])
+modifiers = Dictionary[StringName, float]({
+&"fit:panas_bumi": 0.1,
+&"indep:panas_bumi": 0.3,
+&"spread_mult": 0.05
+})

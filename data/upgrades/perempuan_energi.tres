@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/perempuan_energi.png" id="1_0rwhr"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_3mah2"]
+
+[resource]
+script = ExtResource("2_3mah2")
+id = &"perempuan_energi"
+display_name = "Perempuan Penggerak Energi"
+description = "Ibu-ibu PKK mengelola iuran dan jadwal perawatan. Komunitas lebih awet dan Kesejahteraan naik pelan."
+category = 1
+icon = ExtResource("1_0rwhr")
+cost_points = 7
+cost_money = 3
+requires = Array[StringName]([&"forum_musyawarah"])
+modifiers = Dictionary[StringName, float]({
+&"community_decay_mult": -0.3,
+&"welfare_per_tick": 0.02
+})

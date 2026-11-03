@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/asuransi_pembangkit.png" id="1_8y7wq"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_78l6v"]
+
+[resource]
+script = ExtResource("2_78l6v")
+id = &"asuransi_pembangkit"
+display_name = "Asuransi Pembangkit Desa"
+description = "Iuran kecil menanggung biaya perbaikan setelah bencana. Dampak krisis lebih ringan."
+category = 2
+icon = ExtResource("1_8y7wq")
+cost_points = 10
+cost_money = 6
+requires = Array[StringName]([&"investasi_hijau"])
+modifiers = Dictionary[StringName, float]({
+&"crisis_mult": -0.15
+})

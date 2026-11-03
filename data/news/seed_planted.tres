@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/impact.png" id="1_hbxg7"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_yqk8q"]
+
+[resource]
+script = ExtResource("2_yqk8q")
+trigger = &"seed_planted"
+headline = "Grup daring komunitas menjangkau warga {province}. Benih sudah tertanam."
+icon = ExtResource("1_hbxg7")

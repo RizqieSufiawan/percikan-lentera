@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/duta_pelajar.png" id="1_va3hi"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_ma2u2"]
+
+[resource]
+script = ExtResource("2_ma2u2")
+id = &"duta_pelajar"
+display_name = "Duta Energi Pelajar"
+description = "Pelajar SMA menjadi duta energi bersih di desanya. Komunitas tumbuh lebih cepat dan hoaks melemah."
+category = 1
+icon = ExtResource("1_va3hi")
+cost_points = 8
+cost_money = 2
+requires = Array[StringName]([&"pemuda_penggerak"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": -0.1,
+&"community_gain": 0.3
+})

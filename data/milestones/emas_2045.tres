@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MilestoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/milestone_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/images/milestones/emas_2045.png" id="2_img"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"emas_2045"
+year = 2045
+title = "Indonesia Emas 2045"
+intro = "Seratus tahun Indonesia merdeka. Seberapa jauh desa-desa sudah memakai energi bersih yang dirawat warganya sendiri?"
+image = ExtResource("2_img")
+on_track_access = 0.3
+on_track_independent = 0.18
+source = "Visi Indonesia Emas 2045 (RPJPN 2025–2045). Batas jalur di game: angka desain."

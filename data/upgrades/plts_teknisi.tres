@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/plts_teknisi.png" id="1_8ocad"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_qkppp"]
+
+[resource]
+script = ExtResource("2_qkppp")
+id = &"plts_teknisi"
+display_name = "Teknisi Warga"
+description = "Bengkel Surya Desa: warga merawat panel, inverter, dan baterai sendiri.
+Rugi: mahal."
+icon = ExtResource("1_8ocad")
+cost_points = 12
+cost_money = 12
+requires = Array[StringName]([&"plts_output3", &"plts_material3"])
+modifiers = Dictionary[StringName, float]({
+&"build:plts": 0.35,
+&"fit:plts": 0.1,
+&"indep:plts": 0.4
+})

@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/bakar_lahan.png" id="1_gu86p"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_x62ju"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_lj6go"]
+
+[sub_resource type="Resource" id="Resource_jqsfx"]
+script = ExtResource("2_x62ju")
+label = "Olah jadi biomassa"
+result_text = "Limbah dikumpulkan koperasi untuk pembangkit biomassa."
+effects = Dictionary[StringName, float]({
+&"money": -6.0,
+&"red": -2.0,
+&"welfare": 2.0
+})
+
+[sub_resource type="Resource" id="Resource_14anj"]
+script = ExtResource("2_x62ju")
+label = "Larang tanpa solusi"
+result_text = "Larangan tanpa jalan keluar membuat warga kesal."
+effects = Dictionary[StringName, float]({
+&"blue": 6.0
+})
+
+[resource]
+script = ExtResource("3_lj6go")
+id = &"bakar_lahan"
+title = "Warga Membakar Sisa Lahan"
+body = "Warga {village}, {province}, membakar sisa panen karena tidak ada cara lain mengolahnya."
+fact = "Potensi bioenergi Indonesia 32.654 MW, antara lain dari limbah sawit, sekam, dan sisa panen. Limbah yang diolah menjadi listrik tidak perlu dibakar di lahan. (Sumber: Perpres No. 22 Tahun 2017 tentang RUEN)"
+image = ExtResource("1_gu86p")
+island_tags = Array[StringName]([&"sumatra", &"kalimantan", &"sulawesi", &"nusa_tenggara"])
+option_a = SubResource("Resource_jqsfx")
+option_b = SubResource("Resource_14anj")

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/angin_output3.png" id="1_pm03s"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_7avv5"]
+
+[resource]
+script = ExtResource("2_7avv5")
+id = &"angin_output3"
+display_name = "Output Listrik III"
+description = "Turbin kecil dipasang berkelompok di satu bukit."
+icon = ExtResource("1_pm03s")
+cost_points = 10
+cost_money = 10
+requires = Array[StringName]([&"angin_output2"])
+modifiers = Dictionary[StringName, float]({
+&"output:angin": 0.3
+})

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/hutan_berkabut.png" id="1_y8myi"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_dl302"]
+
+[resource]
+script = ExtResource("2_dl302")
+id = &"hutan_berkabut"
+display_name = "Hutan berkabut"
+description = "Desa di tengah hutan. Matahari sering tertutup kabut dan pepohonan."
+icon = ExtResource("1_y8myi")
+energy_bonus = Dictionary[StringName, float]({
+&"angin": -0.3,
+&"plts": -0.3
+})

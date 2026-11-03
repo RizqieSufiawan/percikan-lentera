@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/kelas_daring.png" id="1_ap6sj"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_jjtua"]
+
+[resource]
+script = ExtResource("2_jjtua")
+id = &"kelas_daring"
+display_name = "Kelas Energi Daring"
+description = "Warga belajar merawat pembangkit dari video dan kelas jarak jauh. Komunitas tumbuh lebih cepat dan hoaks melemah."
+category = 3
+icon = ExtResource("1_ap6sj")
+cost_points = 7
+cost_money = 3
+requires = Array[StringName]([&"sekolah_daring"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": -0.1,
+&"community_gain": 0.3
+})

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/forum_musyawarah.png" id="1_r7wet"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_mmdxm"]
+
+[resource]
+script = ExtResource("2_mmdxm")
+id = &"forum_musyawarah"
+display_name = "Forum Musyawarah Desa"
+description = "Warga rutin bermusyawarah sebelum membangun. Resistensi biru turun sedikit setiap minggu dan komunitas lebih awet.
+Rugi: butuh Ekonomi untuk pertemuan."
+category = 1
+icon = ExtResource("1_r7wet")
+cost_points = 6
+cost_money = 4
+requires = Array[StringName]([&"klarifikasi"])
+modifiers = Dictionary[StringName, float]({
+&"blue_per_tick": -0.04,
+&"community_decay_mult": -0.2
+})

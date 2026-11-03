@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_6q04j"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_cptlo"]
+[ext_resource type="Texture2D" path="res://assets/images/news/stage_3.png" id="2_dxjej"]
+
+[resource]
+script = ExtResource("2_cptlo")
+trigger = &"stage_3"
+headline = "Tahap 3: Desa tetangga mulai tertarik ikut menyala."
+important = true
+icon = ExtResource("1_6q04j")
+image = ExtResource("2_dxjej")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/intro_3.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Masalah Sebenarnya"
+text = "Proyek sering ditinggal begitu KKN selesai. Panel rusak, tidak ada yang merawat.\n\n\"Menyalakan lampu itu mudah. Menjaganya tetap menyala yang sulit.\""
+image = ExtResource("1_img")

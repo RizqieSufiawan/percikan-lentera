@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_3gxdq"]
+[ext_resource type="Texture2D" path="res://assets/images/news/stage_6.png" id="2_7q8px"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_708co"]
+
+[resource]
+script = ExtResource("2_708co")
+trigger = &"stage_6"
+headline = "Tahap 6: Gerakan nasional. Desa-desa saling memantik."
+important = true
+icon = ExtResource("1_3gxdq")
+image = ExtResource("2_7q8px")

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_6diw8"]
+
+[resource]
+script = ExtResource("1_6diw8")
+id = &"maluku"
+display_name = "Maluku"
+color = Color(0.5, 0.8, 0.85, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 0.5,
+&"biomassa": 0.5,
+&"mikrohidro": 0.15,
+&"panas_bumi": 0.5,
+&"plts": 1.0
+})
+base_spread = 0.8
+challenge = "Pulau-pulau tersebar. Surya cocok, logistik sulit."

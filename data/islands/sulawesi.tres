@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_4ofaa"]
+
+[resource]
+script = ExtResource("1_4ofaa")
+id = &"sulawesi"
+display_name = "Sulawesi"
+color = Color(0.6, 0.6, 0.85, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 1.0,
+&"biomassa": 0.5,
+&"mikrohidro": 1.0,
+&"panas_bumi": 0.5,
+&"plts": 0.5
+})
+challenge = "Sungai dan angin. Dampak tambang nikel."

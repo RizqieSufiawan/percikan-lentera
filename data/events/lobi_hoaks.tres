@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/lobi_hoaks.png" id="1_idpy8"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_2rb40"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_ij2bc"]
+
+[sub_resource type="Resource" id="Resource_5jymf"]
+script = ExtResource("2_2rb40")
+label = "Ajak pekerja lama bergabung"
+result_text = "Beberapa pekerja dilatih jadi teknisi energi bersih."
+effects = Dictionary[StringName, float]({
+&"community": 6.0,
+&"money": -6.0,
+&"red": -5.0
+})
+
+[sub_resource type="Resource" id="Resource_10e65"]
+script = ExtResource("2_2rb40")
+label = "Balas dengan spanduk"
+result_text = "Perang spanduk membuat warga makin bingung."
+effects = Dictionary[StringName, float]({
+&"blue": 5.0,
+&"red": 2.0
+})
+
+[resource]
+script = ExtResource("3_ij2bc")
+id = &"lobi_hoaks"
+title = "Kampanye Tandingan"
+body = "Spanduk muncul di {village}, {province}: \"Energi bersih merugikan pekerja\"."
+fact = "Indonesia punya potensi energi terbarukan 443.208 MW, tetapi baru 1,9% yang dimanfaatkan. Membangun dan merawatnya membuka pekerjaan baru di desa. (Sumber: Perpres No. 22 Tahun 2017 tentang RUEN)"
+image = ExtResource("1_idpy8")
+min_stage = 3
+opposition = true
+option_a = SubResource("Resource_5jymf")
+option_b = SubResource("Resource_10e65")

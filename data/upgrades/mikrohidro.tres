@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/energy/mikrohidro.png" id="1_jlr6v"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_3gkk5"]
+
+[resource]
+script = ExtResource("2_3gkk5")
+id = &"mikrohidro"
+display_name = "Mikrohidro"
+description = "Untung: andal, diterima warga.
+Rugi: hanya cocok di daerah bersungai."
+icon = ExtResource("1_jlr6v")
+cost_points = 7
+cost_money = 12
+unlock_energy = &"mikrohidro"

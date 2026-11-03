@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/gudang_cadang.png" id="1_48jh0"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_jv4c2"]
+
+[resource]
+script = ExtResource("2_jv4c2")
+id = &"gudang_cadang"
+display_name = "Gudang Suku Cadang Regional"
+description = "Suku cadang disimpan di kota terdekat. Pembangunan lebih cepat dan kerusakan lebih cepat ditangani."
+category = 4
+icon = ExtResource("1_48jh0")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"jalur_antar_desa"])
+modifiers = Dictionary[StringName, float]({
+&"build_time_mult": -0.15,
+&"crisis_mult": -0.1
+})

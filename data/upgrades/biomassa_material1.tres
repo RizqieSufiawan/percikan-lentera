@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/biomassa_material1.png" id="1_l65qk"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_bvsyb"]
+
+[resource]
+script = ExtResource("2_bvsyb")
+id = &"biomassa_material1"
+display_name = "Material Bangunan I"
+description = "Gudang limbah kering yang lebih aman."
+icon = ExtResource("1_l65qk")
+cost_money = 4
+requires = Array[StringName]([&"biomassa"])
+modifiers = Dictionary[StringName, float]({
+&"quality:biomassa": 0.25
+})

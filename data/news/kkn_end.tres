@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/impact.png" id="1_g1v0t"]
+[ext_resource type="Texture2D" path="res://assets/images/news/kkn_end.png" id="2_p6d7d"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_wcmdg"]
+
+[resource]
+script = ExtResource("2_wcmdg")
+trigger = &"kkn_end"
+headline = "KKN selesai. Tim mahasiswa pulang. Apakah desa tetap menyala tanpa kita?"
+important = true
+icon = ExtResource("1_g1v0t")
+image = ExtResource("2_p6d7d")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_mc6pb"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_4hxur"]
+[ext_resource type="Texture2D" path="res://assets/images/news/seed_ignited.png" id="2_8e3up"]
+
+[resource]
+script = ExtResource("2_4hxur")
+trigger = &"seed_ignited"
+headline = "Warga {village}, {province}, membangun pembangkit pertama mereka sendiri!"
+important = true
+icon = ExtResource("1_mc6pb")
+image = ExtResource("2_8e3up")

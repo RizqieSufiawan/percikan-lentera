@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/lahan_terik.png" id="1_6uji6"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_7ituw"]
+
+[resource]
+script = ExtResource("2_7ituw")
+id = &"lahan_terik"
+display_name = "Lahan terik"
+description = "Lahan luas tanpa naungan, langit cerah, musim kemarau panjang."
+icon = ExtResource("1_6uji6")
+energy_bonus = Dictionary[StringName, float]({
+&"plts": 0.5
+})

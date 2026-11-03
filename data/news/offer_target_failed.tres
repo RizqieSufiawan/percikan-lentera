@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/warning.png" id="1_52x55"]
+[ext_resource type="Texture2D" path="res://assets/images/news/offer_target_failed.png" id="2_05wj7"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_eeldp"]
+
+[resource]
+script = ExtResource("2_eeldp")
+trigger = &"offer_target_failed"
+headline = "Target pemerintah gagal. Kepercayaan pemerintah turun."
+important = true
+icon = ExtResource("1_52x55")
+image = ExtResource("2_05wj7")

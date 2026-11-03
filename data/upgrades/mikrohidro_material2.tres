@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/mikrohidro_material2.png" id="1_6n6n1"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_ern0x"]
+
+[resource]
+script = ExtResource("2_ern0x")
+id = &"mikrohidro_material2"
+display_name = "Material Bangunan II"
+description = "Bendung dan saluran tahan banjir bandang."
+icon = ExtResource("1_6n6n1")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"mikrohidro_material1"])
+modifiers = Dictionary[StringName, float]({
+&"quality:mikrohidro": 0.3
+})

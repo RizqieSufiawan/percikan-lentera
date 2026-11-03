@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MilestoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/milestone_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/images/milestones/ken_2050.png" id="2_img"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"ken_2050"
+year = 2050
+title = "Target KEN 2050"
+intro = "Kebijakan Energi Nasional menargetkan bauran energi baru dan terbarukan 53–55% pada 2050."
+image = ExtResource("2_img")
+major = false
+on_track_access = 0.45
+on_track_independent = 0.28
+source = "Target: PP No. 40 Tahun 2025 tentang Kebijakan Energi Nasional, Pasal 10."

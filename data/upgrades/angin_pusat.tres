@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/angin_pusat.png" id="1_upmni"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_gegmn"]
+
+[resource]
+script = ExtResource("2_gegmn")
+id = &"angin_pusat"
+display_name = "Pusat Pelatihan"
+description = "Pusat Pelatihan Angin: montir desa melatih montir dari pulau lain.
+Rugi: mahal."
+icon = ExtResource("1_upmni")
+cost_points = 15
+cost_money = 15
+requires = Array[StringName]([&"angin_teknisi"])
+modifiers = Dictionary[StringName, float]({
+&"fit:angin": 0.1,
+&"indep:angin": 0.3,
+&"spread_mult": 0.05
+})

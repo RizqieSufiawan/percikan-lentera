@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/guide_1.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Waktu Berjalan"
+text = "Waktu berjalan sendiri: Jeda, 1x, 2x, 3x (Spasi, 1, 2, 3). Tombol - di pojok panel (atau Tab) melipat panel supaya peta terlihat.\nSelama KKN waktu diperlambat. Setelahnya satu tahun berlalu sekitar 26 detik.\nGame berhenti sendiri saat ada keputusan penting."
+image = ExtResource("1_img")

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/sekolah_lapang.png" id="1_y32fx"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_yq0wu"]
+
+[resource]
+script = ExtResource("2_yq0wu")
+id = &"sekolah_lapang"
+display_name = "Sekolah Lapang Energi"
+description = "Warga belajar merawat pembangkit langsung di lapangan. Kekuatan Komunitas di semua wilayah tumbuh dua kali lebih cepat.
+Rugi: hasilnya bertahap."
+category = 1
+icon = ExtResource("1_y32fx")
+modifiers = Dictionary[StringName, float]({
+&"community_gain": 1.0
+})

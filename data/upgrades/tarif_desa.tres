@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/tarif_desa.png" id="1_uaoea"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_7082m"]
+
+[resource]
+script = ExtResource("2_7082m")
+id = &"tarif_desa"
+display_name = "Iuran Listrik Desa"
+description = "Warga membayar iuran kecil untuk perawatan. Ekonomi naik tiap minggu.
+Rugi: sebagian warga keberatan, resistensi biru sedikit lebih cepat."
+category = 2
+icon = ExtResource("1_uaoea")
+requires = Array[StringName]([&"koperasi_energi"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": 0.05,
+&"money_per_tick": 0.15
+})

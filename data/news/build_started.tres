@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_icon"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+trigger = &"build_started"
+headline = "Warga {village} ({province}) mulai membangun pembangkit. Butuh 2-4 bulan sampai menyala."
+icon = ExtResource("1_icon")

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/panas_bumi_material2.png" id="1_dac7b"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_y3j0l"]
+
+[resource]
+script = ExtResource("2_y3j0l")
+id = &"panas_bumi_material2"
+display_name = "Material Bangunan II"
+description = "Sumur dan pipa tahan gempa dan erupsi kecil."
+icon = ExtResource("1_dac7b")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"panas_bumi_material1"])
+modifiers = Dictionary[StringName, float]({
+&"quality:panas_bumi": 0.3
+})

@@ -1,0 +1,796 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_screen.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/ui/map_view.gd" id="2_map"]
+[ext_resource type="Script" path="res://scripts/ui/segment_bar.gd" id="3_seg"]
+[ext_resource type="Script" path="res://scripts/ui/resistance_bar.gd" id="4_res"]
+[ext_resource type="Script" path="res://scripts/ui/province_panel.gd" id="5_prov"]
+[ext_resource type="Script" path="res://scripts/ui/upgrade_panel.gd" id="6_upg"]
+[ext_resource type="Script" path="res://scripts/ui/news_ticker.gd" id="7_tick"]
+[ext_resource type="Script" path="res://scripts/ui/modal_layer.gd" id="8_modal"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/points.png" id="9_pts"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/money.png" id="10_money"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/welfare.png" id="11_welf"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/community.png" id="12_comm"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/resistance.png" id="13_res"]
+[ext_resource type="Script" path="res://scripts/ui/event_feed.gd" id="14_feed"]
+
+[node name="Game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_game")
+
+[node name="MapView" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_map")
+
+[node name="Nodes" type="Control" parent="MapView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bubbles" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -330.0
+offset_top = 8.0
+offset_right = 330.0
+offset_bottom = 90.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="TopPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="TopPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="RegionLabel" type="Label" parent="TopPanel/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Nusantara"
+
+[node name="Spacer" type="Control" parent="TopPanel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IndepLabel" type="Label" parent="TopPanel/VBox/Header"]
+unique_name_in_owner = true
+modulate = Color(0.38, 0.78, 0.47, 1)
+layout_mode = 2
+
+[node name="LitLabel" type="Label" parent="TopPanel/VBox/Header"]
+unique_name_in_owner = true
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+
+[node name="FossilLabel" type="Label" parent="TopPanel/VBox/Header"]
+unique_name_in_owner = true
+modulate = Color(0.75, 0.6, 0.48, 1)
+layout_mode = 2
+
+[node name="DarkLabel" type="Label" parent="TopPanel/VBox/Header"]
+unique_name_in_owner = true
+modulate = Color(0.62, 0.62, 0.7, 1)
+layout_mode = 2
+
+[node name="AccessBar" type="Control" parent="TopPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+tooltip_text = "Hijau = mandiri (energi bersih dirawat warga). Kuning = rapuh (energi bersih, belum dirawat warga). Coklat = fosil (PLTU/PLTD/genset). Abu = gelap (belum ada listrik). Garis putih = ambang menang."
+script = ExtResource("3_seg")
+
+[node name="ResRow" type="HBoxContainer" parent="TopPanel/VBox"]
+layout_mode = 2
+
+[node name="ResIcon" type="TextureRect" parent="TopPanel/VBox/ResRow"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("13_res")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ResText" type="Label" parent="TopPanel/VBox/ResRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Resistensi"
+
+[node name="ResistanceBar" type="Control" parent="TopPanel/VBox/ResRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+tooltip_text = "Biru = keraguan warga. Merah = Kepentingan Lama (energi fosil). Penuh = kalah."
+script = ExtResource("4_res")
+
+[node name="ResistanceLabel" type="Label" parent="TopPanel/VBox/ResRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+
+[node name="StatsPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 238.0
+offset_bottom = 180.0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="StatsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CommunityName" type="Label" parent="StatsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text_overrun_behavior = 3
+
+[node name="DateLabel" type="Label" parent="StatsPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+
+[node name="StageLabel" type="Label" parent="StatsPanel/VBox"]
+unique_name_in_owner = true
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="PointsRow" type="HBoxContainer" parent="StatsPanel/VBox"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="StatsPanel/VBox/PointsRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+texture = ExtResource("9_pts")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PointsLabel" type="Label" parent="StatsPanel/VBox/PointsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+
+[node name="MoneyRow" type="HBoxContainer" parent="StatsPanel/VBox"]
+layout_mode = 2
+tooltip_text = "Ekonomi: dana untuk aksi fisik. Nol terlalu lama = kalah."
+mouse_filter = 1
+
+[node name="Icon" type="TextureRect" parent="StatsPanel/VBox/MoneyRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+texture = ExtResource("10_money")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StatsPanel/VBox/MoneyRow"]
+custom_minimum_size = Vector2(92, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Ekonomi"
+
+[node name="MoneyBar" type="ProgressBar" parent="StatsPanel/VBox/MoneyRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="WelfareRow" type="HBoxContainer" parent="StatsPanel/VBox"]
+layout_mode = 2
+tooltip_text = "Kesejahteraan warga. Nol = kalah."
+mouse_filter = 1
+
+[node name="Icon" type="TextureRect" parent="StatsPanel/VBox/WelfareRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+texture = ExtResource("11_welf")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StatsPanel/VBox/WelfareRow"]
+custom_minimum_size = Vector2(92, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Kesejahteraan"
+
+[node name="WelfareBar" type="ProgressBar" parent="StatsPanel/VBox/WelfareRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="CommunityRow" type="HBoxContainer" parent="StatsPanel/VBox"]
+layout_mode = 2
+tooltip_text = "Kekuatan Komunitas rata-rata di wilayah yang sudah memakai energi bersih. Komunitas 45+ membuat desa rapuh menjadi mandiri."
+mouse_filter = 1
+
+[node name="Icon" type="TextureRect" parent="StatsPanel/VBox/CommunityRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+texture = ExtResource("12_comm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StatsPanel/VBox/CommunityRow"]
+custom_minimum_size = Vector2(92, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Komunitas"
+
+[node name="CommunityBar" type="ProgressBar" parent="StatsPanel/VBox/CommunityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="MissionPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 8.0
+offset_top = 196.0
+offset_right = 238.0
+offset_bottom = 330.0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="MissionPanel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MissionPanel/VBox"]
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+text = "Misi KKN"
+
+[node name="KknTimeLabel" type="Label" parent="MissionPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="MissionList" type="VBoxContainer" parent="MissionPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ProvincePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -292.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -52.0
+grow_horizontal = 0
+grow_vertical = 2
+script = ExtResource("5_prov")
+
+[node name="VBox" type="VBoxContainer" parent="ProvincePanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleRow" type="HBoxContainer" parent="ProvincePanel/VBox"]
+layout_mode = 2
+
+[node name="PName" type="Label" parent="ProvincePanel/VBox/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text_overrun_behavior = 3
+
+[node name="PClose" type="Button" parent="ProvincePanel/VBox/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " x "
+
+[node name="PIsland" type="Label" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.7)
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="PVillages" type="Label" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="CommRow" type="HBoxContainer" parent="ProvincePanel/VBox"]
+layout_mode = 2
+tooltip_text = "Kekuatan Komunitas wilayah. 45+ membuat desa rapuh menjadi mandiri."
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="ProvincePanel/VBox/CommRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Komunitas"
+
+[node name="PCommunity" type="ProgressBar" parent="ProvincePanel/VBox/CommRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="PFlags" type="Label" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+modulate = Color(0.62, 0.8, 1, 1)
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="ActionList" type="HBoxContainer" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="HSeparator" type="HSeparator" parent="ProvincePanel/VBox"]
+layout_mode = 2
+
+[node name="VillagesTitle" type="Label" parent="ProvincePanel/VBox"]
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Kloter desa (klik untuk ciri & bangun)"
+
+[node name="VillageScroll" type="ScrollContainer" parent="ProvincePanel/VBox"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VillageList" type="VBoxContainer" parent="ProvincePanel/VBox/VillageScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="HSeparator2" type="HSeparator" parent="ProvincePanel/VBox"]
+layout_mode = 2
+
+[node name="VillageDetail" type="VBoxContainer" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="VName" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text_overrun_behavior = 3
+
+[node name="VStatus" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="VTraits" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
+unique_name_in_owner = true
+modulate = Color(0.85, 0.92, 1, 1)
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="VBuildList" type="VBoxContainer" parent="ProvincePanel/VBox/VillageDetail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="PHint" type="Label" parent="ProvincePanel/VBox"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.75)
+custom_minimum_size = Vector2(264, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="FeedPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -262.0
+offset_right = 238.0
+offset_bottom = -50.0
+grow_vertical = 0
+script = ExtResource("14_feed")
+
+[node name="VBox" type="VBoxContainer" parent="FeedPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="FeedPanel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="FeedPanel/VBox/Header"]
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "Peristiwa"
+
+[node name="FeedPrev" type="Button" parent="FeedPanel/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 22)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+tooltip_text = "Peristiwa sebelumnya"
+text = "<"
+
+[node name="FeedCounter" type="Label" parent="FeedPanel/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 1
+
+[node name="FeedNext" type="Button" parent="FeedPanel/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 22)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+tooltip_text = "Peristiwa berikutnya"
+text = ">"
+
+[node name="FeedImage" type="TextureRect" parent="FeedPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 118)
+layout_mode = 2
+mouse_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FeedTitle" type="Label" parent="FeedPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+max_lines_visible = 2
+
+[node name="FeedSubtitle" type="Label" parent="FeedPanel/VBox"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.65)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text_overrun_behavior = 3
+
+[node name="BottomBar" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -100.0
+offset_right = 220.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBox" type="HBoxContainer" parent="BottomBar"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="PauseBtn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 34)
+layout_mode = 2
+tooltip_text = "Jeda (Spasi)"
+text = "Jeda"
+
+[node name="Speed1Btn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 34)
+layout_mode = 2
+tooltip_text = "Kecepatan 1x (tombol 1)"
+text = "1x"
+
+[node name="Speed2Btn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 34)
+layout_mode = 2
+tooltip_text = "Kecepatan 2x (tombol 2)"
+text = "2x"
+
+[node name="Speed3Btn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 34)
+layout_mode = 2
+tooltip_text = "Kecepatan 3x (tombol 3)"
+text = "3x"
+
+[node name="NextBtn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(120, 34)
+layout_mode = 2
+tooltip_text = "Mode giliran (fallback): maju satu bulan"
+text = "Berikutnya"
+
+[node name="VSeparator" type="VSeparator" parent="BottomBar/HBox"]
+layout_mode = 2
+
+[node name="UpgradeBtn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 34)
+layout_mode = 2
+tooltip_text = "Pohon Upgrade (U)"
+text = "Pohon Upgrade"
+
+[node name="MenuBtn" type="Button" parent="BottomBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 34)
+layout_mode = 2
+tooltip_text = "Menu, panduan, pengaturan (Esc)"
+text = "Menu"
+
+[node name="Ticker" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -44.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("7_tick")
+
+[node name="HBox" type="HBoxContainer" parent="Ticker"]
+layout_mode = 2
+
+[node name="Tag" type="Label" parent="Ticker/HBox"]
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "BERITA"
+
+[node name="TickerIcon" type="TextureRect" parent="Ticker/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TickerLabel" type="Label" parent="Ticker/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text_overrun_behavior = 3
+
+[node name="UpgradeDim" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="UpgradePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -284.0
+offset_right = 620.0
+offset_bottom = 284.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_upg")
+
+[node name="VBox" type="VBoxContainer" parent="UpgradePanel"]
+layout_mode = 2
+
+[node name="Header" type="HBoxContainer" parent="UpgradePanel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UpgradePanel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Pohon Upgrade (game dijeda)"
+
+[node name="UPoints" type="Label" parent="UpgradePanel/VBox/Header"]
+unique_name_in_owner = true
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+
+[node name="UClose" type="Button" parent="UpgradePanel/VBox/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " Tutup "
+
+[node name="Body" type="HBoxContainer" parent="UpgradePanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Tabs" type="TabContainer" parent="UpgradePanel/VBox/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+size_flags_horizontal = 3
+
+[node name="Detail" type="PanelContainer" parent="UpgradePanel/VBox/Body"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="UpgradePanel/VBox/Body/Detail"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="UIcon" type="TextureRect" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="UName" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+
+[node name="UDesc" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="UCost" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+modulate = Color(1, 0.77, 0.25, 1)
+layout_mode = 2
+
+[node name="UState" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="BuyBtn" type="Button" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "Beli"
+
+[node name="Modal" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_modal")
+
+[node name="Dim" type="ColorRect" parent="Modal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Center" type="CenterContainer" parent="Modal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="Modal/Center"]
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Modal/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MTitle" type="Label" parent="Modal/Center/Card/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="MImage" type="TextureRect" parent="Modal/Center/Card/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 180)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MBody" type="Label" parent="Modal/Center/Card/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(516, 0)
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="MFact" type="Label" parent="Modal/Center/Card/VBox"]
+unique_name_in_owner = true
+modulate = Color(0.62, 0.8, 1, 1)
+custom_minimum_size = Vector2(516, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="MButtons" type="HFlowContainer" parent="Modal/Center/Card/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8

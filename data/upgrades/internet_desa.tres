@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/internet_desa.png" id="1_hfdnn"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_i6ixq"]
+
+[resource]
+script = ExtResource("2_i6ixq")
+id = &"internet_desa"
+display_name = "Internet Desa"
+description = "Untung: setiap wilayah yang sudah berenergi bersih otomatis tersambung internet. Membuka Layanan Digital dan menanam benih di pulau lain.
+Rugi: mahal."
+category = 3
+icon = ExtResource("1_hfdnn")
+cost_points = 8
+cost_money = 18
+flags = Array[StringName]([&"internet"])

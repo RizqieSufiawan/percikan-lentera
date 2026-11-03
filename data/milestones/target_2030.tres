@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MilestoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/milestone_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/images/milestones/target_2030.png" id="2_img"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"target_2030"
+year = 2030
+title = "Semua Desa Berlistrik"
+intro = "Pemerintah menargetkan seluruh desa dan dusun mendapat listrik paling lambat 2029–2030. Bagaimana desa-desa di jangkauan gerakanmu?"
+image = ExtResource("2_img")
+target_no_dark = true
+on_track_access = 0.03
+on_track_independent = 0.01
+source = "Target: Kementerian ESDM, siaran pers No. 002.Pers/04/SJI/2026"

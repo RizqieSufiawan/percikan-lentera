@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/jalur_antar_desa.png" id="1_udt48"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_en0d4"]
+
+[resource]
+script = ExtResource("2_en0d4")
+id = &"jalur_antar_desa"
+display_name = "Jalur Antar-Desa"
+description = "Untung: sebar antar desa dan wilayah lebih cepat.
+Rugi: ekspansi cepat bisa membuat jaringan rapuh."
+category = 4
+icon = ExtResource("1_udt48")
+cost_points = 8
+cost_money = 10
+modifiers = Dictionary[StringName, float]({
+&"spread_mult": 0.3
+})

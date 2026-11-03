@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/panas_bumi_material1.png" id="1_onu8w"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_snaep"]
+
+[resource]
+script = ExtResource("2_snaep")
+id = &"panas_bumi_material1"
+display_name = "Material Bangunan I"
+description = "Pipa dan sumur berlapis bahan tahan karat."
+icon = ExtResource("1_onu8w")
+cost_money = 4
+requires = Array[StringName]([&"panas_bumi"])
+modifiers = Dictionary[StringName, float]({
+&"quality:panas_bumi": 0.25
+})

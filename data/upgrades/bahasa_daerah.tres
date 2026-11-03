@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/bahasa_daerah.png" id="1_6vibi"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_kg52p"]
+
+[resource]
+script = ExtResource("2_kg52p")
+id = &"bahasa_daerah"
+display_name = "Penyuluhan Bahasa Daerah"
+description = "Penyuluhan memakai bahasa dan cerita setempat. Keraguan warga turun dan energi bersih lebih mudah diterima."
+category = 1
+icon = ExtResource("1_6vibi")
+cost_points = 8
+cost_money = 2
+requires = Array[StringName]([&"tokoh_adat"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": -0.15,
+&"spread_mult": 0.05
+})

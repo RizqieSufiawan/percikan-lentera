@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MissionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_370cw"]
+
+[resource]
+script = ExtResource("1_370cw")
+id = &"musyawarah"
+text = "Komunitas wilayah awal 30%"
+counter = &"start_community"
+target = 30
+reward_blue = 2.0

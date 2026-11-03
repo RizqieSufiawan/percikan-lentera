@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/government.png" id="1_y07td"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_gikta"]
+[ext_resource type="Texture2D" path="res://assets/images/news/airplane_opened.png" id="2_vjf2b"]
+
+[resource]
+script = ExtResource("2_gikta")
+trigger = &"airplane_opened"
+headline = "Rute pesawat dibuka. Peralatan bisa dikirim ke pulau yang jauh."
+important = true
+icon = ExtResource("1_y07td")
+image = ExtResource("2_vjf2b")

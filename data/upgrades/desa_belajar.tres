@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/desa_belajar.png" id="1_gyrnt"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_nje5b"]
+
+[resource]
+script = ExtResource("2_nje5b")
+id = &"desa_belajar"
+display_name = "Desa Belajar Mandiri"
+description = "Teknisi, kader, dan penyuluh berbahasa daerah mengajar desa lain tanpa bantuan dari luar. Desa jauh lebih cepat mandiri.
+Rugi: mahal."
+category = 1
+icon = ExtResource("1_gyrnt")
+cost_points = 12
+cost_money = 6
+requires = Array[StringName]([&"kader_desa", &"bahasa_daerah"])
+modifiers = Dictionary[StringName, float]({
+&"community_gain": 0.3,
+&"independence_rate": 0.4
+})

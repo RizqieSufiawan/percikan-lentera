@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/lembah_tertutup.png" id="1_wrhef"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_wvwu0"]
+
+[resource]
+script = ExtResource("2_wvwu0")
+id = &"lembah_tertutup"
+display_name = "Lembah tertutup"
+description = "Desa di lembah yang terlindung bukit. Angin hampir tidak terasa."
+icon = ExtResource("1_wrhef")
+energy_bonus = Dictionary[StringName, float]({
+&"angin": -0.4
+})

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/mikrohidro_material3.png" id="1_wmw83"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_2klh0"]
+
+[resource]
+script = ExtResource("2_2klh0")
+id = &"mikrohidro_material3"
+display_name = "Material Bangunan III"
+description = "Rumah turbin beton dan saringan sampah otomatis."
+icon = ExtResource("1_wmw83")
+cost_points = 10
+cost_money = 10
+requires = Array[StringName]([&"mikrohidro_material2"])
+modifiers = Dictionary[StringName, float]({
+&"quality:mikrohidro": 0.3
+})

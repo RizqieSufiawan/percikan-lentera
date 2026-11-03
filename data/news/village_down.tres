@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/warning.png" id="1_xhyig"]
+[ext_resource type="Texture2D" path="res://assets/images/news/village_down.png" id="2_cnjrf"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_cpmv7"]
+
+[resource]
+script = ExtResource("2_cpmv7")
+trigger = &"village_down"
+headline = "Krisis di {province}: desa yang belum kuat kembali gelap."
+icon = ExtResource("1_xhyig")
+image = ExtResource("2_cnjrf")

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/pasar_daring.png" id="1_vpr3u"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_bgx58"]
+
+[resource]
+script = ExtResource("2_bgx58")
+id = &"pasar_daring"
+display_name = "Pasar Daring Desa"
+description = "Produk UMKM dijual lewat internet. Ekonomi dan Kesejahteraan naik.
+Butuh Internet Desa."
+category = 2
+icon = ExtResource("1_vpr3u")
+cost_points = 8
+cost_money = 4
+requires = Array[StringName]([&"umkm", &"internet_desa"])
+modifiers = Dictionary[StringName, float]({
+&"money_per_tick": 0.1,
+&"welfare_per_tick": 0.02
+})

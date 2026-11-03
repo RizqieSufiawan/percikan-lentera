@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnergyData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/energy/angin.png" id="1_ara4r"]
+[ext_resource type="Script" path="res://scripts/data/energy_data.gd" id="2_1n7jp"]
+
+[resource]
+script = ExtResource("2_1n7jp")
+id = &"angin"
+display_name = "Turbin Angin Kecil"
+description = "Cocok di pesisir berangin. Hasilnya naik turun mengikuti musim."
+icon = ExtResource("1_ara4r")
+color = Color(0.8, 0.94, 0.98, 1)
+kkn_available = false
+hint_strong = "Pesisir terbuka dengan angin kencang"
+hint_medium = "Angin pantai sedang"

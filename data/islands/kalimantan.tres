@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_myqam"]
+
+[resource]
+script = ExtResource("1_myqam")
+id = &"kalimantan"
+display_name = "Kalimantan"
+color = Color(0.45, 0.7, 0.55, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 0.15,
+&"biomassa": 1.0,
+&"mikrohidro": 0.5,
+&"panas_bumi": 0.15,
+&"plts": 0.5
+})
+base_spread = 0.9
+base_resistance = 3.0
+challenge = "Banyak limbah sawit untuk biomassa. Tambang dan karhutla."

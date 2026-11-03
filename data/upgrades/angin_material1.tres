@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/angin_material1.png" id="1_lyk8i"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_cxyjp"]
+
+[resource]
+script = ExtResource("2_cxyjp")
+id = &"angin_material1"
+display_name = "Material Bangunan I"
+description = "Menara dan baut dari baja tahan karat."
+icon = ExtResource("1_lyk8i")
+cost_money = 4
+requires = Array[StringName]([&"angin"])
+modifiers = Dictionary[StringName, float]({
+&"quality:angin": 0.25
+})

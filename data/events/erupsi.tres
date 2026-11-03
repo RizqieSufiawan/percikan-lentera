@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/erupsi.png" id="1_4y57v"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_sohoi"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_hetpq"]
+
+[sub_resource type="Resource" id="Resource_rkmsb"]
+script = ExtResource("2_sohoi")
+label = "Evakuasi dan bersihkan abu"
+result_text = "Warga mengungsi tepat waktu, lalu bergotong royong membersihkan panel."
+effects = Dictionary[StringName, float]({
+&"points": -4.0,
+&"welfare": -2.0
+})
+crisis_severity = 0.3
+
+[sub_resource type="Resource" id="Resource_rxhm3"]
+script = ExtResource("2_sohoi")
+label = "Tunggu situasi reda"
+result_text = "Abu tebal merusak banyak peralatan."
+effects = Dictionary[StringName, float]({
+&"welfare": -6.0
+})
+crisis_severity = 1.2
+
+[resource]
+script = ExtResource("3_hetpq")
+id = &"erupsi"
+title = "Erupsi Gunung Api"
+body = "Gunung api di dekat {village}, {province}, meletus. Abu menutupi atap dan panel."
+fact = "Indonesia punya 127 gunung api, sekitar 13% gunung api dunia, dan sekitar 45 juta jiwa tinggal di sekitarnya. Panas dari gunung api juga sumber energi panas bumi. (Sumber: Kementerian ESDM, 7 Agustus 2024)"
+image = ExtResource("1_4y57v")
+is_disaster = true
+target_traits = Array[StringName]([&"gunung_api"])
+vulnerable_energies = Array[StringName]([&"panas_bumi", &"plts"])
+option_a = SubResource("Resource_rkmsb")
+option_b = SubResource("Resource_rxhm3")

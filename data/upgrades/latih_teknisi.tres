@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/latih_teknisi.png" id="1_j850m"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_7ohci"]
+
+[resource]
+script = ExtResource("2_7ohci")
+id = &"latih_teknisi"
+display_name = "Program Teknisi Desa"
+description = "Untung: Kekuatan Komunitas tumbuh 50% lebih cepat, pembangunan 25% lebih cepat, resistensi biru tumbuh lebih lambat.
+Rugi: mahal, hasilnya lambat terasa."
+category = 1
+icon = ExtResource("1_j850m")
+cost_points = 6
+requires = Array[StringName]([&"sekolah_lapang"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": -0.15,
+&"build_time_mult": -0.25,
+&"community_gain": 0.5
+})

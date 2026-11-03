@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/mikrohidro_material1.png" id="1_2em88"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_s575y"]
+
+[resource]
+script = ExtResource("2_s575y")
+id = &"mikrohidro_material1"
+display_name = "Material Bangunan I"
+description = "Pipa dan rumah turbin dari bahan yang lebih kuat."
+icon = ExtResource("1_2em88")
+cost_money = 4
+requires = Array[StringName]([&"mikrohidro"])
+modifiers = Dictionary[StringName, float]({
+&"quality:mikrohidro": 0.25
+})

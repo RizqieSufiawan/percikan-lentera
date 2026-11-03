@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/peta_risiko.png" id="1_n7j2b"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_5wx6n"]
+
+[resource]
+script = ExtResource("2_5wx6n")
+id = &"peta_risiko"
+display_name = "Peta Risiko Bencana"
+description = "Data sensor digabung menjadi peta risiko per desa. Dampak bencana lebih ringan."
+category = 3
+icon = ExtResource("1_n7j2b")
+cost_points = 8
+cost_money = 6
+requires = Array[StringName]([&"sensor"])
+modifiers = Dictionary[StringName, float]({
+&"crisis_mult": -0.15
+})

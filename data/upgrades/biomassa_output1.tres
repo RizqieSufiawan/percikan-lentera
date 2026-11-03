@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/biomassa_output1.png" id="1_0boln"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_3r75j"]
+
+[resource]
+script = ExtResource("2_3r75j")
+id = &"biomassa_output1"
+display_name = "Output Listrik I"
+description = "Tungku pembakaran yang lebih efisien."
+icon = ExtResource("1_0boln")
+cost_money = 4
+requires = Array[StringName]([&"biomassa"])
+modifiers = Dictionary[StringName, float]({
+&"output:biomassa": 0.2
+})

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/hub_bandara.png" id="1_hpvr7"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_jimrd"]
+
+[resource]
+script = ExtResource("2_jimrd")
+id = &"hub_bandara"
+display_name = "Hub Logistik Bandara Perintis"
+description = "Bandara perintis menjadi gudang peralatan untuk pulau sekitar. Pembangunan dan sebaran lebih cepat."
+category = 4
+icon = ExtResource("1_hpvr7")
+cost_points = 12
+cost_money = 10
+requires = Array[StringName]([&"rute_udara"])
+modifiers = Dictionary[StringName, float]({
+&"build_time_mult": -0.1,
+&"spread_mult": 0.1
+})

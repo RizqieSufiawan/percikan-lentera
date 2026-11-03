@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_n3jch"]
+
+[resource]
+script = ExtResource("1_n3jch")
+id = &"papua"
+display_name = "Papua"
+color = Color(0.75, 0.55, 0.75, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 0.15,
+&"biomassa": 0.5,
+&"mikrohidro": 1.0,
+&"panas_bumi": 0.15,
+&"plts": 0.5
+})
+base_spread = 0.8
+base_resistance = -2.0
+challenge = "Mikrohidro cocok. Hak tanah adat harus dihormati."

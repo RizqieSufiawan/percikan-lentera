@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/angin_output1.png" id="1_shl3b"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_r1a78"]
+
+[resource]
+script = ExtResource("2_r1a78")
+id = &"angin_output1"
+display_name = "Output Listrik I"
+description = "Bilah yang lebih ringan, tetap berputar saat angin lemah."
+icon = ExtResource("1_shl3b")
+cost_money = 4
+requires = Array[StringName]([&"angin"])
+modifiers = Dictionary[StringName, float]({
+&"output:angin": 0.2
+})

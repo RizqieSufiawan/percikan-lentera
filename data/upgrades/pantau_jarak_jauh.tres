@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/pantau_jarak_jauh.png" id="1_7vpnu"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_thdyy"]
+
+[resource]
+script = ExtResource("2_thdyy")
+id = &"pantau_jarak_jauh"
+display_name = "Pemantauan Jarak Jauh"
+description = "Kerusakan terdeteksi dari jauh sebelum pembangkit mati. Krisis lebih ringan dan desa lebih cepat mandiri."
+category = 3
+icon = ExtResource("1_7vpnu")
+cost_points = 10
+cost_money = 8
+requires = Array[StringName]([&"peta_risiko"])
+modifiers = Dictionary[StringName, float]({
+&"crisis_mult": -0.1,
+&"independence_rate": 0.1
+})

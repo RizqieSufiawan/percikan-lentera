@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/tokoh_adat.png" id="1_vooul"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_2j2hj"]
+
+[resource]
+script = ExtResource("2_2j2hj")
+id = &"tokoh_adat"
+display_name = "Libatkan Tokoh Adat"
+description = "Untung: warga lebih siap, sebar lebih cepat.
+Rugi: butuh waktu musyawarah."
+category = 1
+icon = ExtResource("1_vooul")
+cost_points = 7
+requires = Array[StringName]([&"klarifikasi"])
+modifiers = Dictionary[StringName, float]({
+&"blue_growth_mult": -0.2,
+&"spread_mult": 0.15
+})

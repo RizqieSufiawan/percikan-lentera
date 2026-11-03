@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/sungai_deras.png" id="1_5463n"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_oaq3d"]
+
+[resource]
+script = ExtResource("2_oaq3d")
+id = &"sungai_deras"
+display_name = "Sungai deras"
+description = "Ada sungai berarus deras dari pegunungan yang mengalir sepanjang tahun."
+icon = ExtResource("1_5463n")
+energy_bonus = Dictionary[StringName, float]({
+&"mikrohidro": 0.5
+})

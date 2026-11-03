@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/maluku.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/malut.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Negeri Hatu Besi"
+traits = Array[StringName]([&"hutan_berkabut"])
+size = 259
+origin = "Malut"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Negeri Tala Besi"
+traits = Array[StringName]([&"gunung_api"])
+start_fossil = true
+size = 475
+origin = "Malut"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Negeri Tala Lusi"
+traits = Array[StringName]([&"pesisir_berangin"])
+start_fossil = true
+size = 475
+origin = "Malut"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"malut"
+display_name = "Maluku Utara"
+short_name = "Malut"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(904, 273)
+neighbors = Array[StringName]([&"maluku"])
+villages = 3
+fossil_villages = 2
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2")])
+spread_mod = 0.9
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.5, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 18.4, &"badai_pesisir": 8.4, &"kemarau_panjang": 0.8, &"erupsi": 0.8, &"titik_api": 0.6})
+member_provinces = PackedStringArray("Maluku Utara")
+note = "Kepulauan: dari luar Maluku hanya terjangkau lewat internet atau pesawat."

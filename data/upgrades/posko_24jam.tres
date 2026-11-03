@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/posko_24jam.png" id="1_mu3d0"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_7suh0"]
+
+[resource]
+script = ExtResource("2_7suh0")
+id = &"posko_24jam"
+display_name = "Posko Bencana Berlistrik 24 Jam"
+description = "Balai desa menjadi posko bencana dengan listrik, lampu, dan pengisian ponsel sepanjang hari. Kesejahteraan naik dan krisis lebih ringan."
+category = 3
+icon = ExtResource("1_mu3d0")
+cost_points = 8
+cost_money = 6
+requires = Array[StringName]([&"telemedicine"])
+modifiers = Dictionary[StringName, float]({
+&"crisis_mult": -0.1,
+&"welfare_per_tick": 0.03
+})

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/nusa_tenggara.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/bali.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Batu Kelod"
+traits = Array[StringName]([&"lahan_terik"])
+size = 11
+origin = "Bali"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Batu Anyar"
+traits = Array[StringName]([&"lahan_terik"])
+start_fossil = true
+size = 706
+origin = "Bali"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"bali"
+display_name = "Bali"
+short_name = "Bali"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(560, 526)
+label_offset = Vector2(0, -18)
+neighbors = Array[StringName]([&"jatim", &"ntb"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 7.0, &"badai_pesisir": 8.4, &"kemarau_panjang": 1.3, &"erupsi": 0.0, &"titik_api": 0.4})
+member_provinces = PackedStringArray("Bali")
+note = ""

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/ekspor_desa.png" id="1_dp72g"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_w8g8b"]
+
+[resource]
+script = ExtResource("2_w8g8b")
+id = &"ekspor_desa"
+display_name = "Produk Desa ke Kota"
+description = "Hasil UMKM desa dijual ke kota besar. Ekonomi naik."
+category = 2
+icon = ExtResource("1_dp72g")
+cost_points = 10
+requires = Array[StringName]([&"pasar_daring"])
+modifiers = Dictionary[StringName, float]({
+&"money_per_tick": 0.25
+})

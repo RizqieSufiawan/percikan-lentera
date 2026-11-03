@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/umkm.png" id="1_4jlj4"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_5f6aj"]
+
+[resource]
+script = ExtResource("2_5f6aj")
+id = &"umkm"
+display_name = "UMKM Berlistrik"
+description = "Untung: Ekonomi dan Kesejahteraan naik, tekanan energi lama turun.
+Rugi: butuh koperasi."
+category = 2
+icon = ExtResource("1_4jlj4")
+cost_points = 8
+cost_money = 6
+requires = Array[StringName]([&"koperasi_energi"])
+modifiers = Dictionary[StringName, float]({
+&"money_per_tick": 0.05,
+&"red_growth_mult": -0.15,
+&"welfare_per_tick": 0.01
+})

@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sulawesi.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/sultra.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Mata Lotong"
+traits = Array[StringName]([&"sungai_deras", &"hutan_berkabut"])
+size = 366
+origin = "Sultra"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Bonto Tinggi"
+traits = Array[StringName]([&"pesisir_berangin"])
+start_fossil = true
+size = 482
+origin = "Sultra"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Desa Lembang Sapiri"
+traits = Array[StringName]([&"lahan_terik", &"lembah_tertutup"])
+start_fossil = true
+size = 482
+origin = "Sultra"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[sub_resource type="Resource" id="k_3"]
+script = ExtResource("v_script")
+display_name = "Desa Bonto Sapiri"
+traits = Array[StringName]([&"pesisir_berangin"])
+start_fossil = true
+size = 481
+origin = "Sultra"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[sub_resource type="Resource" id="k_4"]
+script = ExtResource("v_script")
+display_name = "Desa Tana Rappo"
+traits = Array[StringName]([&"lahan_terik", &"limbah_perkebunan"])
+start_fossil = true
+size = 481
+origin = "Sultra"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[resource]
+script = ExtResource("p_script")
+id = &"sultra"
+display_name = "Sulawesi Tenggara"
+short_name = "Sultra"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(737, 396)
+neighbors = Array[StringName]([&"sulteng", &"sulsel"])
+villages = 5
+fossil_villages = 4
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4")])
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.5})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 12.8, &"badai_pesisir": 7.9, &"kemarau_panjang": 3.0, &"erupsi": 0.0, &"titik_api": 0.5})
+member_provinces = PackedStringArray("Sulawesi Tenggara")
+note = ""

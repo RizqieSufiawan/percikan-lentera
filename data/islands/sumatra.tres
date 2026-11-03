@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_dnt5a"]
+
+[resource]
+script = ExtResource("1_dnt5a")
+id = &"sumatra"
+display_name = "Sumatra"
+color = Color(0.55, 0.75, 0.45, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 0.15,
+&"biomassa": 1.0,
+&"mikrohidro": 0.5,
+&"panas_bumi": 1.0,
+&"plts": 0.5
+})
+challenge = "Biomassa dan panas bumi menjanjikan. Risiko karhutla."

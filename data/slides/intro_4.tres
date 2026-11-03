@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/intro_4.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Misimu"
+text = "Enam bulan. Setelah itu mahasiswa pulang. Pastikan desa tetap menyala tanpa kita.\n\nLalu bawa gerakan ini ke seluruh 84.276 desa Indonesia, lebih cepat dari target nasional 2060."
+image = ExtResource("1_img")

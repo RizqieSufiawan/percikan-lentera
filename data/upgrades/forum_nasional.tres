@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/forum_nasional.png" id="1_f33g5"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_tteld"]
+
+[resource]
+script = ExtResource("2_tteld")
+id = &"forum_nasional"
+display_name = "Forum Desa Energi Nasional"
+description = "Desa-desa mandiri bersuara bersama di tingkat nasional. Sebaran lebih cepat dan tekanan Kepentingan Lama melemah.
+Rugi: mahal."
+category = 4
+icon = ExtResource("1_f33g5")
+cost_points = 14
+cost_money = 10
+requires = Array[StringName]([&"jaringan_pulau"])
+modifiers = Dictionary[StringName, float]({
+&"red_growth_mult": -0.15,
+&"spread_mult": 0.15
+})

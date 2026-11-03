@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/panas_bumi_output1.png" id="1_orepa"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_2q25g"]
+
+[resource]
+script = ExtResource("2_2q25g")
+id = &"panas_bumi_output1"
+display_name = "Output Listrik I"
+description = "Penukar panas yang lebih efisien."
+icon = ExtResource("1_orepa")
+cost_money = 4
+requires = Array[StringName]([&"panas_bumi"])
+modifiers = Dictionary[StringName, float]({
+&"output:panas_bumi": 0.2
+})

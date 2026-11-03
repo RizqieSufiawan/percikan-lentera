@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/kader_desa.png" id="1_tw14s"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_eppni"]
+
+[resource]
+script = ExtResource("2_eppni")
+id = &"kader_desa"
+display_name = "Kader Energi Desa"
+description = "Untung: desa lebih cepat menjadi mandiri.
+Rugi: butuh Program Teknisi lebih dulu."
+category = 1
+icon = ExtResource("1_tw14s")
+cost_points = 8
+requires = Array[StringName]([&"latih_teknisi"])
+modifiers = Dictionary[StringName, float]({
+&"independence_rate": 0.5
+})

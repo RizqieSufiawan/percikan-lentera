@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/mikrohidro_output2.png" id="1_3kfeh"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_0bdgl"]
+
+[resource]
+script = ExtResource("2_0bdgl")
+id = &"mikrohidro_output2"
+display_name = "Output Listrik II"
+description = "Saluran air diperpanjang sehingga debit lebih besar."
+icon = ExtResource("1_3kfeh")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"mikrohidro_output1"])
+modifiers = Dictionary[StringName, float]({
+&"fit:mikrohidro": 0.05,
+&"output:mikrohidro": 0.3
+})

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnergyData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/energy/plts.png" id="1_07ld6"]
+[ext_resource type="Script" path="res://scripts/data/energy_data.gd" id="2_shsx4"]
+
+[resource]
+script = ExtResource("2_shsx4")
+id = &"plts"
+display_name = "PLTS Komunal"
+description = "Panel surya untuk satu desa. Mudah dipasang hampir di mana saja, tapi rapuh tanpa teknisi."
+icon = ExtResource("1_07ld6")
+color = Color(1, 0.8, 0.22, 1)
+hint_strong = "Matahari terik sepanjang tahun, kemarau panjang"
+hint_medium = "Sinar matahari cukup, sesekali mendung"

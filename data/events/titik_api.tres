@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/titik_api.png" id="1_5xadp"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_8dm0e"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_n77y1"]
+
+[sub_resource type="Resource" id="Resource_vghwn"]
+script = ExtResource("2_8dm0e")
+label = "Kerahkan regu siaga"
+result_text = "Regu siaga desa memadamkan api lebih awal."
+effects = Dictionary[StringName, float]({
+&"points": -3.0,
+&"welfare": -1.0
+})
+crisis_severity = 0.2
+
+[sub_resource type="Resource" id="Resource_rugua"]
+script = ExtResource("2_8dm0e")
+label = "Abaikan"
+result_text = "Api membesar. Jaringan listrik desa ikut rusak dan warga terkena asap."
+effects = Dictionary[StringName, float]({
+&"welfare": -5.0
+})
+crisis_severity = 1.0
+
+[resource]
+script = ExtResource("3_n77y1")
+id = &"titik_api"
+title = "Kebakaran Hutan dan Lahan"
+body = "Asap mulai terlihat dari lahan dekat {village}, {province}."
+fact = "BNPB mencatat 973 kejadian kebakaran hutan dan lahan sepanjang 2024, bencana kedua terbanyak setelah banjir. (Sumber: BNPB, Buku Data Bencana Indonesia 2024)"
+image = ExtResource("1_5xadp")
+is_disaster = true
+target_traits = Array[StringName]([&"limbah_perkebunan", &"hutan_berkabut"])
+vulnerable_energies = Array[StringName]([&"biomassa"])
+option_a = SubResource("Resource_vghwn")
+option_b = SubResource("Resource_rugua")

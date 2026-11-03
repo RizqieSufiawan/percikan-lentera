@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_7y8ja"]
+
+[resource]
+script = ExtResource("1_7y8ja")
+id = &"nusa_tenggara"
+display_name = "Nusa Tenggara"
+color = Color(0.9, 0.6, 0.45, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 1.0,
+&"biomassa": 0.15,
+&"mikrohidro": 0.15,
+&"panas_bumi": 0.5,
+&"plts": 1.0
+})
+base_spread = 0.9
+base_resistance = -3.0
+challenge = "Matahari dan angin melimpah. Desa terpencil dan kemarau panjang."

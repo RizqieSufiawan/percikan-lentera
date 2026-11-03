@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnergyData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/energy/panas_bumi.png" id="1_31xfr"]
+[ext_resource type="Script" path="res://scripts/data/energy_data.gd" id="2_a4e8r"]
+
+[resource]
+script = ExtResource("2_a4e8r")
+id = &"panas_bumi"
+display_name = "Panas Bumi Skala Kecil"
+description = "Stabil siang dan malam, tapi hanya di daerah gunung api dan mahal di awal."
+icon = ExtResource("1_31xfr")
+color = Color(1, 0.5, 0.28, 1)
+kkn_available = false
+hint_strong = "Dekat gunung api, banyak sumber air panas"
+hint_medium = "Ada gunung api, tapi agak jauh dari desa"

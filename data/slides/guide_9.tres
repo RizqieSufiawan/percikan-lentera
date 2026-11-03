@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/guide_9.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Tonggak dan Target 2060"
+text = "2030, 2045, dan 2060: evaluasi besar. 2040 dan 2050: notifikasi singkat.\nTarget nasional (KEN, PP 40/2025): 70% desa berenergi bersih pada 2060. Di game, setengahnya juga harus mandiri. Setiap tonggak memberi tahu apakah kamu masih di jalur."
+image = ExtResource("1_img")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/government.png" id="1_ob1ox"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_75d2l"]
+[ext_resource type="Texture2D" path="res://assets/images/news/stage_4.png" id="2_oavqc"]
+
+[resource]
+script = ExtResource("2_75d2l")
+trigger = &"stage_4"
+headline = "Tahap 4: Pemerintah daerah mulai memperhatikan program ini."
+important = true
+icon = ExtResource("1_ob1ox")
+image = ExtResource("2_oavqc")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_wmsnq"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_job2j"]
+[ext_resource type="Texture2D" path="res://assets/images/news/stage_5.png" id="2_vrgbs"]
+
+[resource]
+script = ExtResource("2_job2j")
+trigger = &"stage_5"
+headline = "Tahap 5: Jaringan antar-desa terbentuk."
+important = true
+icon = ExtResource("1_wmsnq")
+image = ExtResource("2_vrgbs")

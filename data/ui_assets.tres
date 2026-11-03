@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="UiAssets" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/map/bubble.png" id="1_4x8gb"]
+[ext_resource type="Texture2D" path="res://assets/images/end/lose.png" id="2_btxpj"]
+[ext_resource type="Texture2D" path="res://assets/images/end/win.png" id="3_ro5g1"]
+[ext_resource type="Texture2D" path="res://assets/images/news/kkn_start.png" id="4_btxpj"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/community.png" id="4_mptf0"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/money.png" id="5_4kitr"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/points.png" id="6_mk6dv"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/resistance.png" id="7_iqunu"]
+[ext_resource type="Texture2D" path="res://assets/icons/stats/welfare.png" id="8_auys4"]
+[ext_resource type="Texture2D" path="res://assets/map/map_background.png" id="9_on6sc"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/game.wav" id="10_x1gbn"]
+[ext_resource type="AudioStream" path="res://assets/audio/music/menu.wav" id="11_kw66i"]
+[ext_resource type="Texture2D" path="res://assets/map/node_dark.png" id="12_ftkq4"]
+[ext_resource type="Texture2D" path="res://assets/map/node_independent.png" id="13_2w7bo"]
+[ext_resource type="Texture2D" path="res://assets/map/node_lit.png" id="14_7tu17"]
+[ext_resource type="Texture2D" path="res://assets/map/node_seed.png" id="15_uhq4a"]
+[ext_resource type="Texture2D" path="res://assets/map/node_selected.png" id="16_lehyt"]
+[ext_resource type="Script" path="res://scripts/data/ui_assets.gd" id="17_fj80v"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/click.wav" id="18_hsdxx"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/buy.wav" id="19_yvq5o"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/point.wav" id="20_0l4vc"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/lit.wav" id="21_sonlm"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/independent.wav" id="22_tpnaa"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/dark.wav" id="23_pln6k"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/event.wav" id="24_rj38b"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/news.wav" id="25_a2lmk"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/warning.wav" id="26_24qaw"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/stage.wav" id="27_8y30g"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/offer.wav" id="28_l200x"]
+[ext_resource type="Texture2D" path="res://assets/ui/title_background.png" id="29_yns5w"]
+
+[resource]
+script = ExtResource("17_fj80v")
+map_background = ExtResource("9_on6sc")
+node_dark = ExtResource("12_ftkq4")
+node_seed = ExtResource("15_uhq4a")
+node_lit = ExtResource("14_7tu17")
+node_independent = ExtResource("13_2w7bo")
+node_selected = ExtResource("16_lehyt")
+bubble = ExtResource("1_4x8gb")
+title_background = ExtResource("29_yns5w")
+end_win = ExtResource("3_ro5g1")
+end_lose = ExtResource("2_btxpj")
+feed_start = ExtResource("4_btxpj")
+icon_points = ExtResource("6_mk6dv")
+icon_money = ExtResource("5_4kitr")
+icon_welfare = ExtResource("8_auys4")
+icon_community = ExtResource("4_mptf0")
+icon_resistance = ExtResource("7_iqunu")
+sfx = Dictionary[StringName, AudioStream]({
+&"buy": ExtResource("19_yvq5o"),
+&"click": ExtResource("18_hsdxx"),
+&"dark": ExtResource("23_pln6k"),
+&"event": ExtResource("24_rj38b"),
+&"independent": ExtResource("22_tpnaa"),
+&"lit": ExtResource("21_sonlm"),
+&"news": ExtResource("25_a2lmk"),
+&"offer": ExtResource("28_l200x"),
+&"point": ExtResource("20_0l4vc"),
+&"stage": ExtResource("27_8y30g"),
+&"warning": ExtResource("26_24qaw")
+})
+music_menu = ExtResource("11_kw66i")
+music_game = ExtResource("10_x1gbn")

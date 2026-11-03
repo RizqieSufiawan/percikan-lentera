@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/peternakan.png" id="1_kk38w"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_ipxcr"]
+
+[resource]
+script = ExtResource("2_ipxcr")
+id = &"peternakan"
+display_name = "Limbah organik"
+description = "Banyak kotoran ternak atau sampah organik yang bisa diolah menjadi biogas."
+icon = ExtResource("1_kk38w")
+energy_bonus = Dictionary[StringName, float]({
+&"biomassa": 0.3
+})

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnergyData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/energy/biomassa.png" id="1_016tv"]
+[ext_resource type="Script" path="res://scripts/data/energy_data.gd" id="2_l8rrh"]
+
+[resource]
+script = ExtResource("2_l8rrh")
+id = &"biomassa"
+display_name = "Biomassa Limbah"
+description = "Listrik dari limbah pertanian. Mengurangi pembakaran lahan, tapi butuh rantai pasokan limbah."
+icon = ExtResource("1_016tv")
+color = Color(0.66, 0.84, 0.29, 1)
+hint_strong = "Banyak limbah sawit, sekam, dan serbuk kayu"
+hint_medium = "Ada limbah pertanian dan kotoran ternak"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/gunung_api.png" id="1_n71ln"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_3h72r"]
+
+[resource]
+script = ExtResource("2_3h72r")
+id = &"gunung_api"
+display_name = "Dekat gunung api"
+description = "Ada gunung api dan sumber air panas di sekitar desa."
+icon = ExtResource("1_n71ln")
+energy_bonus = Dictionary[StringName, float]({
+&"panas_bumi": 0.5
+})

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/intro_1.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Desa yang Gelap"
+text = "Malam di sebuah desa. Seorang anak belajar dengan lampu minyak. Warung dan balai desa gelap begitu matahari terbenam.\n\nDi 16.618 desa Indonesia masih ada warga yang belum memakai listrik (BPS, Podes 2024). Di banyak desa lain, listriknya dari genset dan PLTD berbahan solar."
+image = ExtResource("1_img")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/impact.png" id="1_w2bx8"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_mrgh2"]
+
+[resource]
+script = ExtResource("2_mrgh2")
+trigger = &"stage_2"
+headline = "Tahap 2: Pasca-KKN. Komunitas warga yang melanjutkan."
+icon = ExtResource("1_w2bx8")

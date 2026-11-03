@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/progress.png" id="1_de8l7"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_fk8oc"]
+
+[resource]
+script = ExtResource("2_fk8oc")
+trigger = &"village_lit"
+headline = "{kloter} ({province}) kini memakai energi bersih."
+icon = ExtResource("1_de8l7")

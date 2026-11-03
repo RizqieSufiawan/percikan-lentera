@@ -1,0 +1,101 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/riau.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Air Permai"
+traits = Array[StringName]([&"lahan_terik"])
+size = 530
+origin = "Riau"
+compat = Dictionary[StringName, float]({&"plts": 0.15, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Air Hijau"
+traits = Array[StringName]([&"limbah_perkebunan"])
+start_fossil = true
+size = 447
+origin = "Riau"
+compat = Dictionary[StringName, float]({&"plts": 0.15, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Desa Tanjung Mulia"
+traits = Array[StringName]([&"limbah_perkebunan"])
+start_fossil = true
+size = 447
+origin = "Riau"
+compat = Dictionary[StringName, float]({&"plts": 0.15, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_3"]
+script = ExtResource("v_script")
+display_name = "Desa Bukit Hijau"
+traits = Array[StringName]([&"limbah_perkebunan"])
+start_fossil = true
+size = 446
+origin = "Riau"
+compat = Dictionary[StringName, float]({&"plts": 0.15, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_4"]
+script = ExtResource("v_script")
+display_name = "Nagari Batu Rajo"
+traits = Array[StringName]([&"sungai_deras", &"hutan_berkabut"])
+size = 451
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_5"]
+script = ExtResource("v_script")
+display_name = "Nagari Lubuk Panjang"
+traits = Array[StringName]([&"gunung_api"])
+start_fossil = true
+size = 418
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_6"]
+script = ExtResource("v_script")
+display_name = "Nagari Koto Gadang"
+traits = Array[StringName]([&"lahan_terik", &"limbah_perkebunan"])
+start_fossil = true
+size = 417
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_7"]
+script = ExtResource("v_script")
+display_name = "Desa Bukit Permai"
+traits = Array[StringName]([&"pesisir_berangin"])
+size = 81
+origin = "Kepri"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_8"]
+script = ExtResource("v_script")
+display_name = "Desa Koto Mulia"
+traits = Array[StringName]([&"pesisir_berangin", &"lahan_terik"])
+start_fossil = true
+size = 349
+origin = "Kepri"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"riau"
+display_name = "Riau, Sumatera Barat & Kepulauan Riau"
+short_name = "Riau-Sumbar"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(190, 289)
+neighbors = Array[StringName]([&"sumut", &"sumsel", &"lampung"])
+villages = 9
+fossil_villages = 6
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4"), SubResource("k_5"), SubResource("k_6"), SubResource("k_7"), SubResource("k_8")])
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.5})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 41.4, &"badai_pesisir": 7.0, &"kemarau_panjang": 1.8, &"erupsi": 3.0, &"titik_api": 4.0})
+member_provinces = PackedStringArray("Riau", "Sumatera Barat", "Kepulauan Riau")
+note = ""

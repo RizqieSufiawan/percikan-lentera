@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/impact.png" id="1_mrpq3"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_llw8o"]
+
+[resource]
+script = ExtResource("2_llw8o")
+trigger = &"compat_revealed"
+headline = "{energy} di {village}: {verdict}."
+icon = ExtResource("1_mrpq3")

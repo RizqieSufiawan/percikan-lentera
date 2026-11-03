@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/opposition.png" id="1_pnlap"]
+[ext_resource type="Texture2D" path="res://assets/images/news/red_high.png" id="2_bhiew"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="2_btgev"]
+
+[resource]
+script = ExtResource("2_btgev")
+trigger = &"red_high"
+headline = "Kepentingan energi lama mulai bergerak menghambat program."
+important = true
+icon = ExtResource("1_pnlap")
+image = ExtResource("2_bhiew")

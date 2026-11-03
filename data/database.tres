@@ -1,0 +1,260 @@
+[gd_resource type="Resource" script_class="GameDatabase" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/action_data.gd" id="1_4x38v"]
+[ext_resource type="Resource" path="res://data/actions/build.tres" id="2_efdec"]
+[ext_resource type="Resource" path="res://data/game_config.tres" id="6_8pyh4"]
+[ext_resource type="Script" path="res://scripts/data/energy_data.gd" id="7_6ejrc"]
+[ext_resource type="Resource" path="res://data/energies/plts.tres" id="8_1mu78"]
+[ext_resource type="Resource" path="res://data/energies/mikrohidro.tres" id="9_pioq2"]
+[ext_resource type="Resource" path="res://data/energies/biomassa.tres" id="10_7uu0p"]
+[ext_resource type="Resource" path="res://data/energies/angin.tres" id="11_3x41s"]
+[ext_resource type="Resource" path="res://data/energies/panas_bumi.tres" id="12_foqjj"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="13_t2r3o"]
+[ext_resource type="Resource" path="res://data/events/hoaks_panel.tres" id="15_xps6e"]
+[ext_resource type="Resource" path="res://data/events/titik_api.tres" id="16_ohnki"]
+[ext_resource type="Resource" path="res://data/events/investor_plta.tres" id="17_5o3i7"]
+[ext_resource type="Resource" path="res://data/events/plts_rusak.tres" id="18_iyju5"]
+[ext_resource type="Resource" path="res://data/events/bakar_lahan.tres" id="19_cfqen"]
+[ext_resource type="Resource" path="res://data/events/solar_subsidi.tres" id="20_om62i"]
+[ext_resource type="Resource" path="res://data/events/izin_ditahan.tres" id="21_fe4bx"]
+[ext_resource type="Resource" path="res://data/events/lobi_hoaks.tres" id="22_vuddu"]
+[ext_resource type="Resource" path="res://data/events/banjir_bandang.tres" id="23_xps6e"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="23_yamwf"]
+[ext_resource type="Resource" path="res://data/events/badai_pesisir.tres" id="24_ohnki"]
+[ext_resource type="Resource" path="res://data/events/kemarau_panjang.tres" id="25_5o3i7"]
+[ext_resource type="Resource" path="res://data/events/erupsi.tres" id="26_iyju5"]
+[ext_resource type="Resource" path="res://data/slides/intro_1.tres" id="31_7p0kf"]
+[ext_resource type="Resource" path="res://data/slides/intro_2.tres" id="32_axm4h"]
+[ext_resource type="Resource" path="res://data/slides/intro_3.tres" id="33_r6wy2"]
+[ext_resource type="Resource" path="res://data/slides/intro_4.tres" id="34_3vqip"]
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="35_bd5fa"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="36_j2d4i"]
+[ext_resource type="Resource" path="res://data/islands/jawa.tres" id="37_058ku"]
+[ext_resource type="Resource" path="res://data/islands/kalimantan.tres" id="38_r74bb"]
+[ext_resource type="Resource" path="res://data/islands/sulawesi.tres" id="39_ltmt3"]
+[ext_resource type="Resource" path="res://data/islands/nusa_tenggara.tres" id="40_yb00q"]
+[ext_resource type="Resource" path="res://data/islands/maluku.tres" id="41_8ljp2"]
+[ext_resource type="Resource" path="res://data/islands/papua.tres" id="42_4fl5l"]
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="43_wydoq"]
+[ext_resource type="Resource" path="res://data/missions/nyalakan.tres" id="44_mvmee"]
+[ext_resource type="Resource" path="res://data/missions/latih.tres" id="45_3t31o"]
+[ext_resource type="Resource" path="res://data/missions/musyawarah.tres" id="46_qq4bd"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="47_sdwmc"]
+[ext_resource type="Resource" path="res://data/news/province_first_lit.tres" id="48_jr2ci"]
+[ext_resource type="Resource" path="res://data/news/village_lit.tres" id="49_8d8fy"]
+[ext_resource type="Resource" path="res://data/news/village_independent.tres" id="50_q44u7"]
+[ext_resource type="Resource" path="res://data/news/province_independent.tres" id="51_2kwtx"]
+[ext_resource type="Resource" path="res://data/news/village_down.tres" id="52_4sogw"]
+[ext_resource type="Resource" path="res://data/news/kkn_end.tres" id="53_uqa51"]
+[ext_resource type="Resource" path="res://data/news/stage_2.tres" id="54_eawlb"]
+[ext_resource type="Resource" path="res://data/news/stage_3.tres" id="55_r4kay"]
+[ext_resource type="Resource" path="res://data/news/stage_4.tres" id="56_60sf5"]
+[ext_resource type="Resource" path="res://data/news/stage_5.tres" id="57_6oyan"]
+[ext_resource type="Resource" path="res://data/news/stage_6.tres" id="58_b5ou0"]
+[ext_resource type="Resource" path="res://data/news/seed_planted.tres" id="59_md5ms"]
+[ext_resource type="Resource" path="res://data/news/seed_ignited.tres" id="60_ekkm5"]
+[ext_resource type="Resource" path="res://data/news/internet_installed.tres" id="61_uhvui"]
+[ext_resource type="Resource" path="res://data/news/airplane_opened.tres" id="62_nm7x6"]
+[ext_resource type="Resource" path="res://data/news/offer_target_met.tres" id="63_pt5f0"]
+[ext_resource type="Resource" path="res://data/news/offer_target_failed.tres" id="64_tjwm4"]
+[ext_resource type="Resource" path="res://data/news/red_high.tres" id="65_udk3o"]
+[ext_resource type="Resource" path="res://data/news/mission_done.tres" id="66_mh0lp"]
+[ext_resource type="Script" path="res://scripts/data/gov_offer_data.gd" id="67_c6128"]
+[ext_resource type="Resource" path="res://data/news/compat_revealed.tres" id="67_efdec"]
+[ext_resource type="Resource" path="res://data/offers/rapuh.tres" id="68_eh6mn"]
+[ext_resource type="Resource" path="res://data/offers/biasa.tres" id="69_iea8p"]
+[ext_resource type="Resource" path="res://data/offers/lancar.tres" id="70_1togd"]
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="71_lbp3g"]
+[ext_resource type="Script" path="res://scripts/data/game_database.gd" id="86_icyur"]
+[ext_resource type="Resource" path="res://data/ui_assets.tres" id="87_pj6xd"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="88_2iqat"]
+[ext_resource type="Resource" path="res://data/upgrades/plts.tres" id="89_dpag5"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro.tres" id="90_x5jdk"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa.tres" id="91_ui6k4"]
+[ext_resource type="Resource" path="res://data/upgrades/angin.tres" id="92_8xwkk"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="92_cfqen"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi.tres" id="93_6jbjn"]
+[ext_resource type="Resource" path="res://data/traits/pesisir_berangin.tres" id="93_om62i"]
+[ext_resource type="Resource" path="res://data/upgrades/latih_teknisi.tres" id="94_a48m7"]
+[ext_resource type="Resource" path="res://data/traits/sungai_deras.tres" id="94_fe4bx"]
+[ext_resource type="Resource" path="res://data/upgrades/kader_desa.tres" id="95_cai5p"]
+[ext_resource type="Resource" path="res://data/traits/lahan_terik.tres" id="95_vuddu"]
+[ext_resource type="Resource" path="res://data/upgrades/klarifikasi.tres" id="96_eaovb"]
+[ext_resource type="Resource" path="res://data/traits/limbah_perkebunan.tres" id="96_yamwf"]
+[ext_resource type="Resource" path="res://data/traits/peternakan.tres" id="97_78cwd"]
+[ext_resource type="Resource" path="res://data/upgrades/tokoh_adat.tres" id="97_r2eag"]
+[ext_resource type="Resource" path="res://data/upgrades/koperasi_energi.tres" id="98_a1vxp"]
+[ext_resource type="Resource" path="res://data/traits/gunung_api.tres" id="98_lrhqr"]
+[ext_resource type="Resource" path="res://data/upgrades/umkm.tres" id="99_0is4j"]
+[ext_resource type="Resource" path="res://data/traits/hutan_berkabut.tres" id="99_e8m1i"]
+[ext_resource type="Resource" path="res://data/upgrades/pekerjaan_hijau.tres" id="100_0t878"]
+[ext_resource type="Resource" path="res://data/traits/lembah_tertutup.tres" id="100_xcsl7"]
+[ext_resource type="Resource" path="res://data/upgrades/internet_desa.tres" id="101_ksatl"]
+[ext_resource type="Resource" path="res://data/upgrades/sekolah_daring.tres" id="102_hmq44"]
+[ext_resource type="Resource" path="res://data/upgrades/telemedicine.tres" id="103_hw1jr"]
+[ext_resource type="Resource" path="res://data/upgrades/sensor.tres" id="104_nu8f6"]
+[ext_resource type="Resource" path="res://data/upgrades/jalur_antar_desa.tres" id="105_36agg"]
+[ext_resource type="Resource" path="res://data/upgrades/rute_udara.tres" id="106_xsd51"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_output1.tres" id="154_cstfk"]
+[ext_resource type="Resource" path="res://data/upgrades/sekolah_lapang.tres" id="154_udk3o"]
+[ext_resource type="Resource" path="res://data/upgrades/forum_musyawarah.tres" id="155_mh0lp"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_material1.tres" id="155_nm5vd"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_output2.tres" id="156_eag3x"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_material2.tres" id="157_ktmia"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_teknisi.tres" id="158_vqef2"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_output1.tres" id="159_c2myk"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_material1.tres" id="160_cgmfv"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_output2.tres" id="161_u8x0i"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_material2.tres" id="162_35c86"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_teknisi.tres" id="163_p5lek"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_output1.tres" id="164_kp1u1"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_material1.tres" id="165_3mcvp"]
+[ext_resource type="Resource" path="res://data/upgrades/pemuda_penggerak.tres" id="166_kp1u1"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_output2.tres" id="166_sc8qo"]
+[ext_resource type="Resource" path="res://data/upgrades/perempuan_energi.tres" id="167_3mcvp"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_material2.tres" id="167_icyur"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_teknisi.tres" id="168_pj6xd"]
+[ext_resource type="Resource" path="res://data/upgrades/desa_belajar.tres" id="168_sc8qo"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_output1.tres" id="169_2iqat"]
+[ext_resource type="Resource" path="res://data/upgrades/tarif_desa.tres" id="169_icyur"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_material1.tres" id="170_dpag5"]
+[ext_resource type="Resource" path="res://data/upgrades/investasi_hijau.tres" id="170_pj6xd"]
+[ext_resource type="Resource" path="res://data/upgrades/pasar_daring.tres" id="171_2iqat"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_output2.tres" id="171_x5jdk"]
+[ext_resource type="Resource" path="res://data/upgrades/dana_bergulir.tres" id="172_dpag5"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_material2.tres" id="172_ui6k4"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_teknisi.tres" id="173_8xwkk"]
+[ext_resource type="Resource" path="res://data/upgrades/peta_risiko.tres" id="173_x5jdk"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_output1.tres" id="174_6jbjn"]
+[ext_resource type="Resource" path="res://data/upgrades/posko_24jam.tres" id="174_ui6k4"]
+[ext_resource type="Resource" path="res://data/upgrades/kelas_daring.tres" id="175_8xwkk"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_material1.tres" id="175_a48m7"]
+[ext_resource type="Resource" path="res://data/upgrades/gudang_cadang.tres" id="176_6jbjn"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_output2.tres" id="176_cai5p"]
+[ext_resource type="Resource" path="res://data/upgrades/jaringan_pulau.tres" id="177_a48m7"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_material2.tres" id="177_eaovb"]
+[ext_resource type="Resource" path="res://data/upgrades/forum_nasional.tres" id="178_cai5p"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_teknisi.tres" id="178_r2eag"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_output3.tres" id="179_eaovb"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_material3.tres" id="180_r2eag"]
+[ext_resource type="Resource" path="res://data/upgrades/plts_pusat.tres" id="181_a1vxp"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_output3.tres" id="182_0is4j"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_material3.tres" id="183_0t878"]
+[ext_resource type="Resource" path="res://data/upgrades/mikrohidro_pusat.tres" id="184_ksatl"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_output3.tres" id="185_hmq44"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_material3.tres" id="186_hw1jr"]
+[ext_resource type="Resource" path="res://data/upgrades/biomassa_pusat.tres" id="187_nu8f6"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_output3.tres" id="188_36agg"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_material3.tres" id="189_xsd51"]
+[ext_resource type="Resource" path="res://data/upgrades/angin_pusat.tres" id="190_bs8xp"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_output3.tres" id="191_todwx"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_material3.tres" id="192_p6wkd"]
+[ext_resource type="Resource" path="res://data/upgrades/panas_bumi_pusat.tres" id="193_pwon2"]
+[ext_resource type="Resource" path="res://data/upgrades/duta_pelajar.tres" id="194_op1x3"]
+[ext_resource type="Resource" path="res://data/upgrades/bahasa_daerah.tres" id="195_sv7j3"]
+[ext_resource type="Resource" path="res://data/upgrades/asuransi_pembangkit.tres" id="196_kj1am"]
+[ext_resource type="Resource" path="res://data/upgrades/ekspor_desa.tres" id="197_ag0tx"]
+[ext_resource type="Resource" path="res://data/upgrades/pantau_jarak_jauh.tres" id="198_hckaj"]
+[ext_resource type="Resource" path="res://data/upgrades/iuran_digital.tres" id="199_su2ve"]
+[ext_resource type="Resource" path="res://data/upgrades/kapal_perintis.tres" id="200_ulfpc"]
+[ext_resource type="Resource" path="res://data/upgrades/hub_bandara.tres" id="201_klpae"]
+[ext_resource type="Resource" path="res://data/slides/guide_1.tres" id="guide_1"]
+[ext_resource type="Resource" path="res://data/slides/guide_2.tres" id="guide_2"]
+[ext_resource type="Resource" path="res://data/slides/guide_3.tres" id="guide_3"]
+[ext_resource type="Resource" path="res://data/slides/guide_4.tres" id="guide_4"]
+[ext_resource type="Resource" path="res://data/slides/guide_5.tres" id="guide_5"]
+[ext_resource type="Resource" path="res://data/slides/guide_6.tres" id="guide_6"]
+[ext_resource type="Resource" path="res://data/slides/guide_7.tres" id="guide_7"]
+[ext_resource type="Resource" path="res://data/slides/guide_8.tres" id="guide_8"]
+[ext_resource type="Resource" path="res://data/slides/guide_9.tres" id="guide_9"]
+[ext_resource type="Resource" path="res://data/slides/guide_10.tres" id="guide_10"]
+[ext_resource type="Resource" path="res://data/milestones/emas_2045.tres" id="ms_emas_2045"]
+[ext_resource type="Resource" path="res://data/milestones/ken_2040.tres" id="ms_ken_2040"]
+[ext_resource type="Resource" path="res://data/milestones/ken_2050.tres" id="ms_ken_2050"]
+[ext_resource type="Resource" path="res://data/milestones/ken_2060.tres" id="ms_ken_2060"]
+[ext_resource type="Script" path="res://scripts/data/milestone_data.gd" id="ms_script"]
+[ext_resource type="Resource" path="res://data/milestones/target_2030.tres" id="ms_target_2030"]
+[ext_resource type="Resource" path="res://data/news/build_delayed.tres" id="news_build_delayed"]
+[ext_resource type="Resource" path="res://data/news/build_started.tres" id="news_build_started"]
+[ext_resource type="Resource" path="res://data/provinces/aceh.tres" id="prov_aceh"]
+[ext_resource type="Resource" path="res://data/provinces/bali.tres" id="prov_bali"]
+[ext_resource type="Resource" path="res://data/provinces/jabar.tres" id="prov_jabar"]
+[ext_resource type="Resource" path="res://data/provinces/jateng.tres" id="prov_jateng"]
+[ext_resource type="Resource" path="res://data/provinces/jatim.tres" id="prov_jatim"]
+[ext_resource type="Resource" path="res://data/provinces/kalbar.tres" id="prov_kalbar"]
+[ext_resource type="Resource" path="res://data/provinces/kalsel.tres" id="prov_kalsel"]
+[ext_resource type="Resource" path="res://data/provinces/kalteng.tres" id="prov_kalteng"]
+[ext_resource type="Resource" path="res://data/provinces/kaltim.tres" id="prov_kaltim"]
+[ext_resource type="Resource" path="res://data/provinces/lampung.tres" id="prov_lampung"]
+[ext_resource type="Resource" path="res://data/provinces/maluku.tres" id="prov_maluku"]
+[ext_resource type="Resource" path="res://data/provinces/malut.tres" id="prov_malut"]
+[ext_resource type="Resource" path="res://data/provinces/ntb.tres" id="prov_ntb"]
+[ext_resource type="Resource" path="res://data/provinces/ntt.tres" id="prov_ntt"]
+[ext_resource type="Resource" path="res://data/provinces/pabar.tres" id="prov_pabar"]
+[ext_resource type="Resource" path="res://data/provinces/papteng.tres" id="prov_papteng"]
+[ext_resource type="Resource" path="res://data/provinces/papua.tres" id="prov_papua"]
+[ext_resource type="Resource" path="res://data/provinces/riau.tres" id="prov_riau"]
+[ext_resource type="Resource" path="res://data/provinces/sulsel.tres" id="prov_sulsel"]
+[ext_resource type="Resource" path="res://data/provinces/sulteng.tres" id="prov_sulteng"]
+[ext_resource type="Resource" path="res://data/provinces/sultra.tres" id="prov_sultra"]
+[ext_resource type="Resource" path="res://data/provinces/sulut.tres" id="prov_sulut"]
+[ext_resource type="Resource" path="res://data/provinces/sumsel.tres" id="prov_sumsel"]
+[ext_resource type="Resource" path="res://data/provinces/sumut.tres" id="prov_sumut"]
+
+[resource]
+script = ExtResource("86_icyur")
+config = ExtResource("6_8pyh4")
+ui = ExtResource("87_pj6xd")
+islands = Array[ExtResource("35_bd5fa")]([ExtResource("36_j2d4i"), ExtResource("37_058ku"), ExtResource("38_r74bb"), ExtResource("39_ltmt3"), ExtResource("40_yb00q"), ExtResource("41_8ljp2"), ExtResource("42_4fl5l")])
+provinces = Array[ExtResource("71_lbp3g")]([ExtResource("prov_aceh"), ExtResource("prov_sumut"), ExtResource("prov_riau"), ExtResource("prov_sumsel"), ExtResource("prov_lampung"), ExtResource("prov_jabar"), ExtResource("prov_jateng"), ExtResource("prov_jatim"), ExtResource("prov_bali"), ExtResource("prov_ntb"), ExtResource("prov_ntt"), ExtResource("prov_kalbar"), ExtResource("prov_kalteng"), ExtResource("prov_kalsel"), ExtResource("prov_kaltim"), ExtResource("prov_sulut"), ExtResource("prov_sulteng"), ExtResource("prov_sulsel"), ExtResource("prov_sultra"), ExtResource("prov_maluku"), ExtResource("prov_malut"), ExtResource("prov_pabar"), ExtResource("prov_papua"), ExtResource("prov_papteng")])
+energies = Array[ExtResource("7_6ejrc")]([ExtResource("8_1mu78"), ExtResource("9_pioq2"), ExtResource("10_7uu0p"), ExtResource("11_3x41s"), ExtResource("12_foqjj")])
+traits = Array[ExtResource("92_cfqen")]([ExtResource("93_om62i"), ExtResource("94_fe4bx"), ExtResource("95_vuddu"), ExtResource("96_yamwf"), ExtResource("97_78cwd"), ExtResource("98_lrhqr"), ExtResource("99_e8m1i"), ExtResource("100_xcsl7")])
+upgrades = Array[ExtResource("88_2iqat")]([ExtResource("89_dpag5"), ExtResource("90_x5jdk"), ExtResource("91_ui6k4"), ExtResource("92_8xwkk"), ExtResource("93_6jbjn"), ExtResource("94_a48m7"), ExtResource("95_cai5p"), ExtResource("96_eaovb"), ExtResource("97_r2eag"), ExtResource("98_a1vxp"), ExtResource("99_0is4j"), ExtResource("100_0t878"), ExtResource("101_ksatl"), ExtResource("102_hmq44"), ExtResource("103_hw1jr"), ExtResource("104_nu8f6"), ExtResource("105_36agg"), ExtResource("106_xsd51"), ExtResource("154_udk3o"), ExtResource("155_mh0lp"), ExtResource("166_kp1u1"), ExtResource("167_3mcvp"), ExtResource("168_sc8qo"), ExtResource("169_icyur"), ExtResource("170_pj6xd"), ExtResource("171_2iqat"), ExtResource("172_dpag5"), ExtResource("173_x5jdk"), ExtResource("174_ui6k4"), ExtResource("175_8xwkk"), ExtResource("176_6jbjn"), ExtResource("177_a48m7"), ExtResource("178_cai5p"), ExtResource("154_cstfk"), ExtResource("155_nm5vd"), ExtResource("156_eag3x"), ExtResource("157_ktmia"), ExtResource("158_vqef2"), ExtResource("159_c2myk"), ExtResource("160_cgmfv"), ExtResource("161_u8x0i"), ExtResource("162_35c86"), ExtResource("163_p5lek"), ExtResource("164_kp1u1"), ExtResource("165_3mcvp"), ExtResource("166_sc8qo"), ExtResource("167_icyur"), ExtResource("168_pj6xd"), ExtResource("169_2iqat"), ExtResource("170_dpag5"), ExtResource("171_x5jdk"), ExtResource("172_ui6k4"), ExtResource("173_8xwkk"), ExtResource("174_6jbjn"), ExtResource("175_a48m7"), ExtResource("176_cai5p"), ExtResource("177_eaovb"), ExtResource("178_r2eag"), ExtResource("179_eaovb"), ExtResource("180_r2eag"), ExtResource("181_a1vxp"), ExtResource("182_0is4j"), ExtResource("183_0t878"), ExtResource("184_ksatl"), ExtResource("185_hmq44"), ExtResource("186_hw1jr"), ExtResource("187_nu8f6"), ExtResource("188_36agg"), ExtResource("189_xsd51"), ExtResource("190_bs8xp"), ExtResource("191_todwx"), ExtResource("192_p6wkd"), ExtResource("193_pwon2"), ExtResource("194_op1x3"), ExtResource("195_sv7j3"), ExtResource("196_kj1am"), ExtResource("197_ag0tx"), ExtResource("198_hckaj"), ExtResource("199_su2ve"), ExtResource("200_ulfpc"), ExtResource("201_klpae")])
+actions = Array[ExtResource("1_4x38v")]([ExtResource("2_efdec")])
+events = Array[ExtResource("13_t2r3o")]([ExtResource("15_xps6e"), ExtResource("16_ohnki"), ExtResource("17_5o3i7"), ExtResource("18_iyju5"), ExtResource("19_cfqen"), ExtResource("20_om62i"), ExtResource("21_fe4bx"), ExtResource("22_vuddu"), ExtResource("23_xps6e"), ExtResource("24_ohnki"), ExtResource("25_5o3i7"), ExtResource("26_iyju5")])
+news = Array[ExtResource("47_sdwmc")]([ExtResource("48_jr2ci"), ExtResource("49_8d8fy"), ExtResource("50_q44u7"), ExtResource("51_2kwtx"), ExtResource("52_4sogw"), ExtResource("53_uqa51"), ExtResource("54_eawlb"), ExtResource("55_r4kay"), ExtResource("56_60sf5"), ExtResource("57_6oyan"), ExtResource("58_b5ou0"), ExtResource("59_md5ms"), ExtResource("60_ekkm5"), ExtResource("61_uhvui"), ExtResource("62_nm7x6"), ExtResource("63_pt5f0"), ExtResource("64_tjwm4"), ExtResource("65_udk3o"), ExtResource("66_mh0lp"), ExtResource("67_efdec"), ExtResource("news_build_started"), ExtResource("news_build_delayed")])
+offers = Array[ExtResource("67_c6128")]([ExtResource("68_eh6mn"), ExtResource("69_iea8p"), ExtResource("70_1togd")])
+missions = Array[ExtResource("43_wydoq")]([ExtResource("44_mvmee"), ExtResource("45_3t31o"), ExtResource("46_qq4bd")])
+milestones = Array[ExtResource("ms_script")]([ExtResource("ms_target_2030"), ExtResource("ms_ken_2040"), ExtResource("ms_emas_2045"), ExtResource("ms_ken_2050"), ExtResource("ms_ken_2060")])
+cities = Dictionary[String, String]({
+"Aceh": "Banda Aceh",
+"Babel": "Pangkalpinang",
+"Bali": "Denpasar",
+"Banten": "Serang",
+"Bengkulu": "Bengkulu",
+"DIY": "Yogyakarta",
+"DKI Jakarta": "Jakarta",
+"Gorontalo": "Gorontalo",
+"Jabar": "Bandung",
+"Jambi": "Jambi",
+"Jateng": "Semarang",
+"Jatim": "Surabaya",
+"Kalbar": "Pontianak",
+"Kalsel": "Banjarbaru",
+"Kaltara": "Tanjung Selor",
+"Kalteng": "Palangka Raya",
+"Kaltim": "Samarinda",
+"Kepri": "Tanjungpinang",
+"Lampung": "Bandar Lampung",
+"Maluku": "Ambon",
+"Malut": "Sofifi",
+"NTB": "Mataram",
+"NTT": "Kupang",
+"Papua": "Jayapura",
+"Papua Barat": "Manokwari",
+"Papua Barat Daya": "Sorong",
+"Papua Pegunungan": "Wamena",
+"Papua Selatan": "Merauke",
+"Papua Tengah": "Nabire",
+"Riau": "Pekanbaru",
+"Sulbar": "Mamuju",
+"Sulsel": "Makassar",
+"Sulteng": "Palu",
+"Sultra": "Kendari",
+"Sulut": "Manado",
+"Sumbar": "Padang",
+"Sumsel": "Palembang",
+"Sumut": "Medan"
+})
+intro_slides = Array[ExtResource("23_yamwf")]([ExtResource("31_7p0kf"), ExtResource("32_axm4h"), ExtResource("33_r6wy2"), ExtResource("34_3vqip")])
+guide_slides = Array[ExtResource("23_yamwf")]([ExtResource("guide_1"), ExtResource("guide_2"), ExtResource("guide_3"), ExtResource("guide_4"), ExtResource("guide_5"), ExtResource("guide_6"), ExtResource("guide_7"), ExtResource("guide_8"), ExtResource("guide_9"), ExtResource("guide_10")])

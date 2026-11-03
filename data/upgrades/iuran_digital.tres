@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/iuran_digital.png" id="1_dkkmw"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_ngyij"]
+
+[resource]
+script = ExtResource("2_ngyij")
+id = &"iuran_digital"
+display_name = "Aplikasi Iuran Digital"
+description = "Iuran listrik dibayar lewat ponsel dan tercatat terbuka. Ekonomi naik dan komunitas lebih awet."
+category = 3
+icon = ExtResource("1_dkkmw")
+cost_points = 9
+cost_money = 4
+requires = Array[StringName]([&"kelas_daring"])
+modifiers = Dictionary[StringName, float]({
+&"community_decay_mult": -0.2,
+&"money_per_tick": 0.1
+})

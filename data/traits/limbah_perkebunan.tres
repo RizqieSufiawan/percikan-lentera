@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/traits/limbah_perkebunan.png" id="1_2ygwt"]
+[ext_resource type="Script" path="res://scripts/data/trait_data.gd" id="2_jubuu"]
+
+[resource]
+script = ExtResource("2_jubuu")
+id = &"limbah_perkebunan"
+display_name = "Limbah perkebunan"
+description = "Desa perkebunan dan sawah. Limbah sawit, sekam, dan serbuk kayu menumpuk."
+icon = ExtResource("1_2ygwt")
+energy_bonus = Dictionary[StringName, float]({
+&"biomassa": 0.5
+})

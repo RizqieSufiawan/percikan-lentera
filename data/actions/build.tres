@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ActionData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/actions/build.png" id="1_v5r3w"]
+[ext_resource type="Script" path="res://scripts/data/action_data.gd" id="2_dva02"]
+
+[resource]
+script = ExtResource("2_dva02")
+id = &"build"
+display_name = "Bangun Bersama Warga"
+description = "Warga dan mitra membangun pembangkit dengan energi pilihanmu. Pembangunan butuh 2-4 bulan dan bisa tertunda bencana. Desa gelap didahulukan; jika tidak ada, desa fosil beralih ke energi bersih. Membangun di wilayah berkomunitas rendah menaikkan resistensi. Kecocokan energi terungkap saat pembangkit menyala."
+icon = ExtResource("1_v5r3w")
+cost_points = 4
+cost_money = 6

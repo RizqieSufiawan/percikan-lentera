@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/pemuda_penggerak.png" id="1_e4til"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_75l5s"]
+
+[resource]
+script = ExtResource("2_75l5s")
+id = &"pemuda_penggerak"
+display_name = "Pemuda Penggerak Energi"
+description = "Pemuda desa yang pernah ikut KKN mengajak desa tetangga. Komunitas tumbuh lebih cepat dan energi bersih sedikit lebih cepat menyebar."
+category = 1
+icon = ExtResource("1_e4til")
+cost_points = 7
+requires = Array[StringName]([&"sekolah_lapang"])
+modifiers = Dictionary[StringName, float]({
+&"community_gain": 0.5,
+&"spread_mult": 0.1
+})

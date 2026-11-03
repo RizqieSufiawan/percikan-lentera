@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/kalimantan.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/kaltim.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Tumbang Apari"
+traits = Array[StringName]([&"sungai_deras", &"hutan_berkabut"])
+size = 194
+origin = "Kaltim"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Rantau Ruai"
+traits = Array[StringName]([&"lahan_terik"])
+start_fossil = true
+size = 429
+origin = "Kaltim"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Desa Tumbang Danum"
+traits = Array[StringName]([&"limbah_perkebunan"])
+start_fossil = true
+size = 429
+origin = "Kaltim"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_3"]
+script = ExtResource("v_script")
+display_name = "Desa Tumbang Lebak"
+traits = Array[StringName]([&"sungai_deras"])
+size = 74
+origin = "Kaltara"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_4"]
+script = ExtResource("v_script")
+display_name = "Desa Rantau Kayan"
+traits = Array[StringName]([&"hutan_berkabut"])
+start_fossil = true
+size = 410
+origin = "Kaltara"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"kaltim"
+display_name = "Kalimantan Timur & Utara"
+short_name = "Kaltim"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(593, 258)
+neighbors = Array[StringName]([&"kalbar", &"kalteng", &"kalsel"])
+villages = 5
+fossil_villages = 3
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4")])
+start_resistance_mod = 3.0
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 28.7, &"badai_pesisir": 2.3, &"kemarau_panjang": 3.8, &"erupsi": 0.0, &"titik_api": 4.8})
+member_provinces = PackedStringArray("Kalimantan Timur", "Kalimantan Utara")
+note = "Daerah tambang: tekanan energi lama lebih kuat."

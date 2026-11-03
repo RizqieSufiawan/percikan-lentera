@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/sensor.png" id="1_8hb54"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_lgao5"]
+
+[resource]
+script = ExtResource("2_lgao5")
+id = &"sensor"
+display_name = "Sensor Peringatan Dini"
+description = "Untung: dampak karhutla dan cuaca ekstrem jauh lebih ringan.
+Rugi: butuh Internet Desa."
+category = 3
+icon = ExtResource("1_8hb54")
+cost_points = 7
+cost_money = 10
+requires = Array[StringName]([&"internet_desa"])
+modifiers = Dictionary[StringName, float]({
+&"crisis_mult": -0.35
+})

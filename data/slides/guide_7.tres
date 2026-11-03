@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/guide_7.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "KKN Selesai"
+text = "Poin dari mahasiswa berhenti setelah 6 bulan. Selama KKN mahasiswa melatih warga wilayah awal; desa rapuh di wilayah yang Komunitasnya masih lemah bisa padam saat tim pulang.\nSetelah itu, desa rapuh menjadi mandiri jika Komunitas mencapai 45."
+image = ExtResource("1_img")

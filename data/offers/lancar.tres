@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GovOfferData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/tawaran_pemerintah.png" id="1_o5ejt"]
+[ext_resource type="Script" path="res://scripts/data/gov_offer_data.gd" id="2_7tg04"]
+
+[resource]
+script = ExtResource("2_7tg04")
+tier = &"lancar"
+title = "Mitra Program Nasional"
+body = "Programmu dinilai berhasil. Pemerintah menawarkan dana besar, rute pesawat luas, dan syarat ringan."
+money = 40.0
+points = 12.0
+airplane_islands = 99
+target_villages = 6
+target_ticks = 104
+fail_red = 4.0
+fail_score_penalty = 10.0
+accept_effects = Dictionary[StringName, float]({
+&"blue": -3.0
+})
+refuse_effects = Dictionary[StringName, float]({
+&"blue": -3.0
+})
+image = ExtResource("1_o5ejt")

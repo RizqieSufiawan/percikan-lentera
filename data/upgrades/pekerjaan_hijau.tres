@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/pekerjaan_hijau.png" id="1_q4niw"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_tv7m2"]
+
+[resource]
+script = ExtResource("2_tv7m2")
+id = &"pekerjaan_hijau"
+display_name = "Pekerjaan Hijau"
+description = "Untung: pekerja energi lama punya alternatif, resistensi merah turun jauh.
+Rugi: mahal."
+category = 2
+icon = ExtResource("1_q4niw")
+cost_points = 10
+cost_money = 15
+requires = Array[StringName]([&"umkm"])
+modifiers = Dictionary[StringName, float]({
+&"red_growth_mult": -0.3,
+&"welfare_per_tick": 0.01
+})

@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/solar_subsidi.png" id="1_hdgp3"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_ty74v"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_jyuwt"]
+
+[sub_resource type="Resource" id="Resource_5ants"]
+script = ExtResource("2_ty74v")
+label = "Tunjukkan hitungan jangka panjang"
+result_text = "Koperasi membandingkan biaya. Sebagian warga bertahan."
+effects = Dictionary[StringName, float]({
+&"points": -3.0,
+&"red": -3.0
+})
+
+[sub_resource type="Resource" id="Resource_k7384"]
+script = ExtResource("2_ty74v")
+label = "Biarkan warga memilih"
+result_text = "Satu desa mematikan pembangkit bersih dan kembali ke genset."
+effects = Dictionary[StringName, float]({
+&"red": 3.0,
+&"to_fossil": 1.0
+})
+
+[resource]
+script = ExtResource("3_jyuwt")
+id = &"solar_subsidi"
+title = "Solar Tiba-tiba Murah"
+body = "Harga solar di {province} turun mendadak. Warga {village} ingin kembali ke genset."
+fact = "Masih ada sekitar 5.200 unit PLTD (pembangkit diesel) di 2.130 lokasi, banyak di daerah terpencil yang bahan bakarnya harus dikirim jauh. Pemerintah merencanakan penggantiannya dengan energi terbarukan. (Sumber: Siaran pers ESDM No. 121.Pers/04/SJI/2022)"
+image = ExtResource("1_hdgp3")
+min_stage = 3
+opposition = true
+option_a = SubResource("Resource_5ants")
+option_b = SubResource("Resource_k7384")

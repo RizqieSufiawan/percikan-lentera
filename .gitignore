@@ -1,0 +1,16 @@
+# Godot 4
+.godot/
+/android/
+*.translation
+
+# Hasil ekspor (unggah ke itch.io / Drive, bukan ke repo)
+/build/
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistem
+.DS_Store
+Thumbs.db
+desktop.ini

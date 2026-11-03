@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/biomassa_teknisi.png" id="1_pylly"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_a5cg3"]
+
+[resource]
+script = ExtResource("2_a5cg3")
+id = &"biomassa_teknisi"
+display_name = "Teknisi Warga"
+description = "Bank Limbah Desa: warga mengumpulkan dan mengolah limbah sendiri.
+Rugi: mahal."
+icon = ExtResource("1_pylly")
+cost_points = 12
+cost_money = 12
+requires = Array[StringName]([&"biomassa_output3", &"biomassa_material3"])
+modifiers = Dictionary[StringName, float]({
+&"build:biomassa": 0.35,
+&"fit:biomassa": 0.1,
+&"indep:biomassa": 0.4
+})

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/banjir_bandang.png" id="1_qcfln"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_guca3"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_sb2yk"]
+
+[sub_resource type="Resource" id="Resource_mktpx"]
+script = ExtResource("2_guca3")
+label = "Evakuasi dan amankan turbin"
+result_text = "Warga sigap mengamankan peralatan. Kerusakan bisa ditekan."
+effects = Dictionary[StringName, float]({
+&"money": -4.0,
+&"points": -3.0
+})
+crisis_severity = 0.25
+
+[sub_resource type="Resource" id="Resource_h2r1m"]
+script = ExtResource("2_guca3")
+label = "Tunggu air surut"
+result_text = "Banjir merusak pembangkit di tepi sungai."
+effects = Dictionary[StringName, float]({
+&"welfare": -4.0
+})
+crisis_severity = 1.0
+
+[resource]
+script = ExtResource("3_sb2yk")
+id = &"banjir_bandang"
+title = "Banjir Bandang"
+body = "Hujan deras berhari-hari. Sungai di dekat {village}, {province}, meluap dan membawa lumpur."
+fact = "Banjir adalah bencana paling sering di Indonesia: 1.420 dari 3.472 kejadian bencana sepanjang 2024. Pembangkit di tepi sungai perlu dirancang tahan banjir. (Sumber: BNPB, Buku Data Bencana Indonesia 2024)"
+image = ExtResource("1_qcfln")
+is_disaster = true
+target_traits = Array[StringName]([&"sungai_deras"])
+vulnerable_energies = Array[StringName]([&"mikrohidro"])
+option_a = SubResource("Resource_mktpx")
+option_b = SubResource("Resource_h2r1m")

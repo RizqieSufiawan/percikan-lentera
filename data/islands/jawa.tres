@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IslandData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/island_data.gd" id="1_njbwu"]
+
+[resource]
+script = ExtResource("1_njbwu")
+id = &"jawa"
+display_name = "Jawa"
+color = Color(0.85, 0.7, 0.45, 1)
+energy_compat = Dictionary[StringName, float]({
+&"angin": 0.15,
+&"biomassa": 0.5,
+&"mikrohidro": 0.5,
+&"panas_bumi": 1.0,
+&"plts": 0.5
+})
+base_spread = 1.2
+base_resistance = 5.0
+challenge = "Padat dan cepat menyebar, tapi bergantung pada PLTU dan resistensi awal lebih tinggi."

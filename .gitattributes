@@ -1,0 +1,19 @@
+# Teks: akhir baris LF di repo (Godot menulis LF), aman dipakai di Windows.
+* text=auto eol=lf
+*.gd text eol=lf
+*.tscn text eol=lf
+*.tres text eol=lf
+*.godot text eol=lf
+*.import text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+
+# Biner
+*.png binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+*.pdf binary

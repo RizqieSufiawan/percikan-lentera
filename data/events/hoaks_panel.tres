@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="EventData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/hoaks_panel.png" id="1_f2has"]
+[ext_resource type="Script" path="res://scripts/data/event_option.gd" id="2_n0y7b"]
+[ext_resource type="Script" path="res://scripts/data/event_data.gd" id="3_a5upf"]
+
+[sub_resource type="Resource" id="Resource_8pbyu"]
+script = ExtResource("2_n0y7b")
+label = "Kampanye klarifikasi (mahal, efektif)"
+result_text = "Warga mendengar penjelasan dan bertanya langsung. Hoaks mereda."
+effects = Dictionary[StringName, float]({
+&"blue": -6.0,
+&"points": -3.0
+})
+
+[sub_resource type="Resource" id="Resource_7fk03"]
+script = ExtResource("2_n0y7b")
+label = "Abaikan"
+result_text = "Hoaks menyebar ke desa tetangga."
+effects = Dictionary[StringName, float]({
+&"blue": 6.0
+})
+
+[resource]
+script = ExtResource("3_a5upf")
+id = &"hoaks_panel"
+title = "Hoaks Viral"
+body = "Pesan berantai di {village}, {province}: \"panel surya bikin sakit\". Warga mulai ragu."
+fact = "Kemkomdigi mengidentifikasi 1.923 konten hoaks sepanjang 2024. Panel surya mengubah cahaya menjadi listrik tanpa membakar apa pun. Cek dulu pesan berantai sebelum dibagikan. (Sumber: Kemkomdigi, Januari 2025)"
+image = ExtResource("1_f2has")
+option_a = SubResource("Resource_8pbyu")
+option_b = SubResource("Resource_7fk03")

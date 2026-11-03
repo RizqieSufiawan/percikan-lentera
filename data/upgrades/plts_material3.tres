@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/plts_material3.png" id="1_yqpd2"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_ih1qv"]
+
+[resource]
+script = ExtResource("2_ih1qv")
+id = &"plts_material3"
+display_name = "Material Bangunan III"
+description = "Panel dan baterai bergaransi panjang dari pabrik dalam negeri."
+icon = ExtResource("1_yqpd2")
+cost_points = 10
+cost_money = 10
+requires = Array[StringName]([&"plts_material2"])
+modifiers = Dictionary[StringName, float]({
+&"quality:plts": 0.3
+})

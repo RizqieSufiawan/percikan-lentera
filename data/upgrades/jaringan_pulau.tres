@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/jaringan_pulau.png" id="1_simd8"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_65v1m"]
+
+[resource]
+script = ExtResource("2_65v1m")
+id = &"jaringan_pulau"
+display_name = "Jaringan Desa Antar-Pulau"
+description = "Desa-desa di pulau berbeda bertukar teknisi dan cerita. Energi bersih menyebar lebih cepat.
+Butuh Internet Desa."
+category = 4
+icon = ExtResource("1_simd8")
+cost_points = 10
+cost_money = 6
+requires = Array[StringName]([&"jalur_antar_desa", &"internet_desa"])
+modifiers = Dictionary[StringName, float]({
+&"spread_mult": 0.15
+})

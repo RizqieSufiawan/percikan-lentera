@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/angin_output2.png" id="1_isjtr"]
+[ext_resource type="Script" path="res://scripts/data/upgrade_data.gd" id="2_csny0"]
+
+[resource]
+script = ExtResource("2_csny0")
+id = &"angin_output2"
+display_name = "Output Listrik II"
+description = "Menara lebih tinggi menjangkau angin yang lebih kencang."
+icon = ExtResource("1_isjtr")
+cost_points = 8
+cost_money = 8
+requires = Array[StringName]([&"angin_output1"])
+modifiers = Dictionary[StringName, float]({
+&"fit:angin": 0.05,
+&"output:angin": 0.3
+})

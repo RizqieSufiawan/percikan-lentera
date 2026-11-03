@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SlideData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/slides/guide_4.png" id="1_img"]
+[ext_resource type="Script" path="res://scripts/data/slide_data.gd" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+title = "Membangun"
+text = "Kloter pertama dipilih di layar persiapan dan langsung dibangun. Pembangunan butuh 2–4 bulan dan bisa tertunda bencana.\nOtomatis (B): warga membangun kloter berikutnya sendiri, tapi hanya di desa yang cocok dengan energi yang sudah kamu buka, dan jika Komunitas wilayah minimal 20. Mau memilih sendiri? Klik kloter lalu Bangun.\nKecocokan baru terungkap saat pembangkit menyala."
+image = ExtResource("1_img")

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GovOfferData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/events/tawaran_pemerintah.png" id="1_pn1bc"]
+[ext_resource type="Script" path="res://scripts/data/gov_offer_data.gd" id="2_2igtn"]
+
+[resource]
+script = ExtResource("2_2igtn")
+tier = &"biasa"
+title = "Kerja Sama Bersyarat"
+body = "Pemerintah daerah menawarkan dana sedang dan rute pesawat ke satu pulau, dengan target yang menekan."
+money = 25.0
+points = 6.0
+airplane_islands = 1
+target_villages = 8
+target_ticks = 78
+fail_red = 8.0
+fail_score_penalty = 10.0
+accept_effects = Dictionary[StringName, float]({
+&"blue": 2.0
+})
+refuse_effects = Dictionary[StringName, float]({
+&"blue": -2.0
+})
+image = ExtResource("1_pn1bc")
