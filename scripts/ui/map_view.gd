@@ -11,6 +11,8 @@ extends Control
 signal province_clicked(id: StringName)
 ## Klik tepat di sel kloter: wilayah dan indeks kloternya.
 signal village_clicked(id: StringName, index: int)
+## Klik di laut / di luar wilayah.
+signal empty_clicked
 
 const REF := Vector2(1280, 720)
 const NODE_SCENE := preload("res://scenes/ui/province_node.tscn")
@@ -394,6 +396,8 @@ func _gui_input(event: InputEvent) -> void:
 			if not cell.is_empty() and cell[0] == id:
 				village_clicked.emit(cell[0], cell[1])
 			accept_event()
+		else:
+			empty_clicked.emit()
 
 
 func _get_tooltip(at_position: Vector2) -> String:

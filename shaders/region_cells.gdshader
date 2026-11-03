@@ -61,9 +61,10 @@ void fragment() {
 				if (col.a > 0.85) {
 					c = col.rgb;  // mandiri: penuh
 				} else {
-					// rapuh / sedang dibangun: garis miring
+					// rapuh / sedang dibangun: garis miring berselang dengan warna tanah asal, supaya
+					// energi berwarna biru (mikrohidro) tidak menyatu dengan laut.
 					bool stripe = mod(gp.x + gp.y, col.a > 0.5 ? 3.0 : 2.0) < 1.0;
-					c = stripe ? col.rgb * 0.72 : col.rgb;
+					c = stripe ? mix(col.rgb, c, 0.6) : col.rgb;
 				}
 			}
 			// Tekstur tanah: variasi terang-gelap halus per blok pixel art.
@@ -78,7 +79,13 @@ void fragment() {
 				c *= 0.88;
 			}
 			if (r == 0 || b == 0 || l == 0 || t == 0) {
-				c = mix(c, vec3(0.9, 0.96, 1.0), 0.24);
+				// Kloter berenergi bersih di pantai diberi tepi gelap (bukan cahaya) agar batas
+				// daratan tetap jelas walau warnanya mirip laut.
+				if (col.a > 0.5 && d < geo.z) {
+					c *= 0.62;
+				} else {
+					c = mix(c, vec3(0.9, 0.96, 1.0), 0.24);
+				}
 			}
 			// Lampu desa: hanya di desa berlistrik. Fosil = lampu redup jingga, mandiri = lampu terang.
 			float h = hash(gp);

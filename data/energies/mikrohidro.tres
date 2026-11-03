@@ -9,6 +9,6 @@ id = &"mikrohidro"
 display_name = "Mikrohidro"
 description = "Pembangkit dari aliran sungai kecil. Andal dan diterima warga, tapi hanya cocok di daerah berair."
 icon = ExtResource("1_ccl3y")
-color = Color(0.27, 0.66, 0.98, 1)
+color = Color(0.16, 0.86, 0.8, 1)
 hint_strong = "Banyak sungai deras dari pegunungan"
 hint_medium = "Ada sungai kecil yang mengalir sepanjang tahun"

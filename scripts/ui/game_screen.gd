@@ -36,6 +36,11 @@ func _ready() -> void:
 	map.build()
 	map.province_clicked.connect(_select_province)
 	map.village_clicked.connect(_select_village_on_map)
+	# Klik laut = bersihkan layar: tutup panel kanan dan hapus sorotan.
+	map.empty_clicked.connect(func(): province_panel.hide())
+	province_panel.visibility_changed.connect(func():
+		if not province_panel.visible:
+			map.set_selected(&""))
 	_build_speed_buttons()
 	_build_auto_button()
 	_build_legend()
