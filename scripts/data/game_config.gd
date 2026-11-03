@@ -30,9 +30,9 @@ const MODIFIER_KEYS := [
 @export var tick_seconds: float = 1.0
 ## Detik per tik selama KKN (diperlambat agar KKN 6 bulan ~ 2 menit).
 @export var kkn_tick_seconds: float = 4.5
-## Awal pasca-KKN dibuat pelan dulu: detik per tik mulai dari sini lalu turun ke tick_seconds
-## selama early_ramp_ticks tik (52 = setahun cerita).
-@export var early_tick_seconds: float = 2.2
+## (Opsional) awal pasca-KKN diperlambat secara waktu nyata: detik per tik mulai dari sini lalu
+## turun ke tick_seconds selama early_ramp_ticks tik. 1.0 = tidak diperlambat.
+@export var early_tick_seconds: float = 1.0
 @export var early_ramp_ticks: int = 52
 ## Lama KKN dalam tik (26 = 6 bulan).
 @export var kkn_ticks: int = 26
@@ -93,6 +93,20 @@ const MODIFIER_KEYS := [
 ## Sebaran & bangun otomatis hanya ke kloter yang paling jauh sekian langkah (sel tetangga di peta)
 ## dari kloter yang sudah berenergi bersih. Warga meniru tetangga yang hasilnya sudah terbukti.
 @export var spread_max_hops: int = 2
+## Momentum gaya Plague Inc: sebaran & bangun otomatis lambat di awal lalu makin cepat seiring
+## makin banyak desa berenergi bersih (bukti sosial). Pengali sebaran bergerak dari
+## spread_early_mult (0% desa bersih) ke spread_late_mult (saat momentum_full_access tercapai).
+@export var spread_early_mult: float = 0.35
+@export var spread_late_mult: float = 2.0
+@export_range(0.05, 1.0) var momentum_full_access: float = 0.5
+## Jeda (tik) antar bangun otomatis: sebesar ini di awal, turun ke 0 saat momentum penuh.
+@export var auto_build_cooldown_early: int = 8
+## Tampilan peta: warna energi memenuhi sel kloter perlahan (desa demi desa) selama sekian tik
+## di awal, makin cepat saat momentum naik.
+@export var fill_ticks_early: int = 30
+@export var fill_ticks_late: int = 3
+## Bangun otomatis berjalan bersamaan paling banyak 1 + (kloter bersih / sekian).
+@export var auto_build_parallel_per: int = 4
 ## Pengali sebar lewat rute pesawat.
 @export var air_factor: float = 0.6
 ## Peluang per tik per sumber ber-internet menanam benih di provinsi jauh.

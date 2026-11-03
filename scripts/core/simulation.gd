@@ -44,6 +44,8 @@ class VillageState:
 	## (<= spread_max_hops) dengan kloter yang listrik bersihnya sudah terbukti.
 	var links: Array = []
 	var near: bool = true
+	## Berapa tik kloter ini sudah berenergi bersih (untuk tampilan: warna memenuhi sel perlahan).
+	var lit_age: int = 0
 
 	func is_building() -> bool:
 		return build_left > 0
@@ -283,6 +285,13 @@ func _auto_build() -> void:
 	# tidak ada pembangunan otomatis.
 	if total_on() == 0 and total_building() > 0:
 		return
+	# Awal permainan warga ragu: sedikit pembangunan berjalan bersamaan, makin banyak saat
+	# makin banyak kloter terbukti menyala.
+	if total_building() >= 1 + total_on() / maxi(1, cfg.auto_build_parallel_per):
+		return
+	if _auto_cd > 0:
+		_auto_cd -= 1
+		return
 	var order: Array = []
 	if provinces.has(auto_build_focus):
 		order.append(provinces[auto_build_focus])
@@ -310,6 +319,7 @@ func _auto_build() -> void:
 		if v and can_do_action(build, s.data.id, v.index) == "":
 			do_action(build, s.data.id, v.index)
 			_bump(&"auto_built")
+			_auto_cd = int(round(cfg.auto_build_cooldown_early * (1.0 - momentum_progress())))
 			return
 
 
@@ -460,7 +470,7 @@ func _spread() -> void:
 	var gains: Dictionary = {}
 	var pools: Dictionary = {}  # id provinsi tujuan -> energi yang bisa ditiru
 	var by_air: Dictionary = {}  # id provinsi tujuan yang dijangkau rute pesawat
-	var spread_mult := 1.0 + mod("spread_mult")
+	var spread_mult := (1.0 + mod("spread_mult")) * momentum()
 	for src: ProvinceState in provinces.values():
 		if src.on() == 0:
 			continue
@@ -1504,6 +1514,7 @@ func _update_near() -> void:
 		for v in s.villages:
 			v.near = false
 			if v.is_clean():
+				v.lit_age += 1
 				dist[v] = 0
 				frontier.append(v)
 	var hops := 0
@@ -1518,6 +1529,25 @@ func _update_near() -> void:
 		frontier = next
 	for v in dist:
 		v.near = true
+
+
+var _auto_cd := 0
+
+
+## 0 di awal permainan, 1 saat momentum_full_access desa sudah berenergi bersih.
+func momentum_progress() -> float:
+	return smoothstep(0.0, cfg.momentum_full_access, access_ratio())
+
+
+## Pengali sebaran: lambat di awal, makin cepat saat makin banyak desa memakai energi bersih.
+func momentum() -> float:
+	return lerpf(cfg.spread_early_mult, cfg.spread_late_mult, momentum_progress())
+
+
+## Tampilan: seberapa penuh warna energi di sel kloter ini (0..1).
+func fill_fraction(v: VillageState) -> float:
+	var ticks := lerpf(cfg.fill_ticks_early, cfg.fill_ticks_late, momentum_progress())
+	return clampf(float(v.lit_age + 1) / maxf(1.0, ticks), 0.0, 1.0)
 
 
 func total_building() -> int:
@@ -1574,6 +1604,7 @@ func _light_village(s: ProvinceState, from_spread: bool = false, village_index: 
 		welfare = clampf(welfare + cfg.new_access_welfare, 0.0, 100.0)
 	v.energy = energy if energy != &"" else best_energy_for(s, v, epool)
 	v.status = V_LIT
+	v.lit_age = 0
 	s.recount()
 	_bump(&"lit_ever")
 	if not from_spread and village_compat(s, v, v.energy) < 0.45:

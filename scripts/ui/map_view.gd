@@ -281,10 +281,12 @@ func _update_cells(s: Simulation.ProvinceState) -> void:
 	for v in s.villages:
 		var k := base + v.index
 		var fossil_base := 1.0 if (v.status == Simulation.V_FOSSIL or (v.data and v.data.start_fossil)) else 0.0
+		# Warna memenuhi sel perlahan (desa demi desa), lambat di awal permainan.
+		var r := lerpf(BUILD_SPOT, _max_r[k], Game.sim.fill_fraction(v)) if v.is_clean() else 0.0
 		if v.status == Simulation.V_INDEP:
-			_set_cell(k, _energy_color(v.energy), fossil_base, _max_r[k], 1.0)
+			_set_cell(k, _energy_color(v.energy), fossil_base, r, 1.0)
 		elif v.status == Simulation.V_LIT:
-			_set_cell(k, _energy_color(v.energy), fossil_base, _max_r[k], 0.66)
+			_set_cell(k, _energy_color(v.energy), fossil_base, r, 0.66)
 		elif v.is_building():
 			_set_cell(k, _energy_color(v.build_energy), fossil_base, BUILD_SPOT, 0.33)
 		else:
