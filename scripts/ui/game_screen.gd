@@ -259,7 +259,7 @@ func _build_missions() -> void:
 
 func _refresh_missions() -> void:
 	var sim := Game.sim
-	%MissionPanel.visible = sim.kkn_active
+	%MissionPanel.visible = sim.kkn_active and _hint_panel == null
 	if not sim.kkn_active:
 		return
 	%KknTimeLabel.text = "Sisa masa KKN: %d minggu" % sim.kkn_weeks_left()
@@ -627,8 +627,9 @@ func _hint_steps() -> Array:
 	return [
 		["1/6  Klik wilayahmu yang disorot di peta.",
 			func(): return province_panel.visible],
-		["2/6  Klik satu kloter untuk melihat energi yang cocok.",
-			func(): return province_panel.village_index >= 0 or _hint_timer > 12.0],
+		["2/6  Klik kloter lain di panel kanan untuk membandingkan energinya.",
+			# Klik wilayah di peta sudah memilih satu kloter, jadi langkah ini menunggu kloter LAIN.
+			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0],
 		["3/6  Buka Pohon Upgrade (U) dan beli satu upgrade.",
 			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1],
 		["4/6  Tab Sumber Energi: perkuat energi yang kamu pakai.",
@@ -708,6 +709,7 @@ func _update_hints(delta: float) -> void:
 	while _hint_step < steps.size() and steps[_hint_step][1].call():
 		_hint_step += 1
 		_hint_timer = 0.0
+		_hint_v0 = province_panel.village_index
 		advanced = true
 	if advanced:
 		Audio.sfx(&"point")
@@ -721,6 +723,11 @@ func _update_spotlight() -> void:
 		return
 	var up_open := upgrade_panel.visible
 	var busy: bool = modal.is_busy()
+	# Selama tutorial, panel statistik & misi disembunyikan supaya tidak menutupi wilayah awal
+	# (mis. Aceh di pojok kiri atas). Muncul lagi begitu petunjuk selesai atau ditutup.
+	var tut := _hint_panel != null
+	$StatsPanel.visible = not tut
+	%MissionPanel.visible = not tut and Game.sim.kkn_active
 	# Urutan lapisan: HUD < sorotan < petunjuk < (panel upgrade) < kartu popup.
 	# Saat panel upgrade terbuka: panel upgrade < sorotan < petunjuk < kartu popup.
 	if up_open != _hint_layer_up:
@@ -744,6 +751,7 @@ func _update_spotlight() -> void:
 
 
 var _hint_layer_up := false
+var _hint_v0 := -1
 
 
 func _place_after(node: Node, ref: Node) -> void:
