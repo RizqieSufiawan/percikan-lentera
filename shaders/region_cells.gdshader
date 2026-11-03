@@ -63,11 +63,11 @@ void fragment() {
 				} else {
 					// rapuh / sedang dibangun: garis miring
 					bool stripe = mod(gp.x + gp.y, col.a > 0.5 ? 3.0 : 2.0) < 1.0;
-					c = stripe ? col.rgb * 0.55 : col.rgb;
+					c = stripe ? col.rgb * 0.72 : col.rgb;
 				}
 			}
 			// Tekstur tanah: variasi terang-gelap halus per blok pixel art.
-			c *= 0.92 + 0.16 * texture(noise_tex, p / 97.0).r;
+			c *= 0.95 + 0.12 * texture(noise_tex, p / 97.0).r;
 			// Garis tipis antar kloter, dan cahaya tipis di tepi pantai (tetangga = laut).
 			vec2 step = 1.0 / cell_map_size;
 			int r = cell_at(UV + vec2(step.x, 0.0));
@@ -75,10 +75,10 @@ void fragment() {
 			int l = cell_at(UV - vec2(step.x, 0.0));
 			int t = cell_at(UV - vec2(0.0, step.y));
 			if ((r > 0 && r != id) || (b > 0 && b != id)) {
-				c *= 0.85;
+				c *= 0.88;
 			}
 			if (r == 0 || b == 0 || l == 0 || t == 0) {
-				c = mix(c, vec3(0.85, 0.92, 1.0), 0.16);
+				c = mix(c, vec3(0.9, 0.96, 1.0), 0.24);
 			}
 			// Lampu desa: hanya di desa berlistrik. Fosil = lampu redup jingga, mandiri = lampu terang.
 			float h = hash(gp);
@@ -94,7 +94,7 @@ void fragment() {
 			}
 			if (h < density * lights) {
 				float tw = 0.65 + 0.35 * sin(TIME * (1.5 + h * 40.0) + h * 300.0);
-				c = mix(c, lamp, 0.75 * tw);
+				c = mix(c, lamp, 0.85 * tw);
 			}
 			sel = float(id - 1) == selected_cell;
 		}

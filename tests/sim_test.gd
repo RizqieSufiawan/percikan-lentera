@@ -109,6 +109,14 @@ func _bot_turn(sim: Simulation, db: GameDatabase, strategy: String) -> void:
 					break
 		elif sim.can_do_action(build, id) == "" and (strategy == "ngebut" or s.community >= 20 or s.on() == 0):
 			sim.do_action(build, id)
+		elif sim.total_on() == 0 and sim.total_building() == 0 and sim.is_reachable(s) and s.unclean() > 0:
+			# Semua padam dan tidak ada desa yang cocok: bangun manual di kloter paling cocok.
+			var best_v: Simulation.VillageState = null
+			for v: Simulation.VillageState in s.villages:
+				if not v.is_clean() and (best_v == null or sim.best_village_compat(s, v) > sim.best_village_compat(s, best_v)):
+					best_v = v
+			if best_v:
+				sim.do_action(build, id, best_v.index, sim.best_energy_for(s, best_v))
 
 
 ## Seberapa cocok energi ini untuk semua desa yang belum bersih di provinsi yang sudah terjangkau.

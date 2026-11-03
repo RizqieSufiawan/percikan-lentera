@@ -25,7 +25,7 @@ void fragment() {
 	// Di luar gambar (sangat jarang): warna tepi memudar ke laut terdalam.
 	vec2 outside = max(max(-tuv, tuv - 1.0), vec2(0.0)) * map_size;
 	float fade = clamp(max(outside.x, outside.y) / 48.0, 0.0, 1.0);
-	c.rgb = mix(c.rgb, vec3(12.0, 24.0, 46.0) / 255.0, fade);
+	c.rgb = mix(c.rgb, vec3(23.0, 55.0, 94.0) / 255.0, fade);
 	vec2 gp = floor(suv * ref_size / pixel);
 	bool water = c.b > c.r + 0.08 && c.b > 0.15;
 	if (water) {
@@ -35,7 +35,7 @@ void fragment() {
 		float h = hash(gp + vec2(slot * 13.0, slot * 7.0));
 		if (h < 0.004 * amount) {
 			float glow = sin(fract(phase) * 3.14159);
-			c.rgb = mix(c.rgb, vec3(0.55, 0.72, 0.9), 0.55 * glow);
+			c.rgb = mix(c.rgb, vec3(0.75, 0.9, 1.0), 0.6 * glow);
 		}
 	}
 	COLOR = vec4(c.rgb, 1.0);

@@ -109,11 +109,11 @@ PIX_LABEL = (34, 74, 120)
 # warna energi yang hangat/terang menonjol (kontras komplementer biru vs kuning-oranye).
 # Daratan negara tetangga dibuat redup supaya perhatian tetap di Indonesia.
 NIGHT = {
-    "sea": [(38, 78, 112), (31, 65, 98), (26, 55, 86), (22, 46, 76), (19, 39, 67), (16, 33, 59), (14, 28, 52), (12, 24, 46)],
-    "foam": (64, 108, 140),
-    "land": (30, 35, 54),
-    "land_edge": (46, 53, 80),
-    "label": (78, 118, 156),
+    "sea": [(62, 132, 176), (52, 116, 162), (44, 102, 148), (38, 90, 136), (33, 79, 124), (29, 70, 113), (26, 62, 103), (23, 55, 94)],
+    "foam": (118, 178, 214),
+    "land": (48, 58, 88),
+    "land_edge": (74, 88, 126),
+    "label": (150, 196, 230),
 }
 BAYER4 = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], dtype=np.float32) / 16.0
 

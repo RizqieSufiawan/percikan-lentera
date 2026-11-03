@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NewsData" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/news/warning.png" id="1_warn"]
+[ext_resource type="Texture2D" path="res://assets/images/news/village_down.png" id="2_img"]
+[ext_resource type="Script" path="res://scripts/data/news_data.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+trigger = &"all_dark_warning"
+headline = "Semua pembangkit bersih padam! Bangun lagi dalam 6 bulan (pilih kloter, lalu Bangun), atau gerakan ini berakhir."
+important = true
+icon = ExtResource("1_warn")
+image = ExtResource("2_img")

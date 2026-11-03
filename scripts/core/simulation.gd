@@ -189,6 +189,7 @@ var milestone_reports: Dictionary = {}
 var celebrated_cities: Dictionary = {}
 
 var money_zero_ticks: int = 0
+var dark_ticks: int = 0
 var game_over: bool = false
 var result: StringName = &""
 
@@ -1161,13 +1162,23 @@ func _check_end() -> void:
 		_end(&"lose_welfare")
 	elif money_zero_ticks >= cfg.economy_grace_ticks:
 		_end(&"lose_economy")
-	elif not kkn_active and total_on() == 0 and total_building() == 0:
+	elif _all_dark_too_long():
 		_end(&"lose_dark")
 	elif desa_dark() + desa_fossil() == 0:
 		# Semua desa di Indonesia sudah memakai energi bersih.
 		_end(&"win")
 	elif cfg.max_ticks > 0 and tick_count >= cfg.max_ticks:
 		_end(&"timeout")
+
+
+func _all_dark_too_long() -> bool:
+	if kkn_active or total_on() > 0 or total_building() > 0:
+		dark_ticks = 0
+		return false
+	dark_ticks += 1
+	if dark_ticks == 1:
+		_news_once(&"all_dark_warning", null)
+	return dark_ticks >= cfg.dark_grace_ticks
 
 
 func _end(r: StringName) -> void:

@@ -115,6 +115,9 @@ const MODIFIER_KEYS := [
 ## sampai energi yang cocok dibuka, atau upgrade "+cocok" menaikkan kecocokannya.
 ## Bangun manual (pilih kloter + energi sendiri) tetap boleh di desa mana pun.
 @export var adopt_min_compat: float = 0.45
+## Kalah "padam" hanya jika setelah KKN tidak ada satu pun pembangkit bersih (menyala atau sedang
+## dibangun) selama sekian tik berturut-turut. Memberi waktu pemain membangun ulang secara manual.
+@export var dark_grace_ticks: int = 26
 ## Resistensi merah tiap desa fosil beralih ke energi bersih.
 @export var fossil_convert_red: float = 0.12
 ## Pengurang kesiapan warga di provinsi yang banyak memakai listrik fosil.

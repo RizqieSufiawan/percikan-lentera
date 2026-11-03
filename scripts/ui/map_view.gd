@@ -26,8 +26,8 @@ const GROW_SPEED := 70.0
 const BUILD_SPOT := 7.0
 
 ## Daratan yang masih ada warga tanpa listrik: biru keunguan gelap (malam), lebih terang dari laut.
-const COLOR_DARK := Color(0.22, 0.25, 0.40)
-const COLOR_BORDER := Color(0.04, 0.06, 0.13)
+const COLOR_DARK := Color(0.33, 0.37, 0.60)
+const COLOR_BORDER := Color(0.07, 0.10, 0.20)
 const SEA_SHADER := preload("res://shaders/sea.gdshader")
 
 var nodes: Dictionary = {}
@@ -428,7 +428,7 @@ func _get_tooltip(at_position: Vector2) -> String:
 
 func _draw() -> void:
 	# Di luar gambar laut: warna laut terdalam supaya menyambung.
-	draw_rect(Rect2(Vector2.ZERO, size), Color8(12, 24, 46))
+	draw_rect(Rect2(Vector2.ZERO, size), Color8(23, 55, 94))
 
 
 ## Digambar di atas wilayah: rute pesawat dan tanda internet.

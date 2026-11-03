@@ -3,10 +3,10 @@ class_name Palette
 
 const NIGHT := Color(0.086, 0.102, 0.227)
 ## Biru keunguan malam: masih ada warga tanpa listrik.
-const DARK := Color(0.30, 0.33, 0.52)
+const DARK := Color(0.38, 0.42, 0.66)
 const LIT := Color(1.0, 0.77, 0.25)
 ## Coklat asap: desa berlistrik energi fosil.
-const FOSSIL := Color(0.62, 0.45, 0.31)
+const FOSSIL := Color(0.72, 0.53, 0.38)
 const INDEPENDENT := Color(0.38, 0.78, 0.47)
 const BLUE := Color(0.35, 0.63, 0.94)
 const RED := Color(0.77, 0.28, 0.22)
