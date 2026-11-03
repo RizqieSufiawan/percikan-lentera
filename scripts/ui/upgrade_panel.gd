@@ -25,8 +25,27 @@ var _canvases: Array[Control] = []
 @onready var buy_button: Button = %BuyBtn
 
 
+## Satu kalimat tujuan per tab (urutan = UpgradeData.CATEGORY_NAMES).
+const TAB_HINTS := [
+	"Buka energi baru agar desa lain mau ikut, lalu perkuat energi yang kamu pakai.",
+	"Naikkan Komunitas: 20 = warga membangun sendiri, 45 = desa jadi Mandiri. Juga menahan Ragu Warga.",
+	"Tambah Ekonomi untuk upgrade mahal, dan tahan Kepentingan Lama.",
+	"Siapkan desa menghadapi bencana (Kesiapan) dan buat Komunitas lebih awet.",
+	"Sebarkan gerakan ke pulau lain dan dapatkan dukungan pemerintah.",
+]
+var _tab_hint: Label
+
+
 func _ready() -> void:
 	%UClose.pressed.connect(close)
+	_tab_hint = Label.new()
+	_tab_hint.add_theme_font_size_override("font_size", 13)
+	_tab_hint.add_theme_color_override("font_color", Palette.LIT)
+	_tab_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var vbox: VBoxContainer = tabs.get_parent().get_parent()
+	vbox.add_child(_tab_hint)
+	vbox.move_child(_tab_hint, 1)
+	tabs.tab_changed.connect(func(i): _tab_hint.text = TAB_HINTS[i] if i < TAB_HINTS.size() else "")
 	buy_button.pressed.connect(_on_buy)
 	for i in UpgradeData.CATEGORY_NAMES.size():
 		var scroll := ScrollContainer.new()
@@ -34,6 +53,7 @@ func _ready() -> void:
 		tabs.add_child(scroll)
 		_build_tree(scroll, i)
 	_select(Game.db.upgrades[0])
+	_tab_hint.text = TAB_HINTS[0]
 
 
 func _make_button(u: UpgradeData) -> Button:
@@ -247,7 +267,8 @@ func _show_detail() -> void:
 	var u := _selected
 	u_icon.texture = u.icon
 	u_name.text = u.display_name
-	u_desc.text = u.description + "\n\nEfek:\n- " + "\n- ".join(UpgradeText.lines(u))
+	var why := UpgradeText.purpose(u)
+	u_desc.text = ("Gunanya: %s\n\n" % why if why != "" else "") + "Efek:\n- " + "\n- ".join(UpgradeText.lines(u)) + "\n\n" + u.description
 	var pts := Game.sim.upgrade_cost(u)
 	var cost := "Biaya: %d Poin" % pts
 	if pts != u.cost_points:

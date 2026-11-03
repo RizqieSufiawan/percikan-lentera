@@ -4,10 +4,10 @@ extends PanelContainer
 
 const STATUS_NAMES := ["Gelap", "Fosil", "Rapuh", "Mandiri"]
 const STATUS_HELP := [
-	"Masih ada warga yang belum memakai listrik.",
-	"Listrik dari PLTU, PLTD, atau genset.",
-	"Energi bersih, belum ada warga yang mampu merawat.",
-	"Energi bersih dirawat warga sendiri.",
+	"Belum berlistrik.",
+	"PLTU/PLTD/genset.",
+	"Bisa padam.",
+	"Dirawat warga.",
 ]
 
 ## Nama pendek aksi tingkat provinsi (tombol sempit). Nama lengkap ada di tooltip.
@@ -118,7 +118,7 @@ func refresh() -> void:
 	if s.building() > 0:
 		villages_label.text += "\n%d kloter sedang dibangun." % s.building()
 	if s.lit > 0 and s.community < Game.db.config.independence_threshold:
-		villages_label.text += "\nKomunitas perlu %d agar desa rapuh jadi mandiri. Percepat lewat upgrade Edukasi & Warga." % int(Game.db.config.independence_threshold)
+		villages_label.text += "\nMandiri di Komunitas %d." % int(Game.db.config.independence_threshold)
 	community_bar.value = s.community
 	var f: Array[String] = []
 	f.append("Terjangkau" if sim.is_reachable(s) else "Belum terjangkau")

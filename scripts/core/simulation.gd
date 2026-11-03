@@ -383,6 +383,25 @@ func _income() -> void:
 	welfare = clampf(welfare, 0.0, 100.0)
 
 
+## Rincian pemasukan per tik (untuk tooltip HUD), sama dengan perhitungan _income().
+func income_breakdown() -> Dictionary:
+	var pm: float = 1.0 + mod("points_mult")
+	var out := {"p_kkn": 0.0, "p_desa": 0.0, "p_komunitas": 0.0, "m_dasar": cfg.money_base_per_tick + mod("money_per_tick"), "m_mandiri": 0.0}
+	if kkn_active:
+		out["p_kkn"] = cfg.kkn_points_per_tick * pm
+	for s: ProvinceState in provinces.values():
+		for v in s.villages:
+			if v.status == V_LIT and not kkn_active:
+				out["p_desa"] += cfg.points_per_lit * energy_output(v.energy) * pm
+			elif v.status == V_INDEP:
+				if not kkn_active:
+					out["p_desa"] += cfg.points_per_independent * energy_output(v.energy) * pm
+				out["m_mandiri"] += cfg.money_per_independent * energy_output(v.energy)
+		if s.on() > 0 and not kkn_active:
+			out["p_komunitas"] += s.community / 100.0 * cfg.points_per_community * pm
+	return out
+
+
 func _community_and_independence() -> void:
 	var decay := cfg.community_decay * mult("community_decay_mult", 0.2)
 	var growth := cfg.community_growth * (1.0 + mod("community_gain"))

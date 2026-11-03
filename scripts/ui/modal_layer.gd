@@ -25,6 +25,19 @@ func show_card(title: String, image: Texture2D, body: String, fact: String, butt
 		_show_next()
 
 
+func current_title() -> String:
+	return _current.get("title", "")
+
+
+## Tutup kartu sekarang tanpa memanggil callback (mis. Esc di panduan).
+func dismiss() -> void:
+	if _current.is_empty():
+		return
+	Audio.sfx(&"click")
+	_current = {}
+	_show_next()
+
+
 func is_busy() -> bool:
 	return not _current.is_empty()
 
@@ -45,10 +58,13 @@ func _show_next() -> void:
 	for c in buttons_box.get_children():
 		c.queue_free()
 	var labels: Array = _current["buttons"]
+	# Menu dengan banyak tombol: lebar seragam supaya susunan tidak berubah saat teks tombol
+	# berganti (mis. "Musik: Nyala" -> "Musik: Mati").
+	var w := 200.0 if labels.size() >= 4 else 160.0
 	for i in labels.size():
 		var b := Button.new()
 		b.text = labels[i]
-		b.custom_minimum_size = Vector2(160, 40)
+		b.custom_minimum_size = Vector2(w, 40)
 		b.pressed.connect(_on_button.bind(i))
 		buttons_box.add_child(b)
 	show()

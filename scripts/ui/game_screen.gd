@@ -85,7 +85,18 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not (event is InputEventKey and event.pressed and not event.echo) or modal.is_busy():
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	# Esc juga menutup: menu jeda = Lanjut, panduan = tutup.
+	if event.keycode == KEY_ESCAPE and modal.is_busy():
+		var t: String = modal.current_title()
+		if t == "Jeda":
+			modal._on_button(0)
+		elif t.begins_with("Panduan"):
+			modal.dismiss()
+		get_viewport().set_input_as_handled()
+		return
+	if modal.is_busy():
 		return
 	match event.keycode:
 		KEY_SPACE:
@@ -129,12 +140,34 @@ func _refresh() -> void:
 	%MoneyBar.value = sim.money
 	%WelfareBar.value = sim.welfare
 	%CommunityBar.value = sim.community_average()
+	_refresh_tooltips()
 	map.refresh()
 	_refresh_legend()
 	_update_reveal()
 	province_panel.refresh()
 	upgrade_panel.refresh()
 	_refresh_missions()
+
+
+## Tooltip HUD: dari mana didapat, dipakai untuk apa, apa yang terjadi kalau habis.
+## Angka pemasukan dihitung per bulan dari keadaan sekarang.
+func _refresh_tooltips() -> void:
+	var sim := Game.sim
+	var cfg := Game.db.config
+	var per_month := 4.33 / maxf(1.0, float(sim.weeks_of(1)))
+	var b := sim.income_breakdown()
+	var p_total: float = (b["p_kkn"] + b["p_desa"] + b["p_komunitas"]) * per_month
+	for row: Control in [$StatsPanel/VBox/PointsRow, $StatsPanel/VBox/MoneyRow, $StatsPanel/VBox/WelfareRow,
+			$StatsPanel/VBox/CommunityRow, $TopPanel/VBox/ResRow, access_bar]:
+		row.mouse_filter = Control.MOUSE_FILTER_PASS
+	var m_total: float = (b["m_dasar"] + b["m_mandiri"]) * per_month
+	$StatsPanel/VBox/PointsRow.tooltip_text = "Poin +%.1f/bln dari %s.\nUntuk upgrade & warga membangun." % [p_total, "tim KKN" if sim.kkn_active else "desa bersih & Komunitas"]
+	$StatsPanel/VBox/MoneyRow.tooltip_text = "Ekonomi +%.1f/bln. Untuk upgrade mahal.\nNol terlalu lama = kalah." % m_total
+	$StatsPanel/VBox/WelfareRow.tooltip_text = "Naik saat desa dapat listrik.\nHabis = kalah."
+	$StatsPanel/VBox/CommunityRow.tooltip_text = "%d: warga membangun sendiri.\n%d: desa jadi Mandiri." % [int(cfg.auto_build_min_community), int(cfg.independence_threshold)]
+	$TopPanel/VBox/ResRow.tooltip_text = "Biru: Ragu Warga %d.  Merah: Kepentingan Lama %d.\n100%% = kalah." % [int(sim.blue), int(sim.red)]
+	resistance_bar.tooltip_text = $TopPanel/VBox/ResRow.tooltip_text
+	access_bar.tooltip_text = "Hijau Mandiri, kuning Rapuh, coklat Fosil, nila Gelap.\nMenang: semua desa bersih sebelum %d." % cfg.deadline_year
 
 
 func _stage_name(stage: int) -> String:
@@ -487,7 +520,7 @@ func toggle_all_panels() -> void:
 # Supaya awal permainan tidak penuh angka: panel dan angka muncul saat mulai relevan.
 #   Awal      : tanggal, Poin, Ekonomi, misi KKN, dan satu kalimat ringkas di panel atas.
 #   Desa pertama menyala : statistik desa, bar akses, Komunitas, kabar terbaru.
-#   KKN selesai          : Kesejahteraan dan Ketahanan (biru vs merah).
+#   KKN selesai          : Kesejahteraan dan Resistensi (Ragu Warga + Kepentingan Lama).
 
 var _reveal_ready := false
 var _reveal_lit := false
@@ -514,7 +547,7 @@ func _update_reveal() -> void:
 		Audio.sfx(&"point")
 		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")
 	if _reveal_ready and post and not _reveal_post_kkn:
-		toast("Panel baru: Kesejahteraan (kiri) dan Ketahanan biru lawan merah (atas). Jaga biru tetap unggul.", Palette.INDEPENDENT)
+		toast("Panel baru: Kesejahteraan (kiri) dan Resistensi (atas) = Ragu Warga + Kepentingan Lama. 100% = kalah.", Palette.INDEPENDENT)
 	_reveal_ready = true
 	_reveal_lit = lit
 	_reveal_post_kkn = post
@@ -888,7 +921,7 @@ func _float_text(text: String, pos: Vector2) -> void:
 # ---------------------------------------------------------------- menu & panduan
 
 func _open_menu() -> void:
-	var popup_text := "Berita penting: Popup" if Game.news_popups_enabled else "Berita penting: Ticker saja"
+	var popup_text := "Berita: Popup" if Game.news_popups_enabled else "Berita: Ticker"
 	var music_text := "Musik: Nyala" if Audio.music_volume_db > -60 else "Musik: Mati"
 	modal.show_card("Jeda", null, "Permainan dijeda.", "", ["Lanjut", "Panduan", popup_text, music_text, "Menu Utama"], _on_menu_choice)
 
