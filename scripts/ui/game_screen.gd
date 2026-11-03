@@ -577,7 +577,7 @@ func _update_reveal() -> void:
 	var changed := not _reveal_ready or lit != _reveal_lit or post != _reveal_post_kkn
 	if _reveal_ready and lit and not _reveal_lit:
 		Audio.sfx(&"point")
-		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")
+		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")  # bar desa sudah tampil sejak awal
 	if _reveal_ready and post and not _reveal_post_kkn:
 		toast("Panel baru di atas: Resistensi (100% = kalah) dan Kesejahteraan (habis = kalah).", Palette.INDEPENDENT)
 	_reveal_ready = true
@@ -596,9 +596,10 @@ func _apply_reveal() -> void:
 		return
 	var lit := _reveal_lit
 	var post := _reveal_post_kkn
+	# Bar desa & angkanya tampil sejak awal (pemain langsung melihat seberapa banyak yang fosil/gelap).
 	for n: Control in [%IndepLabel, %LitLabel, %FossilLabel, %DarkLabel, access_bar]:
-		n.visible = lit
-	_simple_label.visible = not lit
+		n.visible = true
+	_simple_label.visible = false
 	# Komunitas tampil per wilayah di peta (bar kecil di bawah label), bukan di panel kiri.
 	$StatsPanel/VBox/CommunityRow.visible = false
 	_welfare_row().visible = post

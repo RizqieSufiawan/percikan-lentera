@@ -229,6 +229,8 @@ func _layout() -> void:
 ## Dipanggil layar persiapan setelah build().
 func set_preview() -> void:
 	preview = true
+	for k in nodes:
+		nodes[k].set_meta("preview", true)
 	for id in nodes:
 		var n: ProvinceNode = nodes[id]
 		n.count_label.visible = false
@@ -442,7 +444,7 @@ func _get_tooltip(at_position: Vector2) -> String:
 	var cfg := Game.db.config
 	var stage := "macet, warga belum membangun sendiri" if s.community < cfg.auto_build_min_community \
 		else ("warga membangun sendiri" if s.community < cfg.independence_threshold else "desa bisa Mandiri")
-	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\n\nBar di bawah nama = Komunitas %d%% (%s).\nGaris putih: %d = warga membangun sendiri, %d = desa jadi Mandiri." % [s.data.display_name,
+	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\n\nKomunitas %d%% (%s).\nKlik wilayah untuk melihat bar Komunitas: garis %d = warga membangun sendiri, %d = desa jadi Mandiri." % [s.data.display_name,
 		("\nProvinsi: " + members) if members != "" else "", Simulation.ribu(s.total_desa()), Simulation.ribu(s.independent_desa),
 		Simulation.ribu(s.lit_desa), Simulation.ribu(s.fossil_desa), Simulation.ribu(s.dark_desa), int(s.community), stage,
 		int(cfg.auto_build_min_community), int(cfg.independence_threshold)]

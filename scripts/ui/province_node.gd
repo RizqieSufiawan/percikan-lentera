@@ -53,7 +53,7 @@ func refresh(state: Simulation.ProvinceState, ui: UiAssets, reachable: bool) -> 
 	# Persen desa nyata yang sudah memakai energi bersih.
 	count_label.text = "%d%%" % roundi(100.0 * state.on_desa() / maxf(1.0, state.total_desa()))
 	internet_mark.visible = state.internet
-	# Supaya peta tidak penuh: bar Komunitas hanya tampil saat wilayah dipilih atau disorot mouse.
+	# Supaya peta tidak penuh: bar Komunitas hanya tampil saat wilayah diklik (dipilih).
 	_community_bar.set_value(state.community)
 	_update_bar()
 	button.modulate = Color.WHITE if reachable or state.on() > 0 else Color(0.75, 0.75, 0.8)
@@ -71,12 +71,12 @@ func set_selected(value: bool) -> void:
 
 func set_hovered(value: bool) -> void:
 	_hovered = value
-	_update_bar()
 
 
 func _update_bar() -> void:
 	if _community_bar:
-		_community_bar.visible = _selected or _hovered
+		# Layar persiapan (peta pratinjau) tidak punya Komunitas: bar tidak pernah tampil di sana.
+		_community_bar.visible = _selected and Game.sim != null and not get_meta("preview", false)
 
 
 func pulse() -> void:
