@@ -46,7 +46,10 @@ func _ready() -> void:
 	%NextBtn.visible = Game.db.config.turn_based_mode
 	%CommunityName.text = sim.community_name
 	Audio.music(&"game")
-	_select_province.call_deferred(sim.start_province)
+	# Panel kanan tidak dibuka otomatis: pemain mengklik wilayahnya sendiri (petunjuk langkah 1).
+	map.set_selected(sim.start_province)
+	sim.auto_build_focus = sim.start_province
+	_build_reveal()
 	_refresh()
 	_show_start_card.call_deferred()
 	# Tombol debug hanya aktif saat dijalankan dari editor / build debug.
@@ -125,6 +128,7 @@ func _refresh() -> void:
 	%CommunityBar.value = sim.community_average()
 	map.refresh()
 	_refresh_legend()
+	_update_reveal()
 	province_panel.refresh()
 	upgrade_panel.refresh()
 	_refresh_missions()
@@ -153,11 +157,11 @@ const LEGEND_SHORT := {&"plts": "PLTS", &"mikrohidro": "Mikrohidro", &"biomassa"
 var _legend_items: Dictionary = {}  # id energi -> HBoxContainer
 
 
-## Baris warna energi di panel atas. Energi yang belum dibuka tampil redup.
+## Baris warna energi di panel atas. Hanya energi yang sudah dibuka yang tampil.
 func _build_legend() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
-	row.tooltip_text = "Warna peta = energi yang dipakai kloter itu.\nBergaris = rapuh (belum dirawat warga), penuh = mandiri.\nCoklat = listrik fosil, abu = masih ada warga tanpa listrik.\nEnergi yang redup belum dibuka."
+	row.tooltip_text = "Warna peta = energi yang dipakai kloter itu.\nBergaris = rapuh (belum dirawat warga), penuh = mandiri.\nCoklat = listrik fosil, nila = masih ada warga tanpa listrik.\nEnergi baru muncul di sini saat dibuka lewat Pohon Upgrade."
 	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	for e in Game.db.energies:
 		var item := HBoxContainer.new()
@@ -183,12 +187,20 @@ func _build_legend() -> void:
 	note.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(note)
 	$TopPanel/VBox.add_child(row)
+	for id in Game.sim.energies:
+		_known_energies[id] = true
 	_refresh_legend()
 
 
 func _refresh_legend() -> void:
 	for id in _legend_items:
-		_legend_items[id].modulate = Color.WHITE if Game.sim.energies.has(id) else Color(1, 1, 1, 0.35)
+		var owned: bool = Game.sim.energies.has(id)
+		_legend_items[id].visible = owned
+		if owned and not _known_energies.has(id):
+			_known_energies[id] = true
+			var e := Game.db.get_energy(id)
+			if e:
+				toast("Energi baru terbuka: %s. Warnanya sekarang muncul di peta dan legenda." % e.display_name, e.color)
 
 
 # ---------------------------------------------------------------- bangun otomatis
@@ -220,6 +232,8 @@ func _set_auto_build(on: bool) -> void:
 
 
 func toggle_auto_build() -> void:
+	if not _auto_btn.visible:
+		return
 	_auto_btn.button_pressed = not _auto_btn.button_pressed
 
 
@@ -452,6 +466,91 @@ func toggle_all_panels() -> void:
 		province_panel.hide()
 
 
+# ---------------------------------------------------------------- tampilan bertahap
+# Supaya awal permainan tidak penuh angka: panel dan angka muncul saat mulai relevan.
+#   Awal      : tanggal, Poin, Ekonomi, misi KKN, dan satu kalimat ringkas di panel atas.
+#   Desa pertama menyala : statistik desa, bar akses, Komunitas, kabar terbaru, tombol Otomatis.
+#   KKN selesai          : Kesejahteraan dan Ketahanan (biru vs merah).
+
+var _reveal_ready := false
+var _reveal_lit := false
+var _reveal_post_kkn := false
+var _simple_label: Label
+var _known_energies: Dictionary = {}
+var _pulse_tween: Tween
+
+
+func _build_reveal() -> void:
+	_simple_label = Label.new()
+	_simple_label.add_theme_font_size_override("font_size", 13)
+	_simple_label.add_theme_color_override("font_color", Palette.MUTED)
+	_simple_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	%LitLabel.get_parent().add_child(_simple_label)
+
+
+func _update_reveal() -> void:
+	var sim := Game.sim
+	var lit := _reveal_lit or sim.total_on() > 0 or int(sim.counters.get(&"lit_ever", 0)) > 0
+	var post := _reveal_post_kkn or not sim.kkn_active
+	var changed := not _reveal_ready or lit != _reveal_lit or post != _reveal_post_kkn
+	if _reveal_ready and lit and not _reveal_lit:
+		Audio.sfx(&"point")
+		toast("Desa pertama menyala! Angka desa, Komunitas, kabar terbaru, dan tombol Otomatis (B) sekarang terbuka.")
+	if _reveal_ready and post and not _reveal_post_kkn:
+		toast("Panel baru: Kesejahteraan (kiri) dan Ketahanan biru lawan merah (atas). Jaga biru tetap unggul.", Palette.INDEPENDENT)
+	_reveal_ready = true
+	_reveal_lit = lit
+	_reveal_post_kkn = post
+	var total := sim.desa_independent() + sim.desa_lit() + sim.desa_fossil() + sim.desa_dark()
+	_simple_label.text = "0 dari %s desa memakai energi bersih" % Simulation.ribu(total)
+	_update_upgrade_pulse()
+	if not changed:
+		return
+	for n: Control in [%IndepLabel, %LitLabel, %FossilLabel, %DarkLabel, access_bar]:
+		n.visible = lit
+	_simple_label.visible = not lit
+	$StatsPanel/VBox/CommunityRow.visible = lit
+	feed.visible = lit
+	if _auto_btn:
+		_auto_btn.visible = lit
+	$StatsPanel/VBox/WelfareRow.visible = post
+	$TopPanel/VBox/ResRow.visible = post
+	_fit_panels.call_deferred()
+
+
+## Panel statistik dan panel atas menyusut/membesar mengikuti baris yang tampil.
+func _fit_panels() -> void:
+	var stats: PanelContainer = $StatsPanel
+	if not stats.get_meta("collapsed", false):
+		stats.offset_bottom = stats.offset_top + stats.get_combined_minimum_size().y
+		if stats.has_meta("full_offsets"):
+			var full: Vector4 = stats.get_meta("full_offsets")
+			stats.set_meta("full_offsets", Vector4(full.x, full.y, full.z, stats.offset_bottom))
+	var top: PanelContainer = $TopPanel
+	top.offset_bottom = top.offset_top + top.get_combined_minimum_size().y
+	_relayout_left()
+
+
+## Tombol Pohon Upgrade berkedip selama pemain belum pernah membeli upgrade padahal sudah mampu.
+func _update_upgrade_pulse() -> void:
+	var sim := Game.sim
+	var want := false
+	if int(sim.counters.get(&"upgrades_bought", 0)) == 0 and not upgrade_panel.visible:
+		for u in Game.db.upgrades:
+			if sim.upgrade_state(u) == "":
+				want = true
+				break
+	var btn: Button = %UpgradeBtn
+	if want and _pulse_tween == null:
+		_pulse_tween = create_tween().set_loops()
+		_pulse_tween.tween_property(btn, "modulate", Color(1.7, 1.45, 0.6), 0.55).set_trans(Tween.TRANS_SINE)
+		_pulse_tween.tween_property(btn, "modulate", Color.WHITE, 0.55).set_trans(Tween.TRANS_SINE)
+	elif not want and _pulse_tween != null:
+		_pulse_tween.kill()
+		_pulse_tween = null
+		btn.modulate = Color.WHITE
+
+
 # ---------------------------------------------------------------- notifikasi kecil (toast)
 
 var _toast_box: VBoxContainer
@@ -496,15 +595,17 @@ var _hint_check: float = 0.0
 func _hint_steps() -> Array:
 	var sim := Game.sim
 	return [
-		["Langkah 1/5: Pembangkit pertama sedang dibangun (2–4 bulan). Klik satu kloter di panel kanan untuk melihat ciri alamnya.",
-			func(): return province_panel.visible and province_panel.village_index >= 0],
-		["Langkah 2/5: Saat Otomatis menyala (tombol bawah, B), warga membangun kloter berikutnya sendiri. Kamu tetap bisa memilih kloter dan energinya lewat tombol Bangun.",
-			func(): return _hint_timer > 10.0 or int(sim.counters.get(&"built", 0)) >= 2],
-		["Langkah 3/5: Buka Pohon Upgrade (U). Tab Edukasi & Warga mempercepat Kekuatan Komunitas. Bangun otomatis hanya berjalan jika Komunitas wilayah minimal %d." % int(Game.db.config.auto_build_min_community),
+		["Langkah 1/6: Pembangkit pertama sedang dibangun (2–4 bulan). Klik wilayahmu di peta (yang bergaris terang) untuk melihat isinya.",
+			func(): return province_panel.visible],
+		["Langkah 2/6: Panel kanan berisi kloter desa di wilayah ini. Klik satu kloter untuk melihat ciri alam dan energi yang cocok.",
+			func(): return province_panel.village_index >= 0 or _hint_timer > 12.0],
+		["Langkah 3/6: Buka Pohon Upgrade (U, tombol yang berkedip di bawah). Tab Edukasi & Warga mempercepat Kekuatan Komunitas.",
 			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1],
-		["Langkah 4/5: Di tab Sumber Energi, tiap energi punya cabang sendiri: Output Listrik, Material Bangunan, lalu Teknisi Warga. Perkuat energi yang kamu pakai.",
+		["Langkah 4/6: Di tab Sumber Energi, tiap energi punya cabang sendiri: Output Listrik, Material Bangunan, lalu Teknisi Warga. Perkuat energi yang kamu pakai.",
 			func(): return _owns_energy_branch() or int(sim.counters.get(&"upgrades_bought", 0)) >= 3],
-		["Langkah 5/5: Klik gelembung yang muncul di peta untuk Poin tambahan. Arahkan mouse ke wilayah lain untuk melihat ciri desanya.",
+		["Langkah 5/6: Setelah desa pertama menyala, tombol Otomatis (B) muncul di bawah. Saat nyala, warga membangun kloter berikutnya sendiri jika Komunitas wilayah minimal %d." % int(Game.db.config.auto_build_min_community),
+			func(): return _reveal_lit and _hint_timer > 10.0],
+		["Langkah 6/6: Klik gelembung yang muncul di peta untuk Poin tambahan. Arahkan mouse ke wilayah lain untuk melihat ciri desanya.",
 			func(): return _hint_timer > 14.0],
 	]
 
@@ -565,8 +666,9 @@ func _update_hints(delta: float) -> void:
 	if _hint_panel == null:
 		return
 	_hint_check += delta
-	if _hint_step == 1 or _hint_step == 4:
-		_hint_timer += delta
+	if _hint_step == 1 or _hint_step == 4 or _hint_step == 5:
+		if _hint_step != 4 or _reveal_lit:
+			_hint_timer += delta
 	if _hint_check < 0.25:
 		return
 	_hint_check = 0.0

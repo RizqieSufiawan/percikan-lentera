@@ -63,6 +63,8 @@ func _run() -> void:
 	await _wait(0.6)
 	await _shot("03_game_start_card")
 	await _press_modal(0)
+	await _wait(0.3)
+	await _shot("03b_game_fresh")
 
 	var sim := Game.sim
 	var db := Game.db
