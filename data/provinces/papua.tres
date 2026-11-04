@@ -30,6 +30,7 @@ short_name = "Papua"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(1172, 360)
+label_offset = Vector2(0, -16)
 neighbors = Array[StringName]([&"papteng"])
 villages = 2
 fossil_villages = 1

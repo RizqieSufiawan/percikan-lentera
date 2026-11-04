@@ -271,10 +271,13 @@ func _show_detail() -> void:
 	u_desc.text = ("Gunanya: %s\n\n" % why if why != "" else "") + "Efek:\n- " + "\n- ".join(UpgradeText.lines(u)) + "\n\n" + u.description
 	var pts := Game.sim.upgrade_cost(u)
 	var cost := "Biaya: %d Poin" % pts
-	if pts != u.cost_points:
-		cost += " (dasar %d)" % u.cost_points
 	if u.cost_money > 0:
 		cost += " + %d Ekonomi" % u.cost_money
+	var bought := int(Game.sim.counters.get(&"upgrades_bought", 0))
+	if pts != u.cost_points and bought > 0:
+		# Poin naik %d%% dari harga dasar untuk tiap upgrade yang sudah dibeli; Ekonomi tetap.
+		cost += "\n(Harga dasar %d Poin + %d%% x %d upgrade yang sudah kamu beli. Ekonomi tidak ikut naik.)" % [
+			u.cost_points, roundi(100.0 * Game.db.config.upgrade_cost_growth), bought]
 	u_cost.text = cost
 	var state := Game.sim.upgrade_state(u)
 	if state == "owned":
