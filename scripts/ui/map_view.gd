@@ -536,6 +536,3 @@ func _draw_overlay() -> void:
 					break
 		for i in range(1, hubs.size()):
 			_overlay.draw_dashed_line(hubs[0], hubs[i], Palette.CREAM * Color(1, 1, 1, 0.6), 2.0, 10.0)
-	for id in sim.provinces:
-		if sim.provinces[id].internet:
-			_overlay.draw_arc(node_center(id), 22.0 * map_scale() + 6, 0, TAU, 32, Palette.BLUE, 2.0)
