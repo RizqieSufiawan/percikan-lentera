@@ -2,7 +2,7 @@ shader_type canvas_item;
 // Mewarnai satu wilayah per SEL KLOTER (assets/map/cells.png, dibuat tools/make_cells.py).
 // Warna sel = energi yang dipakai kloter itu. Rapuh = bergaris, mandiri = penuh.
 // Belum bersih: coklat hangat (fosil) atau biru keunguan gelap (gelap). Warna menyebar dari titik
-// kloter ke tepi selnya. Supaya peta tidak terlihat mati: tekstur halus, cahaya tipis di garis pantai,
+// kloter ke tepi selnya, titik demi titik. Supaya peta tidak terlihat mati: tekstur halus, cahaya tipis di garis pantai,
 // dan lampu kecil berkelip di desa yang sudah berlistrik (fosil sedikit, energi bersih lebih banyak).
 
 uniform vec4 color_dark : source_color = vec4(0.25, 0.27, 0.34, 1.0);
@@ -22,9 +22,13 @@ uniform sampler2D cell_map : filter_nearest;
 uniform vec2 cell_map_size = vec2(320.0, 180.0);
 // Satu kolom per kloter. cell_color: rgb energi, a = mode (0 belum, 0.33 dibangun, 0.66 rapuh, 1 mandiri).
 uniform sampler2D cell_color : filter_nearest;
-// cell_geom: titik kloter (x, y), jari-jari sebaran sekarang, dasar (0 gelap, 1 fosil).
+// cell_geom: titik kloter (x, y), isi kloter sekarang 0..1 (-1 = kosong), dasar (0 gelap, 1 fosil).
 uniform sampler2D cell_geom : filter_nearest;
 uniform float cell_count = 1.0;
+// Urutan menyala tiap piksel di kloternya (0..1); piksel menyala jika urutannya < isi kloter (geo.z).
+uniform sampler2D cell_rank : filter_nearest;
+// Energi kedua (baris atas) dan ketiga (baris bawah) per kloter: rgb warna, a = bagian titik.
+uniform sampler2D cell_mix : filter_nearest;
 uniform float selected_cell = -1.0;
 uniform float lights = 1.0;
 
@@ -56,8 +60,20 @@ void fragment() {
 			vec4 geo = texture(cell_geom, vec2(u, 0.5));
 			c = mix(color_dark.rgb, color_fossil.rgb, geo.a);
 			c = mix(c, region_tint.rgb, region_tint.a);
-			float d = distance(p, geo.xy) + (texture(noise_tex, p / 256.0).r - 0.5) * noise_amp;
-			if (col.a > 0.1 && d < geo.z) {
+			// Kloter menyala titik demi titik (1 titik peta ~ 9 desa), bukan sekaligus.
+			bool on = texture(cell_rank, UV).r < geo.z;
+			if (col.a > 0.5 && on) {
+				// Sebagian desa di kloter memakai energi lain yang cocok (campuran).
+				vec4 m2 = texture(cell_mix, vec2(u, 0.25));
+				vec4 m3 = texture(cell_mix, vec2(u, 0.75));
+				float hm = hash(gp + vec2(17.3, 91.7));
+				if (hm < m2.a) {
+					col.rgb = m2.rgb;
+				} else if (hm < m2.a + m3.a) {
+					col.rgb = m3.rgb;
+				}
+			}
+			if (col.a > 0.1 && on) {
 				if (col.a > 0.85) {
 					c = col.rgb;  // mandiri: penuh
 				} else {
@@ -81,7 +97,7 @@ void fragment() {
 			if (r == 0 || b == 0 || l == 0 || t == 0) {
 				// Kloter berenergi bersih di pantai diberi tepi gelap (bukan cahaya) agar batas
 				// daratan tetap jelas walau warnanya mirip laut.
-				if (col.a > 0.5 && d < geo.z) {
+				if (col.a > 0.5 && on) {
 					c *= 0.62;
 				} else {
 					c = mix(c, vec3(0.9, 0.96, 1.0), 0.24);
@@ -91,10 +107,10 @@ void fragment() {
 			float h = hash(gp);
 			float density = 0.0;
 			vec3 lamp = vec3(1.0, 0.82, 0.5);
-			if (col.a > 0.85 && d < geo.z) {
+			if (col.a > 0.85 && on) {
 				density = 0.07;
 				lamp = vec3(1.0, 0.97, 0.85);
-			} else if (col.a > 0.5 && d < geo.z) {
+			} else if (col.a > 0.5 && on) {
 				density = 0.04;
 			} else if (geo.a > 0.5) {
 				density = 0.03;

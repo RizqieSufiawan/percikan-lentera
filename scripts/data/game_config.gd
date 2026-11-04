@@ -56,7 +56,7 @@ const MODIFIER_KEYS := [
 @export var bubble_lifetime: float = 6.0
 
 @export_group("Awal")
-@export var start_points: float = 8.0
+@export var start_points: float = 12.0
 @export var start_money: float = 50.0
 @export var start_welfare: float = 40.0
 @export var start_community: float = 10.0

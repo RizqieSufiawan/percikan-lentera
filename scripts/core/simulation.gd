@@ -54,7 +54,12 @@ class VillageState:
 		return status == V_LIT or status == V_INDEP
 
 	func name() -> String:
-		return data.display_name if data else "Desa %d" % (index + 1)
+		if data == null:
+			return "Kloter %d" % (index + 1)
+		# Nama kloter dari desa wakil, tanpa sebutan Desa/Kampung (kloter berisi ratusan desa).
+		var n: String = data.display_name
+		var sp := n.find(" ")
+		return "Kloter " + (n.substr(sp + 1) if sp >= 0 else n)
 
 	## Jumlah desa nyata dalam kloter ini.
 	func size() -> int:
@@ -1572,9 +1577,14 @@ func key_decisions() -> Array[String]:
 	if genset > 0:
 		line += " Kamu memilih genset %d kali, memberi makan Kepentingan Lama." % genset
 	out.append(line)
+	# Jalur menuju target nasional, ringkas dalam satu baris.
+	var steps: Array[String] = []
 	for m in db.milestones:
 		if milestone_reports.has(m.id):
-			out.append(milestone_summary(m, milestone_reports[m.id]))
+			var r: Dictionary = milestone_reports[m.id]
+			steps.append("%d: %d%%" % [m.year, int(r["access"] * 100.0)])
+	if not steps.is_empty():
+		out.append("Desa berenergi bersih per tonggak: %s (target 2060: 70%%)." % "  ·  ".join(steps))
 	return out
 
 
@@ -1831,6 +1841,42 @@ func village_compat(s: ProvinceState, v: VillageState, energy_id: StringName) ->
 			c += td.energy_bonus.get(energy_id, 0.0)
 	c += mod(StringName("fit:%s" % energy_id))
 	return clampf(c, 0.15, 1.0)
+
+
+## Campuran energi kloter berenergi bersih (hanya tampilan: peta dan panel). Satu kloter berisi
+## ratusan desa; sebagian desanya memakai energi lain yang SUDAH DIBUKA dan cocok dengan ciri kloter.
+## Energi utama (yang dibangun) selalu minimal separuh. Hasil: [[energi, bagian], ...], utama dulu.
+func energy_mix(s: ProvinceState, v: VillageState) -> Array:
+	if not v.is_clean() or v.energy == &"":
+		return []
+	var others: Array = []
+	var total := 0.0
+	var main_w := pow(village_compat(s, v, v.energy), 2.0)
+	for e in energies:
+		if e == v.energy:
+			continue
+		var c := village_compat(s, v, e)
+		if c < cfg.adopt_min_compat:
+			continue
+		others.append([e, c * c])
+	others.sort_custom(func(a, b): return a[1] > b[1])
+	others = others.slice(0, 2)
+	for o in others:
+		total += o[1]
+	if total <= 0.0:
+		return [[v.energy, 1.0]]
+	var main_share := maxf(0.5, main_w / (main_w + total))
+	var out: Array = [[v.energy, main_share]]
+	for o in others:
+		var share: float = (1.0 - main_share) * o[1] / total
+		if share >= 0.1:
+			out.append([o[0], share])
+	# Bagian yang dibuang (terlalu kecil) kembali ke energi utama.
+	var sum := 0.0
+	for o in out:
+		sum += o[1]
+	out[0][1] += 1.0 - sum
+	return out
 
 
 func best_energy_for(s: ProvinceState, v: VillageState, pool: Array[StringName] = []) -> StringName:

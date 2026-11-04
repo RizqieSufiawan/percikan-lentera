@@ -23,9 +23,9 @@ const CELL_JSON_PATH := "res://data/map_cells.json"
 ## Ukuran piksel pixel art (piksel referensi).
 const SAMPLE_STEP := 4
 ## Kecepatan pertumbuhan warna di dalam sel (piksel referensi per detik).
-const GROW_SPEED := 70.0
+const GROW_SPEED := 0.8  # bagian kloter per detik (animasi menuju isi target)
 ## Jari-jari titik kecil saat kloter sedang dibangun.
-const BUILD_SPOT := 7.0
+const BUILD_SPOT := 0.001  # sedang dibangun: hanya titik pertama (dekat pusat kloter)
 
 ## Daratan yang masih ada warga tanpa listrik: biru keunguan gelap (malam), lebih terang dari laut.
 const COLOR_DARK := Color(0.33, 0.37, 0.60)
@@ -48,6 +48,12 @@ var _cell_base: Dictionary = {}
 var _cell_owner: Array = []  # indeks global -> [id wilayah, indeks kloter]
 var _cell_count: int = 0
 var _cell_ids: Image  # 320x180, id + 1 per piksel
+## Urutan menyala tiap piksel di dalam kloternya (0..1). Satu piksel peta ~ 9 desa: kloter menyala
+## titik demi titik, acak tapi cenderung dari pusat ke tepi.
+var _rank_tex: ImageTexture
+## Energi kedua dan ketiga per kloter (baris 0 dan 1): rgb warna, a = bagian titik.
+var _mix_img: Image
+var _mix_tex: ImageTexture
 var _color_img: Image
 var _geom_img: Image
 var _color_tex: ImageTexture
@@ -135,12 +141,49 @@ func _load_cells() -> void:
 		_color_img.set_pixel(k, 0, Color(0, 0, 0, 0))
 		_geom_img.set_pixel(k, 0, Color(_seed_pos[k].x, _seed_pos[k].y, -1.0, 0.0))
 	_color_tex = ImageTexture.create_from_image(_color_img)
+	_mix_img = Image.create(n, 2, false, Image.FORMAT_RGBA8)
+	_mix_img.fill(Color(0, 0, 0, 0))
+	_mix_tex = ImageTexture.create_from_image(_mix_img)
 	_geom_tex = ImageTexture.create_from_image(_geom_img)
 	var cell_tex: Texture2D = load(CELL_MAP_PATH) if ResourceLoader.exists(CELL_MAP_PATH) else null
 	if cell_tex:
 		_cell_ids = cell_tex.get_image()
 		if _cell_ids.is_compressed():
 			_cell_ids.decompress()
+		_make_rank()
+
+
+func _make_rank() -> void:
+	var cs := _cell_ids.get_size()
+	var scale := Vector2(REF.x / float(cs.x), REF.y / float(cs.y))
+	var groups: Dictionary = {}  # gid -> [[kunci, x, y], ...]
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 84276
+	for y in cs.y:
+		for x in cs.x:
+			var c := _cell_ids.get_pixel(x, y)
+			var g := roundi(c.r8 + c.g8 * 256) - 1
+			if g < 0 or g >= _cell_count:
+				continue
+			var pos := (Vector2(x, y) + Vector2(0.5, 0.5)) * scale
+			var d := pos.distance_to(_seed_pos[g]) / maxf(4.0, _max_r[g])
+			if not groups.has(g):
+				groups[g] = []
+			groups[g].append([d * 0.45 + rng.randf() * 0.55, x, y, d])
+	var img := Image.create(cs.x, cs.y, false, Image.FORMAT_RF)
+	for g in groups:
+		var arr: Array = groups[g]
+		# Titik pertama (tempat pembangkit dibangun) = piksel terdekat ke pusat kloter.
+		var near := 0
+		for i in arr.size():
+			if arr[i][3] < arr[near][3]:
+				near = i
+		arr[near][0] = -1.0
+		arr.sort_custom(func(a, b): return a[0] < b[0])
+		var n := float(arr.size())
+		for i in arr.size():
+			img.set_pixel(arr[i][1], arr[i][2], Color(i / n, 0, 0))
+	_rank_tex = ImageTexture.create_from_image(img)
 
 
 func _prepare_region(p: ProvinceData) -> void:
@@ -168,6 +211,9 @@ func _prepare_region(p: ProvinceData) -> void:
 		mat.set_shader_parameter("cell_map_size", Vector2(_cell_ids.get_size()))
 	mat.set_shader_parameter("cell_color", _color_tex)
 	mat.set_shader_parameter("cell_geom", _geom_tex)
+	if _rank_tex:
+		mat.set_shader_parameter("cell_rank", _rank_tex)
+	mat.set_shader_parameter("cell_mix", _mix_tex)
 	mat.set_shader_parameter("cell_count", float(maxi(1, _cell_count)))
 	r.material = mat
 	_region_layer.add_child(r)
@@ -291,7 +337,14 @@ func _update_cells(s: Simulation.ProvinceState) -> void:
 		var k := base + v.index
 		var fossil_base := 1.0 if (v.status == Simulation.V_FOSSIL or (v.data and v.data.start_fossil)) else 0.0
 		# Warna memenuhi sel perlahan (desa demi desa), lambat di awal permainan.
-		var r := lerpf(BUILD_SPOT, _max_r[k], Game.sim.fill_fraction(v)) if v.is_clean() else 0.0
+		var r := maxf(BUILD_SPOT, Game.sim.fill_fraction(v)) if v.is_clean() else 0.0
+		var mix := Game.sim.energy_mix(s, v)
+		for row in 2:
+			if row + 1 < mix.size():
+				var mc := _energy_color(mix[row + 1][0])
+				_mix_img.set_pixel(k, row, Color(mc.r, mc.g, mc.b, mix[row + 1][1]))
+			else:
+				_mix_img.set_pixel(k, row, Color(0, 0, 0, 0))
 		if v.status == Simulation.V_INDEP:
 			_set_cell(k, _energy_color(v.energy), fossil_base, r, 1.0)
 		elif v.status == Simulation.V_LIT:
@@ -316,6 +369,7 @@ func _set_cell(k: int, energy_col: Color, fossil_base: float, target_r: float, m
 
 func _push_cells() -> void:
 	_color_tex.update(_color_img)
+	_mix_tex.update(_mix_img)
 	_geom_tex.update(_geom_img)
 
 

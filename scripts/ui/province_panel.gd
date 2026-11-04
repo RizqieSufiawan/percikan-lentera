@@ -208,7 +208,7 @@ func _refresh_detail(s: Simulation.ProvinceState) -> void:
 	var sim := Game.sim
 	var v: Simulation.VillageState = s.villages[village_index]
 	v_name.text = "%s · %s" % [v.name(), v.origin()] if v.origin() != "" else v.name()
-	var status := "Kloter %s desa. Status: %s. %s" % [Simulation.ribu(v.size()), STATUS_NAMES[v.status], STATUS_HELP[v.status]]
+	var status := "Berisi %s desa. Status: %s. %s" % [Simulation.ribu(v.size()), STATUS_NAMES[v.status], STATUS_HELP[v.status]]
 	if v.is_clean():
 		var en := Game.db.get_energy(v.energy)
 		var ename: String = en.display_name if en else String(v.energy)
@@ -216,6 +216,13 @@ func _refresh_detail(s: Simulation.ProvinceState) -> void:
 			status += "\nEnergi: %s (terbukti %s)" % [ename, Palette.compat_word(sim.village_compat(s, v, v.energy)).to_lower()]
 		else:
 			status += "\nEnergi: %s (meniru desa lain, belum terbukti)" % ename
+		var mix := sim.energy_mix(s, v)
+		if mix.size() > 1:
+			var parts: Array[String] = []
+			for m in mix:
+				var me := Game.db.get_energy(m[0])
+				parts.append("%s %d%%" % [me.display_name if me else String(m[0]), roundi(100.0 * m[1])])
+			status += "\nCampuran: " + " · ".join(parts)
 	if v.is_building():
 		var ben := Game.db.get_energy(v.build_energy)
 		status += "\nSedang dibangun: %s, menyala ±%d minggu lagi (%d%%)." % [ben.display_name if ben else String(v.build_energy),
