@@ -1264,7 +1264,8 @@ func upgrade_state(u: UpgradeData) -> String:
 	if points < upgrade_cost(u):
 		return "Poin Dukungan kurang"
 	if u.cost_money > 0 and money - u.cost_money < cfg.money_reserve:
-		return "Ekonomi kurang"
+		return "Ekonomi kurang: butuh %d (biaya %d + cadangan %d), kamu punya %d" % [
+			ceili(u.cost_money + cfg.money_reserve), roundi(u.cost_money), roundi(cfg.money_reserve), floori(money)]
 	return ""
 
 

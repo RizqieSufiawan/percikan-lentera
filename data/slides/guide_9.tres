@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_script")
 title = "Tonggak dan Target 2060"
-text = "2030, 2045, dan 2060: evaluasi besar. 2040 dan 2050: notifikasi singkat.\nTarget nasional (KEN, PP 40/2025): 70% desa berenergi bersih pada 2060. Di game, setengahnya juga harus mandiri. Setiap tonggak memberi tahu apakah kamu masih di jalur."
+text = "2030, 2045, dan 2060: evaluasi besar. 2040 dan 2050: notifikasi singkat.\nTarget nasional (KEN, PP 40/2025): 70% desa berenergi bersih pada 2060; tonggak juga menilai apakah setengahnya sudah mandiri. Setiap tonggak memberi tahu apakah kamu masih di jalur."
 image = ExtResource("1_img")

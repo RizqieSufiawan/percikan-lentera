@@ -127,7 +127,7 @@ func _is_rush(u: UpgradeData) -> bool:
 
 func _has_rush(sim: Simulation, db: GameDatabase) -> bool:
 	for u in db.upgrades:
-		if _is_rush(u) and sim.upgrade_state(u) in ["", "Poin Dukungan kurang", "Ekonomi kurang"]:
+		if _is_rush(u) and (sim.upgrade_state(u) in ["", "Poin Dukungan kurang"] or sim.upgrade_state(u).begins_with("Ekonomi kurang")):
 			return true
 	return false
 

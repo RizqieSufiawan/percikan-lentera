@@ -29,6 +29,9 @@ func _run() -> void:
 	Game.chosen_province = &"papua"
 	Game.chosen_energy = &"mikrohidro"
 	Game.new_game()
+	# Tutorial menjeda permainan di langkah penjelasan; tes ini menguji hal lain.
+	Game.sim.counters[&"tutorial_step"] = 99
+	Game.sim.counters[&"lessons_off"] = 1
 	Game.goto("game")
 	await _wait(0.5)
 	var modal = get_tree().current_scene.get_node("%Modal")

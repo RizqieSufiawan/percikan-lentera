@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_script")
 title = "Poin, Ekonomi, Pohon Upgrade"
-text = "Warga membangun memakai Poin + Ekonomi. Semua kemampuan ada di Pohon Upgrade (U) dan berlaku di semua wilayah.\nSumber Energi: tiap energi punya cabang sendiri (Output Listrik I–III, Material Bangunan I–III, Teknisi Warga, Pusat Pelatihan). Edukasi & Warga: Komunitas tumbuh lebih cepat, resistensi turun. Layanan Digital: internet otomatis di wilayah berenergi bersih."
+text = "POIN DUKUNGAN: selama KKN dari tim KKN tiap minggu dan hadiah Misi KKN; setelah KKN dari desa Rapuh dan Mandiri, ditambah Komunitas wilayah. Bonus dari gelembung di peta.\nEKONOMI: bertambah sedikit tiap bulan, lebih banyak dari desa Mandiri. Selalu disisakan 5 sebagai cadangan.\nKeduanya dipakai di Pohon Upgrade (U). Setiap pembelian membuat upgrade lain 5% lebih mahal. Sumber Energi: buka dan perkuat energi. Edukasi & Warga: Komunitas lebih cepat, resistensi turun. Layanan Digital: internet di wilayah berenergi bersih."
 image = ExtResource("1_img")

@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_script")
 title = "Menang dan Kalah"
-text = "Game selesai saat SEMUA desa memakai energi bersih. Semakin cepat dan semakin banyak yang mandiri, semakin baik akhirnya.\nKalah: Resistensi penuh, Kesejahteraan atau Ekonomi habis, atau semua pembangkit energi bersih padam."
+text = "MENANG: semua desa memakai energi bersih. Semakin cepat dan semakin banyak yang mandiri, semakin baik akhirnya.\nRESISTENSI: biru = Ragu Warga (naik jika banyak desa Rapuh di wilayah berkomunitas lemah, turun saat desa jadi Mandiri), merah = Kepentingan Lama (naik tiap tahun dan saat energi bersih meluas).\nKALAH: Resistensi 100%, Kesejahteraan habis, Ekonomi habis terlalu lama, semua pembangkit padam terlalu lama, atau lewat tahun 2085."
 image = ExtResource("1_img")
