@@ -5,6 +5,6 @@
 
 [resource]
 script = ExtResource("2_script")
-title = "Pemerintah, Event, Bencana"
-text = "Tawaran pemerintah: Terima atau Tolak. Isinya tergantung kinerjamu.\nKartu event: pilih A atau B, tidak ada pilihan yang selalu benar.\nBencana menyasar desa sesuai ciri alamnya, dan paling merusak energi yang rentan."
+title = "Event, Kesiapan, Tawaran"
+text = "Bencana, hoaks, dan masalah lain diselesaikan otomatis. Berhasil atau tidaknya tergantung KESIAPAN, yang naik lewat upgrade. Bencana menyasar desa sesuai ciri alamnya.\nYang meminta keputusanmu hanya tawaran kerja sama (mis. investor PLTA) dan tawaran pemerintah: Terima atau Tolak, tidak ada pilihan yang selalu benar."
 image = ExtResource("1_img")

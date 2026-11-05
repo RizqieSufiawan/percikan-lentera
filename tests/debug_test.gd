@@ -19,6 +19,9 @@ func _run() -> void:
 	Game.chosen_province = &"sumut"
 	Game.chosen_energy = &"biomassa"
 	Game.new_game()
+	# Tutorial menjeda permainan di langkah penjelasan; tes ini menguji hal lain.
+	Game.sim.counters[&"tutorial_step"] = 99
+	Game.sim.counters[&"lessons_off"] = 1
 	# Seed tetap supaya tes tidak bergantung keberuntungan (F5 = ujian KKN sungguhan bisa memadamkan semua desa).
 	Game.sim.rng.seed = 7
 	Game.goto("game")

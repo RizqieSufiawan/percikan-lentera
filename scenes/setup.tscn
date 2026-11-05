@@ -180,7 +180,7 @@ theme_override_constants/separation = 6
 
 [node name="NameLabel" type="Label" parent="BottomPanel/Columns/StartCol"]
 layout_mode = 2
-text = "4. Nama komunitas (opsional)"
+text = "4. Nama komunitas (wajib diisi)"
 
 [node name="NameEdit" type="LineEdit" parent="BottomPanel/Columns/StartCol"]
 unique_name_in_owner = true

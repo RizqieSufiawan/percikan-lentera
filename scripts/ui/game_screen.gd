@@ -321,7 +321,7 @@ func _build_missions() -> void:
 
 func _refresh_missions() -> void:
 	var sim := Game.sim
-	%MissionPanel.visible = sim.kkn_active and _hint_panel == null
+	%MissionPanel.visible = sim.kkn_active and not _tutorial_hides_left()
 	if not sim.kkn_active:
 		return
 	%KknTimeLabel.text = "Sisa masa KKN: %d minggu" % sim.kkn_weeks_left()
@@ -577,9 +577,13 @@ func _update_reveal() -> void:
 	var changed := not _reveal_ready or lit != _reveal_lit or post != _reveal_post_kkn
 	if _reveal_ready and lit and not _reveal_lit:
 		Audio.sfx(&"point")
-		toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")  # bar desa sudah tampil sejak awal
+		if Game.sim.counters.has(LESSONS_OFF):
+			toast("Desa pertama menyala! Warga sekitar mulai ikut membangun sendiri.")
+		_queue_lesson.call_deferred(&"lit", func(_up: bool): return feed.get_global_rect() if feed.visible else Rect2())
 	if _reveal_ready and post and not _reveal_post_kkn:
-		toast("Panel baru di atas: Resistensi (100% = kalah) dan Kesejahteraan (habis = kalah).", Palette.INDEPENDENT)
+		if Game.sim.counters.has(LESSONS_OFF):
+			toast("Panel baru di atas: Resistensi (100% = kalah) dan Kesejahteraan (habis = kalah).", Palette.INDEPENDENT)
+		_queue_lesson.call_deferred(&"post_kkn", func(up: bool): return Rect2() if up else $TopPanel.get_global_rect())
 	_reveal_ready = true
 	_reveal_lit = lit
 	_reveal_post_kkn = post
@@ -684,33 +688,106 @@ func _build_toasts() -> void:
 	stack.add_child(_toast_box)
 
 
-# ---------------------------------------------------------------- petunjuk menit pertama
+# ---------------------------------------------------------------- tutorial
+
+## Tutorial berlapis:
+## - Langkah UTAMA (menit pertama): campuran langkah PENJELASAN (permainan dijeda, ada tombol
+##   "Lanjut", bagian yang dibahas disorot) dan langkah AKSI (pemain melakukan sesuatu).
+## - PELAJARAN susulan: penjelasan sekali jalan saat sesuatu baru muncul (desa pertama menyala,
+##   tim KKN pulang). Disimpan di sim.counters supaya tidak berulang setelah memuat permainan.
+## Tombol x menutup semuanya (tutorial dan pelajaran susulan).
 
 var _hint_panel: PanelContainer
 var _hint_stack: VBoxContainer
 var _spotlight: Spotlight
 var _hint_label: Label
+var _hint_next: Button
 var _hint_step: int = 0
 var _hint_timer: float = 0.0
 var _hint_check: float = 0.0
+var _hint_ack := false
+var _main_active := false
+var _lessons: Array = []  # [{text, target}] antre
 
 
-## Langkah petunjuk: [teks, Callable yang mengembalikan true jika langkah selesai].
+func _step(text: String, target: Callable, done: Callable = Callable()) -> Dictionary:
+	return {"text": text, "target": target, "done": done, "info": not done.is_valid()}
+
+
+func _rect_of(path: String) -> Callable:
+	return func(_up: bool) -> Rect2:
+		var n := get_node_or_null(path) as Control
+		return n.get_global_rect() if n and n.is_visible_in_tree() else Rect2()
+
+
+var _steps_cache: Array = []
+
+
 func _hint_steps() -> Array:
+	if not _steps_cache.is_empty():
+		return _steps_cache
 	var sim := Game.sim
-	return [
-		["1/5  Klik wilayahmu yang disorot di peta.",
-			func(): return province_panel.visible],
-		["2/5  Klik kloter lain di panel kanan untuk membandingkan energinya.",
-			# Klik wilayah di peta sudah memilih satu kloter, jadi langkah ini menunggu kloter LAIN.
-			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0],
-		["3/5  Buka Pohon Upgrade (U) dan beli satu upgrade.",
-			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1],
-		["4/5  Tab Sumber Energi: perkuat energi yang kamu pakai.",
-			func(): return _owns_energy_branch() or int(sim.counters.get(&"upgrades_bought", 0)) >= 3],
-		["5/5  Klik gelembung di peta untuk Poin tambahan.",
-			func(): return _hint_timer > 14.0],
+	var cfg := Game.db.config
+	var n := 13
+	_steps_cache = [
+		_step("1/%d  TUJUAN. Bar ini adalah seluruh 84.276 desa Indonesia. Coklat = Fosil (listrik PLTU/genset), nila = Gelap (masih ada warga tanpa listrik), kuning = Rapuh (sudah energi bersih, tapi belum dirawat warga, bisa padam), hijau = Mandiri. Buat semua desa bersih sebelum 2085." % n,
+			_rect_of("TopPanel")),
+		_step("2/%d  POIN DUKUNGAN, uang utama untuk membeli upgrade. Selama KKN: dari tim KKN tiap minggu dan hadiah Misi KKN. Setelah KKN: dari desa Rapuh dan Mandiri, ditambah Komunitas wilayah. Bonus: gelembung di peta." % n,
+			_rect_of("StatsPanel/VBox/PointsRow")),
+		_step("3/%d  EKONOMI, dipakai bersama Poin untuk sebagian upgrade. Bertambah sedikit tiap bulan, dan lebih banyak dari desa Mandiri. Selalu disisakan %d sebagai cadangan. Ekonomi habis terlalu lama = kalah." % [n, roundi(cfg.money_reserve)],
+			_rect_of("StatsPanel/VBox/MoneyRow")),
+		_step("4/%d  MISI KKN. Tim KKN hanya tinggal %d minggu. Selesaikan misi untuk Poin tambahan. Saat tim pulang, desa Rapuh di wilayah yang Komunitasnya di bawah %d bisa padam." % [n, cfg.kkn_ticks, roundi(cfg.kkn_test_threshold)],
+			_rect_of("MissionPanel")),
+		_step("5/%d  Klik wilayahmu yang disorot di peta." % n,
+			func(up: bool): return Rect2() if up else map.province_rect(sim.start_province),
+			func(): return province_panel.visible),
+		_step("6/%d  KOMUNITAS = kesiapan warga merawat listriknya sendiri (0-100). Naik saat tim KKN melatih warga dan dari desa yang sudah bersih. Di %d warga mulai membangun sendiri; di %d desa Rapuh jadi Mandiri. Klik wilayah mana pun untuk melihat barnya di peta." % [n, roundi(cfg.auto_build_min_community), roundi(cfg.independence_threshold)],
+			_rect_of("ProvincePanel/VBox/CommRow")),
+		_step("7/%d  KLOTER = kelompok ratusan desa nyata. Tiap kloter punya ciri (sungai deras, lahan terik, ...) yang menentukan energi yang cocok. Klik kloter lain untuk membandingkan." % n,
+			_rect_of("ProvincePanel"),
+			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0),
+		_step("8/%d  SEBARAN OTOMATIS. Kamu tidak membangun sendiri. Setelah pembangkit pertama menyala, warga kloter tetangga (paling jauh 2 kloter) yang energinya cocok ikut membangun. Awalnya lambat, makin banyak desa bersih makin cepat." % n,
+			func(up: bool): return Rect2() if up else map.province_rect(sim.start_province)),
+		_step("9/%d  POHON UPGRADE adalah keputusan utamamu. Buka (U) dan beli satu upgrade. HARGA NAIK: tiap upgrade yang kamu beli membuat semua upgrade berikutnya 5%% lebih mahal (hanya Poin; Ekonomi tetap). Jadi pilih yang paling berguna dulu, jangan borong." % n,
+			func(up: bool): return Rect2() if up else %UpgradeBtn.get_global_rect(),
+			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1),
+		_step("10/%d  Tab Sumber Energi: perkuat energi yang kamu pakai, atau buka energi baru." % n,
+			_energy_tab_target,
+			func(): return _owns_energy_branch() or int(sim.counters.get(&"upgrades_bought", 0)) >= 3),
+		_step("11/%d  KESIAPAN. Bencana, hoaks, dan masalah lain diselesaikan otomatis. Berhasil atau tidaknya tergantung Kesiapan, yang naik lewat upgrade. Hanya tawaran kerja sama yang meminta keputusanmu." % n,
+			func(up: bool): return Rect2() if up else %UpgradeBtn.get_global_rect()),
+		_step("12/%d  WAKTU. Jeda, 1x, 2x, 3x mengatur kecepatan. Esc membuka menu: simpan, pengaturan, dan Panduan (berisi semua penjelasan ini)." % n,
+			_speed_target),
+		_step("13/%d  Klik gelembung yang muncul di peta untuk Poin tambahan." % n,
+			func(_up: bool): return Rect2(),
+			func(): return _hint_timer > 14.0),
 	]
+	return _steps_cache
+
+
+func _energy_tab_target(up_open: bool) -> Rect2:
+	if not up_open:
+		return %UpgradeBtn.get_global_rect()
+	var tabs: TabContainer = upgrade_panel.tabs
+	if tabs.current_tab == 0:
+		return Rect2()
+	var bar := tabs.get_tab_bar()
+	var r := bar.get_tab_rect(0)
+	return Rect2(bar.global_position + r.position, r.size)
+
+
+func _speed_target(up_open: bool) -> Rect2:
+	if up_open:
+		return Rect2()
+	var r: Rect2 = $BottomBar/HBox/PauseBtn.get_global_rect()
+	return r.merge($BottomBar/HBox/Speed3Btn.get_global_rect())
+
+
+## Pelajaran susulan (sekali per permainan).
+const LESSONS := {
+	&"lit": "DESA PERTAMA MENYALA! Warga sekitar mulai ikut membangun sendiri. Panel Peristiwa di kiri bawah mencatat kejadian penting; klik < > untuk melihat yang lama.",
+	&"post_kkn": "TIM KKN PULANG. Sekarang Poin datang dari desa bersih. Dua ancaman baru di panel atas:\nRESISTENSI: biru = Ragu Warga (naik jika banyak desa Rapuh di wilayah yang Komunitasnya lemah, turun saat desa jadi Mandiri), merah = Kepentingan Lama (naik tiap tahun dan saat energi bersih meluas). Mencapai 100% = kalah.\nKESEJAHTERAAN naik saat makin banyak desa berlistrik dan bersih. Habis = kalah.",
+}
 
 
 func owned_upgrade_count() -> int:
@@ -729,23 +806,35 @@ func _owns_energy_branch() -> bool:
 ## mengulang tutorial: lanjut dari langkah terakhir, atau tidak muncul jika sudah selesai/ditutup.
 const TUTORIAL_KEY := &"tutorial_step"
 const TUTORIAL_DONE := 99
+const LESSONS_OFF := &"lessons_off"
 
 
-func _build_hints(parent: Control) -> void:
-	if Game.sim == null or Game.sim.tick_count > Game.db.config.kkn_ticks:
+func _build_hints(_parent: Control) -> void:
+	if Game.sim == null:
 		return
 	var saved_step := int(Game.sim.counters.get(TUTORIAL_KEY, 0))
-	if saved_step >= _hint_steps().size():
+	if Game.sim.tick_count > Game.db.config.kkn_ticks or saved_step >= _hint_steps().size():
+		return
+	_main_active = true
+	_hint_step = saved_step
+	_show_hint()
+
+
+func _ensure_hint_panel() -> void:
+	if _hint_panel:
 		return
 	_hint_panel = PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.1, 0.03, 0.94)
+	style.bg_color = Color(0.12, 0.1, 0.03, 0.96)
 	style.border_color = Palette.LIT
 	style.set_border_width_all(2)
-	style.set_content_margin_all(8)
+	style.set_content_margin_all(10)
 	_hint_panel.add_theme_stylebox_override("panel", style)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 6)
+	_hint_panel.add_child(col)
 	var row := HBoxContainer.new()
-	_hint_panel.add_child(row)
+	col.add_child(row)
 	_hint_label = Label.new()
 	_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_label.custom_minimum_size = Vector2(470, 0)
@@ -754,28 +843,76 @@ func _build_hints(parent: Control) -> void:
 	row.add_child(_hint_label)
 	var close := Button.new()
 	close.text = "x"
-	close.tooltip_text = "Tutup petunjuk"
+	close.tooltip_text = "Tutup semua petunjuk"
 	close.focus_mode = Control.FOCUS_NONE
-	close.pressed.connect(func():
-		Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
-		_hint_panel.queue_free()
-		_hint_panel = null)
+	close.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	close.pressed.connect(_close_hints)
 	row.add_child(close)
-	parent.add_child(_hint_panel)
-	_hint_step = saved_step
-	_show_hint()
+	_hint_next = Button.new()
+	_hint_next.text = "Lanjut"
+	_hint_next.focus_mode = Control.FOCUS_NONE
+	_hint_next.custom_minimum_size = Vector2(110, 30)
+	_hint_next.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_hint_next.pressed.connect(func():
+		Audio.sfx(&"click")
+		_hint_ack = true
+		_hint_check = 1.0)
+	col.add_child(_hint_next)
+	_hint_stack.add_child(_hint_panel)
+	_hint_stack.move_child(_hint_panel, 0)
+
+
+func _close_hints() -> void:
+	Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
+	Game.sim.counters[LESSONS_OFF] = 1
+	_main_active = false
+	_lessons.clear()
+	_free_hint_panel()
+
+
+func _free_hint_panel() -> void:
+	Game.release(&"tutorial")
+	if _hint_panel:
+		_hint_panel.queue_free()
+		_hint_panel = null
+
+
+## Langkah yang sedang tampil: pelajaran susulan didahulukan, lalu langkah utama.
+func _current_hint() -> Dictionary:
+	if not _lessons.is_empty():
+		return _lessons[0]
+	if _main_active:
+		var steps := _hint_steps()
+		if _hint_step < steps.size():
+			return steps[_hint_step]
+	return {}
 
 
 func _show_hint() -> void:
-	var steps := _hint_steps()
-	if _hint_panel == null:
+	var cur := _current_hint()
+	if cur.is_empty():
+		_free_hint_panel()
 		return
-	if _hint_step >= steps.size():
-		Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
-		_hint_panel.queue_free()
-		_hint_panel = null
+	_ensure_hint_panel()
+	_hint_ack = false
+	_hint_label.text = cur["text"]
+	_hint_next.visible = cur["info"]
+	# Langkah penjelasan menjeda permainan supaya pemain sempat membaca.
+	if cur["info"]:
+		Game.hold(&"tutorial")
+	else:
+		Game.release(&"tutorial")
+
+
+## Antrekan pelajaran susulan (sekali per permainan).
+func _queue_lesson(id: StringName, target: Callable) -> void:
+	var sim := Game.sim
+	var key := StringName("lesson_" + String(id))
+	if sim.counters.has(key) or sim.counters.has(LESSONS_OFF):
 		return
-	_hint_label.text = steps[_hint_step][0]
+	sim.counters[key] = 1
+	_lessons.append(_step(LESSONS[id], target))
+	_show_hint()
 
 
 func _update_hints(delta: float) -> void:
@@ -783,22 +920,42 @@ func _update_hints(delta: float) -> void:
 	if _hint_panel == null:
 		return
 	_hint_check += delta
-	if _hint_step == 1 or _hint_step == 4:
+	var cur := _current_hint()
+	if not cur.is_empty() and not cur["info"]:
 		_hint_timer += delta
 	if _hint_check < 0.25:
 		return
 	_hint_check = 0.0
-	var steps := _hint_steps()
 	var advanced := false
-	while _hint_step < steps.size() and steps[_hint_step][1].call():
-		_hint_step += 1
-		Game.sim.counters[TUTORIAL_KEY] = _hint_step
+	while true:
+		cur = _current_hint()
+		if cur.is_empty():
+			break
+		var ok: bool = _hint_ack if cur["info"] else cur["done"].call()
+		if not ok:
+			break
+		_hint_ack = false
 		_hint_timer = 0.0
 		_hint_v0 = province_panel.village_index
 		advanced = true
+		if not _lessons.is_empty():
+			_lessons.pop_front()
+		else:
+			_hint_step += 1
+			Game.sim.counters[TUTORIAL_KEY] = _hint_step
+			if _hint_step >= _hint_steps().size():
+				_main_active = false
+				Game.sim.counters[TUTORIAL_KEY] = TUTORIAL_DONE
 	if advanced:
 		Audio.sfx(&"point")
 		_show_hint()
+
+
+## Panel kiri disembunyikan hanya saat langkah AKSI di peta (supaya tidak menutupi wilayah
+## awal seperti Aceh). Saat langkah penjelasan panel tetap tampil karena sedang dibahas.
+func _tutorial_hides_left() -> bool:
+	var cur := _current_hint()
+	return not cur.is_empty() and not cur["info"]
 
 
 ## Sorotan tutorial: redupkan layar kecuali hal yang dituju langkah petunjuk sekarang.
@@ -808,11 +965,9 @@ func _update_spotlight() -> void:
 		return
 	var up_open := upgrade_panel.visible
 	var busy: bool = modal.is_busy()
-	# Selama tutorial, panel statistik & misi disembunyikan supaya tidak menutupi wilayah awal
-	# (mis. Aceh di pojok kiri atas). Muncul lagi begitu petunjuk selesai atau ditutup.
-	var tut := _hint_panel != null
-	$StatsPanel.visible = not tut
-	%MissionPanel.visible = not tut and Game.sim.kkn_active
+	var hide_left := _tutorial_hides_left()
+	$StatsPanel.visible = not hide_left
+	%MissionPanel.visible = not hide_left and Game.sim.kkn_active
 	# Urutan lapisan: HUD < sorotan < petunjuk < (panel upgrade) < kartu popup.
 	# Saat panel upgrade terbuka: panel upgrade < sorotan < petunjuk < kartu popup.
 	if up_open != _hint_layer_up:
@@ -833,7 +988,8 @@ func _update_spotlight() -> void:
 	if _hint_panel == null or busy:
 		_spotlight.set_hole(Rect2())
 		return
-	_spotlight.set_hole(_hint_target(up_open))
+	var cur := _current_hint()
+	_spotlight.set_hole(cur["target"].call(up_open) if not cur.is_empty() else Rect2())
 
 
 var _hint_layer_up := false
@@ -848,26 +1004,6 @@ func _place_after(node: Node, ref: Node) -> void:
 func _place_before(node: Node, ref: Node) -> void:
 	var i := ref.get_index()
 	move_child(node, i - 1 if node.get_index() < i else i)
-
-
-func _hint_target(up_open: bool) -> Rect2:
-	match _hint_step:
-		0:
-			return Rect2() if up_open else map.province_rect(Game.sim.start_province)
-		1:
-			return province_panel.get_global_rect() if province_panel.visible and not up_open else Rect2()
-		2:
-			return Rect2() if up_open else %UpgradeBtn.get_global_rect()
-		3:
-			if not up_open:
-				return %UpgradeBtn.get_global_rect()
-			var tabs: TabContainer = upgrade_panel.tabs
-			if tabs.current_tab == 0:
-				return Rect2()
-			var bar := tabs.get_tab_bar()
-			var r := bar.get_tab_rect(0)
-			return Rect2(bar.global_position + r.position, r.size)
-	return Rect2()
 
 
 ## Notifikasi kecil yang tidak menjeda permainan, hilang sendiri setelah beberapa detik.

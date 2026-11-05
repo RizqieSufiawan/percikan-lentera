@@ -52,7 +52,7 @@ func refresh(state: Simulation.ProvinceState, ui: UiAssets, reachable: bool) -> 
 			button.texture_normal = ui.node_dark
 	# Persen desa nyata yang sudah memakai energi bersih.
 	count_label.text = "%d%%" % roundi(100.0 * state.on_desa() / maxf(1.0, state.total_desa()))
-	internet_mark.visible = state.internet
+	internet_mark.visible = false  # tanda internet di peta dihilangkan (terlalu ramai)
 	# Supaya peta tidak penuh: bar Komunitas hanya tampil saat wilayah diklik (dipilih).
 	_community_bar.set_value(state.community)
 	_update_bar()
@@ -83,3 +83,4 @@ func pulse() -> void:
 	var t := create_tween()
 	t.tween_property(self, "scale", Vector2(1.25, 1.25), 0.12)
 	t.tween_property(self, "scale", Vector2.ONE, 0.18)
+

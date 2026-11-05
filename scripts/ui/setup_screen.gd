@@ -39,6 +39,9 @@ func _ready() -> void:
 	%VillagePick.get_popup().max_size = Vector2i(100000, 200)
 	%NameEdit.text = Game.chosen_name
 	%StartBtn.pressed.connect(_on_start)
+	%NameEdit.placeholder_text = "Ketik nama timmu (wajib)"
+	%NameEdit.text_changed.connect(func(_t: String): _update_start())
+	%NameEdit.text_submitted.connect(func(_t: String): _on_start())
 	%BackBtn.pressed.connect(func(): Game.goto("title"))
 	var first: StringName = Game.chosen_province if Game.chosen_province != &"" else Game.db.provinces[0].id
 	if not _energy_buttons.has(Game.chosen_energy):
@@ -114,11 +117,19 @@ func _pick_village(item: int) -> void:
 	_update_start()
 
 
-## Tombol Mulai baru aktif setelah kloter pertama dipilih.
+## Tombol Mulai baru aktif setelah kloter pertama dipilih DAN nama tim diisi.
 func _update_start() -> void:
-	var ok := Game.chosen_village >= 0
-	%StartBtn.disabled = not ok
-	%StartBtn.tooltip_text = "" if ok else "Pilih kloter pertama dulu."
+	var has_village: bool = Game.chosen_village >= 0
+	var has_name: bool = %NameEdit.text.strip_edges() != ""
+	%StartBtn.disabled = not (has_village and has_name)
+	if not has_village and not has_name:
+		%StartBtn.tooltip_text = "Pilih kloter pertama dan isi nama tim dulu."
+	elif not has_village:
+		%StartBtn.tooltip_text = "Pilih kloter pertama dulu."
+	elif not has_name:
+		%StartBtn.tooltip_text = "Isi nama tim dulu."
+	else:
+		%StartBtn.tooltip_text = ""
 
 
 func _pick_energy(id: StringName, sound: bool = true) -> void:
@@ -130,7 +141,7 @@ func _pick_energy(id: StringName, sound: bool = true) -> void:
 
 
 func _on_start() -> void:
-	if Game.chosen_village < 0:
+	if %StartBtn.disabled:
 		return
 	Audio.sfx(&"click")
 	Game.chosen_name = %NameEdit.text.strip_edges()
