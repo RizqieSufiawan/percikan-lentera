@@ -5,10 +5,10 @@ extends PanelContainer
 ## membuat upgrade berikutnya lebih mahal (GameConfig.upgrade_cost_growth).
 
 const COL_W := 88.0
-const ROW_H := 108.0
+const ROW_H := 122.0
 const NODE_SIZE := Vector2(52, 52)
 const LABEL_W := 84.0
-const LABEL_H := 42.0
+const LABEL_H := 56.0
 const PAD := Vector2(4, 6)
 
 var _selected: UpgradeData
@@ -87,6 +87,13 @@ func _make_button(u: UpgradeData) -> Button:
 	fx.add_theme_color_override("font_color", Palette.LIT)
 	fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.set_meta("effect", fx)
+	# Harga terkini (ikut naik sesuai pengali tiap upgrade yang dibeli).
+	var pr := Label.new()
+	pr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pr.clip_text = true
+	pr.add_theme_font_size_override("font_size", 10)
+	pr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.set_meta("price", pr)
 	return b
 
 
@@ -159,6 +166,10 @@ func _build_tree(scroll: ScrollContainer, category: int) -> void:
 		canvas.add_child(fx)
 		fx.position = cell + Vector2((COL_W - LABEL_W) / 2.0, NODE_SIZE.y + 29)
 		fx.size = Vector2(LABEL_W, 14)
+		var pr: Label = b.get_meta("price")
+		canvas.add_child(pr)
+		pr.position = cell + Vector2((COL_W - LABEL_W) / 2.0, NODE_SIZE.y + 43)
+		pr.size = Vector2(LABEL_W, 14)
 
 
 func _place(u: UpgradeData, r: int, children: Dictionary, row: Dictionary, next_row: Array) -> void:
@@ -236,6 +247,15 @@ func refresh() -> void:
 		b.modulate = col
 		l.modulate = col
 		b.get_meta("effect").modulate = col
+		var pr: Label = b.get_meta("price")
+		if state == "owned":
+			pr.text = "dimiliki"
+		else:
+			var ptxt := "%d Poin" % sim.upgrade_cost(u)
+			if u.cost_money > 0:
+				ptxt += " + %d Eko" % u.cost_money
+			pr.text = ptxt
+		pr.modulate = col
 		# Ikon yang dimiliki diberi bingkai hijau, yang terpilih bingkai krem.
 		b.add_theme_stylebox_override("normal", _node_style(state == "owned", u == _selected))
 	for c in _canvases:
@@ -271,10 +291,13 @@ func _show_detail() -> void:
 	u_desc.text = ("Gunanya: %s\n\n" % why if why != "" else "") + "Efek:\n- " + "\n- ".join(UpgradeText.lines(u)) + "\n\n" + u.description
 	var pts := Game.sim.upgrade_cost(u)
 	var cost := "Biaya: %d Poin" % pts
-	if pts != u.cost_points:
-		cost += " (dasar %d)" % u.cost_points
 	if u.cost_money > 0:
 		cost += " + %d Ekonomi" % u.cost_money
+	var bought := int(Game.sim.counters.get(&"upgrades_bought", 0))
+	if pts != u.cost_points and bought > 0:
+		# Poin naik %d%% dari harga dasar untuk tiap upgrade yang sudah dibeli; Ekonomi tetap.
+		cost += "\n(Harga dasar %d Poin + %d%% x %d upgrade yang sudah kamu beli. Ekonomi tidak ikut naik.)" % [
+			u.cost_points, roundi(100.0 * Game.db.config.upgrade_cost_growth), bought]
 	u_cost.text = cost
 	var state := Game.sim.upgrade_state(u)
 	if state == "owned":
