@@ -9,8 +9,8 @@ Data: Natural Earth 1:10m (domain publik), dari github.com/nvkelso/natural-earth
 Gaya bawaan: peta relief halus. --pixel = gaya pixel art (1 piksel seni = 4 piksel layar, pita
 kedalaman dengan dithering, buih pantai, kilau ombak, huruf piksel).
 
-Pakai (versi yang dipakai game: pixel art, palet malam):
-  python3 tools/make_sea.py --ne <folder natural-earth-vector> --night
+Pakai (versi yang dipakai game: pixel art malam yang rapi):
+  python3 tools/make_sea.py --ne <folder natural-earth-vector> --refined
 Pilihan lain: --pixel (pixel art terang), tanpa opsi (relief halus).
 Butuh: pip install pyshp
 """
@@ -62,12 +62,16 @@ def signed_area(pts):
     return a / 2.0
 
 
-def rasterize(shp_path, proj, w, h):
-    """Mask poligon (lubang dihormati: cincin luar searah jarum jam, lubang sebaliknya)."""
+def rasterize(shp_path, proj, w, h, skip=None):
+    """Mask poligon (lubang dihormati: cincin luar searah jarum jam, lubang sebaliknya).
+    skip(record) -> True untuk melewati satu fitur (mis. Indonesia, yang diambil dari peta wilayah)."""
     img = Image.new("L", (w, h), 0)
     d = ImageDraw.Draw(img)
     r = shapefile.Reader(shp_path)
-    for shape in r.iterShapes():
+    for sr in r.iterShapeRecords():
+        shape = sr.shape
+        if skip is not None and skip(sr.record):
+            continue
         if not in_bbox(shape.bbox):
             continue
         parts = list(shape.parts) + [len(shape.points)]
@@ -178,6 +182,94 @@ def make_pixel(a):
     print("ok (pixel art):", a.out)
 
 
+# Gaya RAPI (dipakai game): pita kedalaman lebar dan halus, peralihan antarpita hanya selebar satu
+# piksel papan catur, tanpa bintik acak. Kilau ombak bergerak ditambahkan shader (shaders/sea.gdshader).
+REFINED = {
+    "sea": [(58, 124, 168), (46, 106, 150), (38, 92, 136), (32, 80, 123), (28, 70, 112), (24, 61, 101)],
+    "depths": [0, 150, 900, 2200, 4000, 6500],
+    "shelf": (62, 130, 174),
+    "foam": (92, 156, 196),
+    "land": (44, 54, 84),
+    "land_edge": (64, 78, 114),
+    "label": (132, 182, 220),
+}
+
+
+def make_refined(a):
+    base = geo_projection(a.geojson, 1.0)
+
+    def proj(x, y):
+        px, py = base(x, y)
+        return px + EXT_X, py + EXT_Y
+    W, H = OUT_W, OUT_H
+    depth = np.zeros((H, W), dtype=np.float32)
+    bdir = os.path.join(a.ne, "10m_physical", "ne_10m_bathymetry_all")
+    for letter, meters in LEVELS:
+        mask = rasterize(os.path.join(bdir, "ne_10m_bathymetry_%s_%d.shp" % (letter, meters)), proj, W, H)
+        depth[mask] = meters
+    # Negara tetangga dari Natural Earth; daratan Indonesia diambil dari peta sel kloter
+    # (assets/map/cells.png), supaya garis pantai di latar sama persis dengan wilayah di game.
+    land = rasterize(os.path.join(a.ne, "10m_cultural", "ne_10m_admin_0_countries.shp"), proj, W, H,
+                     skip=lambda rec: rec["ADMIN"] == "Indonesia")
+    w, h = W // PIXEL, H // PIXEL
+    d_lr = depth.reshape(h, PIXEL, w, PIXEL).mean(axis=(1, 3))
+    land_lr = land.reshape(h, PIXEL, w, PIXEL).mean(axis=(1, 3)) > 0.5
+    cells = np.array(Image.open(os.path.join(ROOT, "assets", "map", "cells.png")).convert("RGBA")).astype(int)
+    indo = (cells[:, :, 0] + cells[:, :, 1] * 256) > 0
+    ox, oy = EXT_X // PIXEL, EXT_Y // PIXEL
+    indo_full = np.zeros_like(land_lr)
+    indo_full[oy:oy + indo.shape[0], ox:ox + indo.shape[1]] = indo
+    # NE tetangga di dalam bingkai peta tidak boleh menimpa laut Indonesia (beda sumber data).
+    land_lr = (land_lr & ~ndimage.binary_dilation(indo_full, iterations=1)) | indo_full
+    d_lr = ndimage.gaussian_filter(d_lr, sigma=2.2)
+    pal = np.array(REFINED["sea"], dtype=np.uint8)
+    f = np.interp(d_lr, REFINED["depths"], np.arange(len(REFINED["depths"]), dtype=np.float32))
+    idx = np.floor(f).astype(int)
+    frac = f - idx
+    # Peralihan: sepertiga terakhir tiap pita diberi pola papan catur dengan pita berikutnya.
+    yy, xx = np.mgrid[0:h, 0:w]
+    checker = ((xx + yy) % 2) == 0
+    idx = np.where((frac > 0.72) & checker, idx + 1, idx)
+    idx = np.clip(idx, 0, len(pal) - 1)
+    img = pal[idx]
+    # Paparan dangkal 2 piksel di sekitar daratan, lalu buih 1 piksel menempel pantai.
+    dist = ndimage.distance_transform_cdt(~land_lr, metric="chessboard")
+    img[dist == 2] = REFINED["shelf"]
+    # Ombak: garis pendek 3 piksel tersebar teratur (kisi bergeser acak), hanya di laut lepas.
+    rng = np.random.default_rng(5)
+    for gy in range(0, h, 14):
+        for gx in range(0, w, 22):
+            y = gy + int(rng.integers(0, 10))
+            x = gx + (7 if (gy // 14) % 2 else 0) + int(rng.integers(0, 12))
+            if y >= h or x + 3 >= w or idx[y, x] < 2 or (dist[y, x:x + 3] < 6).any():
+                continue
+            img[y, x:x + 3] = pal[idx[y, x] - 1]
+    img[dist == 1] = REFINED["foam"]
+    edge = land_lr & ~ndimage.binary_erosion(land_lr, iterations=1)
+    img[land_lr] = REFINED["land"]
+    img[edge] = REFINED["land_edge"]
+    out = Image.fromarray(img, "RGB").resize((W, H), Image.NEAREST)
+    if not a.no_labels:
+        # Nama laut: huruf bitmap 2x dengan jarak antarhuruf, warna lembut.
+        layer = Image.new("RGBA", (W // 2, H // 2), (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        font = ImageFont.load_default_imagefont()
+        for name, lon, lat in SEA_NAMES:
+            x, y = proj(lon, lat)
+            # Jarak antarhuruf +1 piksel.
+            widths = [d.textlength(ch, font=font) + 1 for ch in name]
+            cx = round(x / 2 - sum(widths) / 2)
+            for ch, cw in zip(name, widths):
+                d.text((cx, round(y / 2)), ch, font=font, fill=REFINED["label"] + (170,))
+                cx += cw
+        layer = layer.resize((W, H), Image.NEAREST)
+        out = out.convert("RGBA")
+        out.alpha_composite(layer)
+        out = out.convert("RGB")
+    out.save(a.out)
+    print("ok (rapi):", a.out)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ne", required=True, help="folder natural-earth-vector")
@@ -185,8 +277,12 @@ def main():
     ap.add_argument("--out", default=os.path.join(ROOT, "assets", "map", "map_background.png"))
     ap.add_argument("--no-labels", action="store_true")
     ap.add_argument("--pixel", action="store_true", help="gaya pixel art (bawaan: relief halus)")
-    ap.add_argument("--night", action="store_true", help="pixel art dengan palet malam (dipakai game)")
+    ap.add_argument("--night", action="store_true", help="pixel art dengan palet malam (versi lama)")
+    ap.add_argument("--refined", action="store_true", help="pixel art malam yang rapi (dipakai game)")
     a = ap.parse_args()
+    if a.refined:
+        make_refined(a)
+        return
     if a.night:
         a.pixel = True
     if a.pixel:

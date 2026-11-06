@@ -31,6 +31,7 @@ const BUILD_SPOT := 0.001  # sedang dibangun: hanya titik pertama (dekat pusat k
 const COLOR_DARK := Color(0.33, 0.37, 0.60)
 const COLOR_BORDER := Color(0.07, 0.10, 0.20)
 const SEA_SHADER := preload("res://shaders/sea.gdshader")
+const AMBIENT_SCRIPT := preload("res://scripts/ui/map_ambient.gd")
 
 var nodes: Dictionary = {}
 var selected: StringName = &""
@@ -63,12 +64,17 @@ var _max_r: PackedFloat32Array
 var _r_now: PackedFloat32Array
 var _r_target: PackedFloat32Array
 var _animating: bool = false
+## Status terakhir tiap kloter, untuk efek saat kloter baru menjadi mandiri (-1 = belum dibaca).
+var _last_status: PackedInt32Array
+var _last_energy: Array[StringName] = []
 var _selected_cell: int = -1
 
 @onready var node_layer: Control = $Nodes
 var _region_layer: Control
 var _overlay: Control
 var _sea: ColorRect
+## Awan, perahu, burung, asap fosil, dan percikan energi bersih (scripts/ui/map_ambient.gd).
+var _ambient: Control
 
 
 func build() -> void:
@@ -90,12 +96,17 @@ func build() -> void:
 	_sea.material = sea_mat
 	add_child(_sea)
 	_region_layer = _make_layer("Regions")
+	_ambient = AMBIENT_SCRIPT.new()
+	_ambient.name = "Ambient"
+	add_child(_ambient)
 	_overlay = _make_layer("Overlay")
 	_overlay.draw.connect(_draw_overlay)
 	move_child(_sea, 0)
 	move_child(_region_layer, 1)
-	move_child(_overlay, 2)
+	move_child(_ambient, 2)
+	move_child(_overlay, 3)
 	_load_cells()
+	_ambient.setup(self, _cell_ids)
 	for p in Game.db.provinces:
 		var n: ProvinceNode = NODE_SCENE.instantiate()
 		node_layer.add_child(n)
@@ -132,6 +143,8 @@ func _load_cells() -> void:
 			_max_r.append(float(r[2]) + 6.0)
 			_r_now.append(-1.0)
 			_r_target.append(-1.0)
+			_last_status.append(-1)
+			_last_energy.append(&"")
 			_cell_owner.append([p.id, i])
 			_cell_count += 1
 	var n := maxi(1, _cell_count)
@@ -313,6 +326,25 @@ func refresh() -> void:
 	_overlay.queue_redraw()
 
 
+## Kembang api di atas kota yang merayakan. origin = asal kloter (VillageData.origin).
+func celebrate_origin(origin: String) -> void:
+	if _ambient == null or Game.sim == null:
+		return
+	var sum := Vector2.ZERO
+	var n := 0
+	var cols := {}
+	for s: Simulation.ProvinceState in Game.sim.provinces.values():
+		for v in s.villages:
+			if v.origin() != origin:
+				continue
+			sum += _seed_pos[_cell_base[s.data.id] + v.index]
+			n += 1
+			if v.is_clean():
+				cols[_energy_color(v.energy)] = true
+	if n > 0:
+		_ambient.celebrate(sum / n, cols.keys())
+
+
 ## Posisi titik kloter di layar (koordinat lokal peta).
 func village_center(id: StringName, index: int) -> Vector2:
 	if not _cell_base.has(id):
@@ -345,6 +377,14 @@ func _update_cells(s: Simulation.ProvinceState) -> void:
 				_mix_img.set_pixel(k, row, Color(mc.r, mc.g, mc.b, mix[row + 1][1]))
 			else:
 				_mix_img.set_pixel(k, row, Color(0, 0, 0, 0))
+		if v.status == Simulation.V_INDEP and _last_status[k] == Simulation.V_LIT and _ambient:
+			_ambient.cell_independent(k, _energy_color(v.energy))
+		elif _ambient and (_last_status[k] == Simulation.V_LIT or _last_status[k] == Simulation.V_INDEP) and not v.is_clean():
+			_ambient.cell_down(k, _energy_color(_last_energy[k]), true)
+		elif _ambient and _last_status[k] == Simulation.V_INDEP and v.status == Simulation.V_LIT:
+			_ambient.cell_down(k, _energy_color(v.energy), false)
+		_last_energy[k] = v.energy
+		_last_status[k] = v.status
 		if v.status == Simulation.V_INDEP:
 			_set_cell(k, _energy_color(v.energy), fossil_base, r, 1.0)
 		elif v.status == Simulation.V_LIT:
@@ -420,7 +460,7 @@ func _update_region_styles() -> void:
 		mat.set_shader_parameter("region_tint", tint)
 		var is_sel: bool = id == selected
 		mat.set_shader_parameter("border_color", Palette.CREAM if is_sel else COLOR_BORDER)
-		mat.set_shader_parameter("border_px", (4.0 if is_sel else 2.0))
+		mat.set_shader_parameter("highlight_border", 1.0 if is_sel else 0.0)
 		mat.set_shader_parameter("highlight", 0.15 if id == hovered else 0.0)
 	# Wilayah terpilih digambar paling atas supaya garisnya utuh.
 	if _regions.has(selected):

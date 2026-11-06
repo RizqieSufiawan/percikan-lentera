@@ -104,9 +104,6 @@ func _make_shade() -> GradientTexture2D:
 
 
 func _style_texts() -> void:
-	var kicker: Label = %Kicker
-	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.add_theme_color_override("font_color", Palette.LIT)
 	var title: Label = %GameTitle
 	title.add_theme_font_size_override("font_size", 72)
 	title.add_theme_constant_override("line_spacing", -18)
@@ -121,9 +118,6 @@ func _style_texts() -> void:
 	var tag: Label = %Tagline
 	tag.add_theme_font_size_override("font_size", 14)
 	tag.add_theme_color_override("font_color", Palette.MUTED)
-	var foot: Label = %Footer
-	foot.add_theme_font_size_override("font_size", 11)
-	foot.add_theme_color_override("font_color", Color(Palette.MUTED, 0.7))
 
 
 func _button_style(bg: Color, bar: Color) -> StyleBoxFlat:
@@ -242,18 +236,16 @@ func _build_buttons() -> void:
 
 func _play_intro() -> void:
 	# Judul memudar masuk, lalu tombol muncul satu per satu.
-	for n in [%Kicker, %GameTitle, %Subtitle, %Tagline, %Footer]:
+	for n in [%GameTitle, %Subtitle, %Tagline]:
 		n.modulate.a = 0.0
 	for b in _buttons:
 		b.modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(%Kicker, "modulate:a", 1.0, 0.35)
 	tw.tween_property(%GameTitle, "modulate:a", 1.0, 0.6)
 	tw.parallel().tween_property(%Subtitle, "modulate:a", 1.0, 0.6).set_delay(0.2)
 	tw.parallel().tween_property(%Tagline, "modulate:a", 1.0, 0.6).set_delay(0.35)
 	for i in _buttons.size():
 		tw.parallel().tween_property(_buttons[i], "modulate:a", 1.0, 0.3).set_delay(0.45 + 0.07 * i)
-	tw.parallel().tween_property(%Footer, "modulate:a", 1.0, 0.6).set_delay(0.8)
 
 
 # ---------------------------------------------------------------- animasi latar

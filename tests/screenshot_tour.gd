@@ -67,8 +67,15 @@ func _run() -> void:
 	Game.chosen_energy = &"plts"
 	Game.chosen_name = "KKN Tematik Nyala"
 	Game.new_game()
+	Game.sim.counters[&"tutorial_step"] = 99
+	Game.sim.counters[&"lessons_off"] = 1
 	Game.goto("game")
 	await _wait(0.6)
+	# Sembunyikan label debug (build rilis tidak menampilkannya).
+	if OS.get_environment("HIDE_DEBUG") != "":
+		for c in get_tree().current_scene.get_children():
+			if c.has_method("handle_key"):
+				c._status.visible = false
 	await _shot("03_game_start_card")
 	await _press_modal(0)
 	await _wait(0.3)

@@ -33,7 +33,7 @@ void fragment() {
 		float phase = TIME * 0.35 + hash(vec2(gp.y, 7.0)) * 10.0;
 		float slot = floor(phase);
 		float h = hash(gp + vec2(slot * 13.0, slot * 7.0));
-		if (h < 0.004 * amount) {
+		if (h < 0.0025 * amount) {
 			float glow = sin(fract(phase) * 3.14159);
 			c.rgb = mix(c.rgb, vec3(0.75, 0.9, 1.0), 0.6 * glow);
 		}

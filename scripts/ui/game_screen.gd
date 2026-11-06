@@ -460,6 +460,7 @@ func _on_milestone(m: MilestoneData, report: Dictionary) -> void:
 ## Perayaan kecil saat ibu kota provinsi "beralih": sebagian besar desa di provinsinya sudah bersih.
 func _on_city_celebrated(city: String, province: String, share: float) -> void:
 	Audio.sfx(&"independent")
+	map.celebrate_origin(province)
 	var text := "%s merayakan! %d%% desa di %s kini memakai energi bersih." % [city, roundi(share * 100), province]
 	toast(text, Palette.INDEPENDENT)
 	ticker.push(text, null)
