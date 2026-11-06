@@ -474,8 +474,7 @@ def main():
     app.badge((40, 46, 96))
     sym_lantern(app)
     save("assets/ui/app_icon.png", app.out(64))
-    tb = title_background()
-    tb.save(os.path.join(ROOT, "assets", "ui", "title_background.png"))
+    # Latar layar judul sekarang dibuat oleh tools/make_title_bg.py (berlapis untuk paralaks).
     if a.sheet:
         cols = 16
         rows = (len(made) + cols - 1) // cols
