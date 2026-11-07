@@ -381,18 +381,37 @@ def palm(im, d, x, base, h, lean, sway=0.0, flutter=0.0):
     d.ellipse([cx - 2, cy - 1, cx + 2, cy + 2], fill=NEAR2)
 
 
+def smooth(a, b, t):
+    t = max(0.0, min(1.0, t))
+    t = t * t * (3 - 2 * t)
+    return a + (b - a) * t
+
+
+def ground_y(x):
+    """Tanah depan: gundukan kiri (pohon kelapa) melandai halus ke tepi danau, naik lagi di kanan."""
+    left = 166 + 6 * math.sin(x * 0.03)
+    shore = 176 - 4 * math.sin(x * 0.05)
+    right = 166 + (320 - x) * 0.05
+    y = smooth(left, shore, (x - 92) / 46.0)
+    return smooth(y, right, (x - 258) / 24.0)
+
+
 def near_layer(bake_palms=True):
     R.seed(303)
     im, d = new()
     # Tanah depan di kiri dan kanan bawah, dengan rumput.
     for x in range(W):
-        left = 166 + 6 * math.sin(x * 0.03)
-        y0 = int(left if x < 120 else (176 - 4 * math.sin(x * 0.05) if x < 270 else 166 + (320 - x) * 0.05))
+        y0 = int(round(ground_y(x)))
         for y in range(y0, H):
             px(im, x, y, NEAR)
-        if x % 3 == 0:
-            for y in range(y0 - R.randint(1, 4), y0):
-                px(im, x + R.randint(-1, 1), y, NEAR)
+        # Rumput: helai pendek-panjang bervariasi, sedikit condong, tidak berjajar kaku.
+        if R.random() < 0.55:
+            h = R.choice((1, 2, 2, 3, 3, 4, 5))
+            lean = R.choice((-1, 0, 0, 1))
+            for k in range(h):
+                px(im, x + (lean if k >= h - 1 and h > 2 else 0), y0 - 1 - k, NEAR)
+            if h >= 4 and R.random() < 0.4:
+                px(im, x + lean, y0 - 1 - h, NEAR2)  # ujung helai terkena cahaya bulan
     if bake_palms:
         palm(im, d, 24, 172, 96, 0.9)
         palm(im, d, 54, 172, 66, -0.5)

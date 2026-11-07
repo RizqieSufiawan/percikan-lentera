@@ -43,6 +43,7 @@ const FIREFLY_COUNT := 12
 
 var _buttons: Array[Button] = []
 var _layers: Array[TextureRect] = []
+var _rays: ColorRect  # pancaran cahaya bulan (shaders/moon_rays.gdshader), anak lapisan langit
 var _fx: Array[Control] = []  # satu kanvas efek per lapisan, ikut bergeser bersama lapisannya
 var _lanterns: Array = []
 var _stars: Array = []
@@ -113,6 +114,13 @@ func _build_scenery() -> void:
 		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		%Scenery.add_child(tr)
+		if i == 0:
+			_rays = ColorRect.new()
+			_rays.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var rm := ShaderMaterial.new()
+			rm.shader = preload("res://shaders/moon_rays.gdshader")
+			_rays.material = rm
+			tr.add_child(_rays)
 		var fx := Control.new()
 		fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		fx.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -130,6 +138,12 @@ func _layout_layers() -> void:
 		var d: float = LAYERS[i][1]
 		tr.size = vs + Vector2.ONE * MARGIN * 2.0
 		tr.position = (Vector2(-MARGIN, -MARGIN) - _par * MARGIN * d).round()
+	if _rays:
+		# Tepat menutup gambar langit di dalam lapisannya (gambar diperbesar & dipotong "cover").
+		var tr0 := _layers[0]
+		var k := maxf(tr0.size.x / IMG.x, tr0.size.y / IMG.y)
+		_rays.position = (tr0.size - IMG * k) / 2.0
+		_rays.size = IMG * k
 
 
 ## Titik di gambar lapisan (1280x720) -> titik lokal di lapisan yang sudah diperbesar/dipotong.
@@ -426,15 +440,27 @@ func _draw_lake(c: Control, px: float) -> void:
 		if x > 320.0 or x + ln < 0.0:
 			continue
 		_art(c, px, Vector2(x, r["y"]), LAKE2 if r["bright"] else LAKE1, ln)
-	# Pantulan bulan: tiap baris bergoyang sendiri, kadang terputus, makin lebar dan pudar ke bawah.
-	for y in range(LAKE_Y + 2, ART_H, 2):
-		var spread := 3 + (y - LAKE_Y) / 5
+	# Pantulan bulan: di dekat tepi danau berbentuk cakram bulan yang gepeng (sedikit bergoyang,
+	# baris berselang agak redup seperti permukaan air), lalu pecah jadi garis-garis ke bawah.
+	var disc := [5, 8, 10, 10, 9, 7, 4]
+	for i in disc.size():
+		var y: int = LAKE_Y + 1 + i
+		var hw: int = disc[i]
+		var wob := roundf(sin(_time * 1.3 + i * 0.9) * 0.8)
+		var col := Color8(226, 222, 198) if i % 2 == 0 else Color8(196, 196, 186)
+		_art(c, px, Vector2(MOON.x - hw + wob, y), col, hw * 2)
+		if i % 2 == 1:
+			# Satu celah gelap per baris berselang, bergeser pelan (riak memecah pantulan).
+			var cut := int(fmod(_time * 1.2 + i * 2.3, float(hw * 2 - 2))) + 1
+			_art(c, px, Vector2(MOON.x - hw + wob + cut, y), Color8(120, 130, 160))
+	for y in range(LAKE_Y + 2 + disc.size(), ART_H, 2):
+		var spread := 4 + (y - LAKE_Y) / 5
 		var wob := roundf(sin(_time * 1.6 + y * 0.9) * 1.2 + sin(_time * 0.7 + y * 0.35))
 		var ln := spread * 2 - int(absf(sin(_time * 2.1 + y * 1.7)) * 3.0)
 		var x0 := MOON.x - spread + wob
-		var col := Color8(200, 200, 196) if y < 160 else Color8(150, 156, 176)
+		var col := Color8(196, 198, 196) if y < 164 else Color8(150, 156, 176)
 		var gap := int((0.5 + 0.5 * sin(_time * 1.1 + y)) * ln)
-		if y > 156 and gap > 0 and gap < ln - 1:
+		if gap > 0 and gap < ln - 1:
 			_art(c, px, Vector2(x0, y), col, gap)
 			_art(c, px, Vector2(x0 + gap + 1, y), col, ln - gap - 1)
 		else:
@@ -446,6 +472,8 @@ func _draw_lake(c: Control, px: float) -> void:
 	for hx in HOUSES:
 		for k in 4:
 			var y: int = LAKE_Y + 2 + k * 3
+			if absf(hx + 3 - MOON.x) < 12.0 and y < LAKE_Y + 9:
+				continue  # tertutup cakram pantulan bulan
 			var wob := roundf(sin(_time * 2.0 + hx + k * 1.3))
 			var a: float = (0.75 + 0.25 * sin(_time * 3.0 + hx * 0.7 + k)) * _house_light.get(hx, 1.0)
 			_art(c, px, Vector2(hx + 3 + wob, y), Color(Color8(200, 160, 96), a))
