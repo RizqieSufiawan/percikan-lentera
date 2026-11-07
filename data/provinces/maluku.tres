@@ -39,6 +39,7 @@ short_name = "Maluku"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(970, 389)
+label_offset = Vector2(-23, -35)
 neighbors = Array[StringName]([&"malut"])
 villages = 3
 fossil_villages = 2

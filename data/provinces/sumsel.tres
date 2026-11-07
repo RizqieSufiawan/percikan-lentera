@@ -118,6 +118,7 @@ short_name = "Sumsel-Jambi"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(242, 358)
+label_offset = Vector2(0, -30)
 neighbors = Array[StringName]([&"riau", &"lampung"])
 villages = 12
 fossil_villages = 9

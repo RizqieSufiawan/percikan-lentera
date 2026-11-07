@@ -57,6 +57,7 @@ short_name = "Sultra"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(737, 396)
+label_offset = Vector2(-3, -33)
 neighbors = Array[StringName]([&"sulteng", &"sulsel"])
 villages = 5
 fossil_villages = 4

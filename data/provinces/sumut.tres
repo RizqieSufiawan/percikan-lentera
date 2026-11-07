@@ -126,6 +126,7 @@ short_name = "Sumut"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(126, 231)
+label_offset = Vector2(3, -29)
 neighbors = Array[StringName]([&"aceh", &"riau"])
 villages = 13
 fossil_villages = 9

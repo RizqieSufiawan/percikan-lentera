@@ -48,6 +48,7 @@ short_name = "Kalsel"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(568, 383)
+label_offset = Vector2(-1, -24)
 neighbors = Array[StringName]([&"kalteng", &"kaltim"])
 villages = 4
 fossil_villages = 3

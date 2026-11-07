@@ -439,10 +439,6 @@ def near_layer(bake_palms=True):
     # Semak di kanan bawah.
     for bx, by, br in ((296, 168, 7), (308, 166, 9), (318, 167, 6)):
         d.ellipse([bx - br, by - br * 0.7, bx + br, by + br], fill=NEAR)
-    # Perahu kecil di danau.
-    d.polygon([(120, 168), (142, 168), (138, 172), (124, 172)], fill=NEAR2)
-    d.line([(131, 168), (131, 158)], fill=NEAR2)
-    px(im, 132, 158, LAMP)
     return im
 
 

@@ -191,6 +191,7 @@ short_name = "Jateng"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
 map_position = Vector2(433, 502)
+label_offset = Vector2(-13, -33)
 neighbors = Array[StringName]([&"jabar", &"jatim"])
 villages = 20
 fossil_villages = 18

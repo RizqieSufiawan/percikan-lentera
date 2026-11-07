@@ -50,6 +50,11 @@ SEA_NAMES = [  # (nama, lon, lat)
 ]
 
 
+# Jangkauan geser maksimum (setengah resolusi) untuk laut yang sempit, supaya namanya tidak pindah
+# ke laut lain walau harus sedikit mepet ke pulau.
+SEA_SEARCH = {"LAUT FLORES": (30, 12), "LAUT SULAWESI": (36, 14)}
+
+
 def in_bbox(bbox):
     x0, y0, x1, y1 = bbox
     return not (x1 < BBOX[0] or x0 > BBOX[2] or y1 < BBOX[1] or y0 > BBOX[3])
@@ -191,8 +196,63 @@ REFINED = {
     "foam": (92, 156, 196),
     "land": (44, 54, 84),
     "land_edge": (64, 78, 114),
-    "label": (132, 182, 220),
+    "label": (172, 206, 232),
+    "label_edge": (16, 40, 76),
 }
+
+
+def draw_sea_labels(out, proj, dist_lr, W, H):
+    """Nama laut: huruf bitmap 2x berjarak, tipis (tanpa garis tepi), warna terang lembut.
+    Posisi dicari otomatis di sekitar koordinatnya: kotak teks (plus jarak aman) sebisa mungkin
+    tidak menyentuh daratan/buih/paparan dan tidak bertumpuk dengan nama laut lain."""
+    font = ImageFont.load_default_imagefont()
+    hw, hh = W // 2, H // 2
+    # Daerah terlarang (setengah resolusi): daratan, buih, dan paparan dangkal.
+    avoid_lr = dist_lr <= 2
+    avoid = np.array(Image.fromarray((avoid_lr * 255).astype(np.uint8)).resize((hw, hh), Image.NEAREST)) > 0
+    integ = np.pad(avoid.astype(np.int32).cumsum(0).cumsum(1), ((1, 0), (1, 0)))
+
+    def count(x0, y0, x1, y1):
+        x0, y0 = max(0, x0), max(0, y0)
+        x1, y1 = min(hw, x1), min(hh, y1)
+        if x1 <= x0 or y1 <= y0:
+            return 0
+        return int(integ[y1, x1] - integ[y0, x1] - integ[y1, x0] + integ[y0, x0])
+
+    probe = ImageDraw.Draw(Image.new("L", (1, 1)))
+    placed = []
+    layer = Image.new("RGBA", (hw, hh), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    for name, lon, lat in SEA_NAMES:
+        x, y = proj(lon, lat)
+        widths = [probe.textlength(ch, font=font) + 1 for ch in name]
+        tw, th = int(sum(widths)), 11
+        cx0, cy0 = x / 2.0, y / 2.0
+        best = None
+        rx, ry = SEA_SEARCH.get(name, (110, 60))
+        for dy in range(-ry, ry + 1, 2):
+            for dx in range(-rx, rx + 1, 2):
+                bx, by = int(cx0 + dx - tw / 2), int(cy0 + dy)
+                pad = 2
+                hit = count(bx - pad, by - pad, bx + tw + pad, by + th + pad)
+                clash = any(not (bx + tw + 8 < px0 or px1 + 8 < bx or by + th + 6 < py0 or py1 + 6 < by)
+                            for px0, py0, px1, py1 in placed)
+                # Wajib: tidak bertumpuk dengan nama lain; sangat diutamakan: bersih dari daratan;
+                # lalu sedekat mungkin dengan koordinat aslinya.
+                cost = (1e9 if clash else 0) + (1e6 if hit else 0) + hit * 1000 + (dx * dx + dy * dy * 3) ** 0.5
+                if best is None or cost < best[0]:
+                    best = (cost, bx, by)
+        _, bx, by = best
+        placed.append((bx, by, bx + tw, by + th))
+        cx = bx
+        for ch, cw in zip(name, widths):
+            d.text((cx, by), ch, font=font, fill=REFINED["label"] + (190,))
+            cx += cw
+        print("  %-20s geser (%+d, %+d)" % (name, (bx + tw / 2 - cx0) * 2, (by - cy0) * 2))
+    layer = layer.resize((W, H), Image.NEAREST)
+    out = out.convert("RGBA")
+    out.alpha_composite(layer)
+    return out.convert("RGB")
 
 
 def make_refined(a):
@@ -219,8 +279,15 @@ def make_refined(a):
     ox, oy = EXT_X // PIXEL, EXT_Y // PIXEL
     indo_full = np.zeros_like(land_lr)
     indo_full[oy:oy + indo.shape[0], ox:ox + indo.shape[1]] = indo
-    # NE tetangga di dalam bingkai peta tidak boleh menimpa laut Indonesia (beda sumber data).
-    land_lr = (land_lr & ~ndimage.binary_dilation(indo_full, iterations=1)) | indo_full
+    # Daratan tetangga (NE) dan Indonesia (cells.png) dari sumber berbeda: tetangga tidak boleh
+    # menimpa Indonesia, dan celah tipis di PERBATASAN DARAT (mis. Kalimantan-Malaysia) diisi sebagai
+    # daratan tetangga, supaya tidak muncul "laut" berbuih di tengah pulau.
+    foreign = land_lr & ~indo_full
+    both = foreign | indo_full
+    near_f = ndimage.binary_dilation(foreign, iterations=3)
+    near_i = ndimage.binary_dilation(indo_full, iterations=3)
+    gap = ndimage.binary_closing(both, structure=np.ones((3, 3)), iterations=3) & ~both & near_f & near_i
+    land_lr = foreign | gap | indo_full
     d_lr = ndimage.gaussian_filter(d_lr, sigma=2.2)
     pal = np.array(REFINED["sea"], dtype=np.uint8)
     f = np.interp(d_lr, REFINED["depths"], np.arange(len(REFINED["depths"]), dtype=np.float32))
@@ -250,22 +317,7 @@ def make_refined(a):
     img[edge] = REFINED["land_edge"]
     out = Image.fromarray(img, "RGB").resize((W, H), Image.NEAREST)
     if not a.no_labels:
-        # Nama laut: huruf bitmap 2x dengan jarak antarhuruf, warna lembut.
-        layer = Image.new("RGBA", (W // 2, H // 2), (0, 0, 0, 0))
-        d = ImageDraw.Draw(layer)
-        font = ImageFont.load_default_imagefont()
-        for name, lon, lat in SEA_NAMES:
-            x, y = proj(lon, lat)
-            # Jarak antarhuruf +1 piksel.
-            widths = [d.textlength(ch, font=font) + 1 for ch in name]
-            cx = round(x / 2 - sum(widths) / 2)
-            for ch, cw in zip(name, widths):
-                d.text((cx, round(y / 2)), ch, font=font, fill=REFINED["label"] + (170,))
-                cx += cw
-        layer = layer.resize((W, H), Image.NEAREST)
-        out = out.convert("RGBA")
-        out.alpha_composite(layer)
-        out = out.convert("RGB")
+        out = draw_sea_labels(out, proj, dist, W, H)
     out.save(a.out)
     print("ok (rapi):", a.out)
 
