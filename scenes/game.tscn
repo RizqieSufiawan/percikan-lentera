@@ -512,6 +512,7 @@ custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
+text_overrun_behavior = 3
 max_lines_visible = 2
 
 [node name="FeedSubtitle" type="Label" parent="FeedPanel/VBox"]

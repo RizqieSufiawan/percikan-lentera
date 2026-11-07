@@ -80,6 +80,9 @@ func _show_start_card() -> void:
 
 
 func _process(delta: float) -> void:
+	if _outro_t >= 0.0:
+		_process_outro(delta)
+		return
 	_update_hints(delta)
 	_combo_time = maxf(0.0, _combo_time - delta)
 	_fit_panels()
@@ -94,6 +97,10 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	if _outro_t >= 0.0:
+		_finish_outro(false)
+		get_viewport().set_input_as_handled()
 		return
 	# Esc juga menutup: menu jeda = Lanjut, panduan = tutup.
 	if event.keycode == KEY_ESCAPE and modal.is_busy():
@@ -1064,12 +1071,117 @@ func _on_kkn_ended(lost: int) -> void:
 	modal.show_card("KKN Selesai", null, text, "Waktu sekarang berjalan lebih cepat.", ["Lanjut"])
 
 
-func _on_game_ended(_result: StringName) -> void:
+## Penutup sebelum layar akhir: peta dibiarkan tampil beberapa detik (dengan kembang api bila menang)
+## supaya pemain bisa menikmati hasil kerjanya. Klik atau tombol apa saja untuk langsung lanjut.
+const OUTRO_SECONDS := 12.0
+const OUTRO_MIN_SKIP := 1.5
+var _outro: Control
+var _outro_t := -1.0
+var _outro_fw_cd := 0.0
+var _outro_origins: Array[String] = []
+var _outro_hint: Label
+
+
+func _on_game_ended(result: StringName) -> void:
 	# Simpanan otomatis ditandai selesai supaya tombol Lanjutkan tidak membuka permainan yang sudah tamat.
 	Game.save_game(Game.AUTO_SLOT)
-	await get_tree().create_timer(1.2).timeout
 	upgrade_panel.close()
+	modal.clear_all()
+	# Peta dan bar atas memakai keadaan terakhir (sebelum panel lain disembunyikan).
+	_refresh()
+	map.refresh()
+	if _hint_panel:
+		_hint_panel.hide()
+	if _spotlight:
+		_spotlight.hide()
+	for n in ["StatsPanel", "MissionPanel", "ProvincePanel", "FeedPanel", "BottomBar", "Ticker", "Bubbles"]:
+		get_node(n).hide()
+	if _toast_box:
+		_toast_box.hide()
+	# Asal kloter yang sudah berenergi bersih: tempat kembang api diluncurkan.
+	var seen := {}
+	for st: Simulation.ProvinceState in Game.sim.provinces.values():
+		for v in st.villages:
+			if v.is_clean() and not seen.has(v.origin()):
+				seen[v.origin()] = true
+				_outro_origins.append(v.origin())
+	_build_outro(result)
+	_outro_t = 0.0
+
+
+func _build_outro(result: StringName) -> void:
+	var win := result == &"win"
+	_outro = Control.new()
+	_outro.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_outro.mouse_filter = Control.MOUSE_FILTER_STOP
+	_outro.gui_input.connect(func(e: InputEvent):
+		if e is InputEventMouseButton and e.pressed:
+			_finish_outro(false))
+	add_child(_outro)
+	move_child(_outro, modal.get_index())
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	box.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	box.offset_bottom = -36
+	box.alignment = BoxContainer.ALIGNMENT_END
+	box.add_theme_constant_override("separation", 4)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_outro.add_child(box)
+	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(panel)
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(col)
+	var title := Label.new()
+	title.theme_type_variation = &"PixelTitle"
+	title.add_theme_font_size_override("font_size", 36)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Palette.LIT if win else Palette.MUTED)
+	match result:
+		&"win": title.text = "Nusantara Menyala!"
+		&"timeout": title.text = "Waktu Habis"
+		_: title.text = "Lampu Padam"
+	col.add_child(title)
+	var sub := Label.new()
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.text = "%s  |  %s dari %s desa memakai energi bersih" % [Game.sim.date_text(),
+		Simulation.ribu(Game.sim.desa_on()), Simulation.ribu(Game.sim.desa_total())]
+	col.add_child(sub)
+	_outro_hint = Label.new()
+	_outro_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_outro_hint.add_theme_color_override("font_color", Palette.MUTED)
+	col.add_child(_outro_hint)
+	panel.modulate.a = 0.0
+	panel.create_tween().tween_property(panel, "modulate:a", 1.0, 0.8)
+
+
+func _process_outro(delta: float) -> void:
+	_outro_t += delta
+	var left := ceili(OUTRO_SECONDS - _outro_t)
+	_outro_hint.text = "Klik untuk melihat hasil  ·  %d" % maxi(left, 0)
+	# Kembang api di kota-kota yang sudah berenergi bersih (hanya saat menang).
+	if Game.sim.result == &"win" and not _outro_origins.is_empty():
+		_outro_fw_cd -= delta
+		if _outro_fw_cd <= 0.0:
+			_outro_fw_cd = randf_range(0.5, 0.9)
+			map.celebrate_origin(_outro_origins[randi() % _outro_origins.size()])
+	if _outro_t >= OUTRO_SECONDS:
+		_finish_outro(true)
+
+
+## force: lewati batas waktu minimum (dipakai saat waktu habis dan oleh tes otomatis).
+func _finish_outro(force: bool) -> void:
+	if _outro_t < 0.0 or (not force and _outro_t < OUTRO_MIN_SKIP):
+		return
+	_outro_t = -1.0
 	Game.goto("end")
+
+
+func skip_outro() -> void:
+	_finish_outro(true)
 
 
 # ---------------------------------------------------------------- gelembung aksi

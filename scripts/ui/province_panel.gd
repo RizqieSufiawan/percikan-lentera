@@ -83,7 +83,7 @@ func _build_village_rows() -> void:
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.clip_text = true
 		b.toggle_mode = true
-		b.custom_minimum_size = Vector2(0, 26)
+		b.custom_minimum_size = Vector2(0, 44)
 		b.add_theme_font_size_override("font_size", 16)
 		b.pressed.connect(_select_village.bind(v.index))
 		village_list.add_child(b)
@@ -152,10 +152,12 @@ func _refresh_village_rows(s: Simulation.ProvinceState) -> void:
 			for t in v.data.traits:
 				var td := Game.db.get_trait(t)
 				traits.append(td.display_name.to_lower() if td else String(t))
-		b.text = "%s · %s · %s" % [v.name(), v.origin(), ", ".join(traits)]
+		# Dua baris supaya nama tidak terpotong: nama kloter (dan asal), lalu cirinya.
+		var head := "%s · %s" % [v.name(), v.origin()] if v.origin() != "" else v.name()
 		_style_building_row(b, v)
 		if v.is_building():
-			b.text = "MEMBANGUN %d mgg · %s" % [Game.sim.weeks_of(v.build_left), b.text]
+			head = "MEMBANGUN %d mgg · %s" % [Game.sim.weeks_of(v.build_left), v.name()]
+		b.text = "%s\n%s" % [head, ", ".join(traits)]
 		b.tooltip_text = "%s dan %s desa sekitarnya (%s)\nStatus: %s" % [v.name(), Simulation.ribu(v.size() - 1), v.origin(), STATUS_NAMES[v.status]]
 		b.set_pressed_no_signal(v.index == village_index)
 

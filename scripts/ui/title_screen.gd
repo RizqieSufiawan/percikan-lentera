@@ -27,6 +27,7 @@ const WATER_F2 := Color8(96, 140, 196)
 const LAKE1 := Color8(40, 62, 116)
 const LAKE2 := Color8(72, 96, 156)
 const PALMS := preload("res://assets/ui/title_palms.png")
+const CREDITS := preload("res://scripts/ui/credits_panel.gd")
 const PALM_FRAMES := 16
 const PALM_BOX := Rect2(0, 52, 108, 128)  # piksel seni, sama dengan make_title_bg.py
 const PALM_FPS := 7.0
@@ -40,6 +41,11 @@ const ROOF := Color8(70, 40, 44)
 const LIT_HOUSES := [20, 92, 238, 252, 280, 296, 309]
 const CHIMNEY_HOUSES := [252, 296]  # rumah yang sedang memasak (asap dapur tipis)
 const FIREFLY_COUNT := 12
+## Awan malam di langit tengah (piksel seni): berkelompok, hanyut pelan dari kiri ke kanan.
+## Sprite dari tools/make_title_clouds.py (kotak dicetak oleh script itu).
+const CLOUD_BAND := Vector2(46, 82)  # rentang y awan: lereng atas gunung, jauh di atas desa
+const CLOUDS := preload("res://assets/ui/title_clouds.png")
+const CLOUD_RECTS := [Rect2(0, 0, 96, 28), Rect2(0, 29, 78, 25), Rect2(0, 55, 112, 30), Rect2(0, 86, 64, 23), Rect2(0, 110, 100, 28), Rect2(0, 139, 86, 26)]
 
 var _buttons: Array[Button] = []
 var _layers: Array[TextureRect] = []
@@ -48,6 +54,8 @@ var _fx: Array[Control] = []  # satu kanvas efek per lapisan, ikut bergeser bers
 var _lanterns: Array = []
 var _stars: Array = []
 var _flies: Array = []
+var _clouds: Array = []  # {rect, x, y, w, sp}
+var _cloud_period := 400.0
 var _ripples: Array = []  # garis riak danau: {y, x, len, sp, ph, bright}
 var _smoke: Array = []  # kepulan asap gunung: {p, age, life, r0, r1}
 var _embers: Array = []  # bara kecil dari kawah: {p, v, age}
@@ -80,6 +88,7 @@ func _ready() -> void:
 		_stars.append({"p": g * 4.0, "ph": _rng.randf() * TAU, "sp": _rng.randf_range(0.6, 2.2),
 			"lvl": 0.55 if roll < 0.55 else (0.85 if roll < 0.9 else 1.0), "big": roll >= 0.9,
 			"col": Color(1, 0.98, 0.9) if _rng.randf() < 0.7 else Color(0.8, 0.86, 1.0)})
+	_spawn_cloud_groups()
 	# Asap gunung sudah mengepul sejak awal (tidak mulai dari kosong).
 	for i in 20:
 		_spawn_smoke(i * 0.75)
@@ -293,6 +302,10 @@ func _build_buttons() -> void:
 	settings.pressed.connect(func():
 		Audio.sfx(&"click")
 		add_child(SettingsPanel.new()))
+	var credits := _make_button("Kredit", false)
+	credits.pressed.connect(func():
+		Audio.sfx(&"click")
+		add_child(CREDITS.new()))
 	if OS.get_name() != "Web":
 		var quit := _make_button("Keluar", false)
 		quit.pressed.connect(func(): get_tree().quit())
@@ -341,6 +354,10 @@ func _process(delta: float) -> void:
 			_shooting = {}
 	for r in _ripples:
 		r["x"] = fposmod(r["x"] + r["sp"] * delta, 330.0)
+	for cl in _clouds:
+		cl["x"] += cl["sp"] * delta
+		if cl["x"] > 330.0:
+			cl["x"] -= _cloud_period  # muncul lagi dari kiri
 	_update_volcano(delta)
 	_update_houses(delta)
 	for fx in _fx:
@@ -385,6 +402,7 @@ func _new_lantern(anywhere: bool) -> Dictionary:
 func _draw_lanterns() -> void:
 	var c: Control = _fx[1]
 	_draw_volcano(c, _pix(c))
+	_draw_clouds(c, _pix(c))
 	var px := _pix(c) * 0.5
 	for l in _lanterns:
 		var s: float = l["size"]
@@ -434,44 +452,49 @@ func _draw_lake(c: Control, px: float) -> void:
 		if x > 320.0 or x + ln < 0.0:
 			continue
 		_art(c, px, Vector2(x, r["y"]), LAKE2 if r["bright"] else LAKE1, ln)
-	# Pantulan bulan: di dekat tepi danau berbentuk cakram bulan yang gepeng (sedikit bergoyang,
-	# baris berselang agak redup seperti permukaan air), lalu pecah jadi garis-garis ke bawah.
-	var disc := [5, 8, 10, 10, 9, 7, 4]
-	for i in disc.size():
-		var y: int = LAKE_Y + 1 + i
-		var hw: int = disc[i]
-		var wob := roundf(sin(_time * 1.3 + i * 0.9) * 0.8)
-		var col := Color8(226, 222, 198) if i % 2 == 0 else Color8(196, 196, 186)
-		_art(c, px, Vector2(MOON.x - hw + wob, y), col, hw * 2)
-		if i % 2 == 1:
-			# Satu celah gelap per baris berselang, bergeser pelan (riak memecah pantulan).
-			var cut := int(fmod(_time * 1.2 + i * 2.3, float(hw * 2 - 2))) + 1
-			_art(c, px, Vector2(MOON.x - hw + wob + cut, y), Color8(120, 130, 160))
-	for y in range(LAKE_Y + 2 + disc.size(), ART_H, 2):
-		var spread := 4 + (y - LAKE_Y) / 5
-		var wob := roundf(sin(_time * 1.6 + y * 0.9) * 1.2 + sin(_time * 0.7 + y * 0.35))
-		var ln := spread * 2 - int(absf(sin(_time * 2.1 + y * 1.7)) * 3.0)
-		var x0 := MOON.x - spread + wob
-		var col := Color8(196, 198, 196) if y < 164 else Color8(150, 156, 176)
+	# Pantulan bulan (jalur kilau): karena perspektif, di dekat tepi seberang jalurnya tipis, rapat,
+	# dan redup; makin dekat ke pemain makin lebar, terang, dan pecah jadi riak besar yang membulat.
+	var span := float(ART_H - LAKE_Y)
+	var ry := LAKE_Y + 1
+	while ry < ART_H:
+		var y := ry
+		var t := float(y - LAKE_Y) / span
+		var hw := _moon_path_hw(y)
+		var wob := roundf(sin(_time * 1.6 + y * 0.9) * (0.4 + 1.2 * t) + sin(_time * 0.7 + y * 0.35) * t)
+		var ln := maxi(1, hw * 2 - int(absf(sin(_time * 2.1 + y * 1.7)) * (1.0 + 3.0 * t)))
+		var x0 := MOON.x - ln / 2 + wob
+		var col := Color8(120, 130, 160).lerp(Color8(228, 224, 200), clampf(t * 1.4, 0.0, 1.0))
+		# Dekat tepi seberang: baris berselang lebih redup dan bergeser, supaya berkilau, bukan pita padat.
+		if t < 0.3 and (y + int(_time * 2.0)) % 2 == 0:
+			col = col.lerp(LAKE2, 0.55)
+			x0 += 1 if sin(_time * 1.7 + y) > 0.0 else -1
 		var gap := int((0.5 + 0.5 * sin(_time * 1.1 + y)) * ln)
-		if gap > 0 and gap < ln - 1:
+		if ln > 4 and gap > 1 and gap < ln - 2:
 			_art(c, px, Vector2(x0, y), col, gap)
 			_art(c, px, Vector2(x0 + gap + 1, y), col, ln - gap - 1)
 		else:
 			_art(c, px, Vector2(x0, y), col, ln)
-		# Kilau kecil berpindah-pindah di pantulan.
-		if fmod(_time * 3.0 + y * 0.37, 1.0) < 0.15:
-			_art(c, px, Vector2(x0 + int(fmod(y * 7.3 + floorf(_time * 3.0) * 5.0, ln)), y), Color8(240, 236, 210))
+		# Kilau kecil berpindah-pindah, lebih sering di bagian dekat.
+		if t > 0.3 and fmod(_time * 3.0 + y * 0.37, 1.0) < 0.1 + 0.15 * t:
+			_art(c, px, Vector2(x0 + int(fmod(y * 7.3 + floorf(_time * 3.0) * 5.0, ln)), y), Color8(244, 240, 216))
+		# Riak makin renggang ke arah pemain (perspektif).
+		ry += 1 if t < 0.3 else 2
 	# Pantulan lampu rumah: titik hangat bergoyang.
 	for hx in HOUSES:
 		for k in 4:
 			var y: int = LAKE_Y + 2 + k * 3
-			if absf(hx + 3 - MOON.x) < 12.0 and y < LAKE_Y + 9:
-				continue  # tertutup cakram pantulan bulan
+			if absf(hx + 3 - MOON.x) <= _moon_path_hw(y) + 1:
+				continue  # tertutup jalur pantulan bulan
 			var wob := roundf(sin(_time * 2.0 + hx + k * 1.3))
 			var a: float = (0.75 + 0.25 * sin(_time * 3.0 + hx * 0.7 + k)) * _house_light.get(hx, 1.0)
 			_art(c, px, Vector2(hx + 3 + wob, y), Color(Color8(200, 160, 96), a))
 			_art(c, px, Vector2(hx + 4 + wob, y), Color(Color8(160, 126, 90), a))
+
+
+## Setengah lebar jalur pantulan bulan di baris y: tipis di tepi seberang, melebar membulat ke bawah.
+func _moon_path_hw(y: int) -> int:
+	var t := float(y - LAKE_Y) / float(ART_H - LAKE_Y)
+	return 1 + int(roundf(pow(t, 1.25) * 13.0))
 
 
 # ---------------------------------------------------------------- gunung api
@@ -539,6 +562,33 @@ func _draw_volcano(c: Control, px: float) -> void:
 	for e in _embers:
 		var t: float = e["age"] / 1.6
 		_art(c, px, e["p"], Color(1.0, 0.65 - t * 0.3, 0.3, 1.0 - t))
+
+
+# ---------------------------------------------------------------- awan
+
+## Satu gerombolan dari tiga awan (sprite berbeda) yang berdempetan, hanyut hampir bersamaan.
+func _spawn_cloud_groups() -> void:
+	var picks := range(CLOUD_RECTS.size())
+	picks.shuffle()
+	var x0 := _rng.randf_range(-40.0, 40.0)
+	var gx := x0
+	var sp := _rng.randf_range(1.8, 2.6)  # satu gerombolan bergerak bersamaan
+	for g in 3:
+		var r: Rect2 = CLOUD_RECTS[picks[g]]
+		_clouds.append({"rect": r, "x": gx, "y": roundf(_rng.randf_range(CLOUD_BAND.x, CLOUD_BAND.y - r.size.y)),
+			"w": r.size.x, "sp": sp})
+		gx += r.size.x + _rng.randf_range(-12.0, 14.0)  # rapat, boleh sedikit bertumpuk
+	# Periode putar sama untuk semua awan, supaya gerombolan tetap utuh saat muncul lagi dari kiri.
+	_cloud_period = 330.0 + (gx - x0) + 40.0
+	# Awan yang lebih tinggi digambar dulu (di belakang).
+	_clouds.sort_custom(func(p, q): return p["y"] + p["rect"].size.y < q["y"] + q["rect"].size.y)
+
+
+func _draw_clouds(c: Control, px: float) -> void:
+	for cl in _clouds:
+		var r: Rect2 = cl["rect"]
+		var tl := _map(c, Vector2(floorf(cl["x"]), cl["y"]) * 4.0)
+		c.draw_texture_rect_region(CLOUDS, Rect2(tl, r.size * px), r)
 
 
 # ---------------------------------------------------------------- rumah

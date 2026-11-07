@@ -71,6 +71,15 @@ func dismiss() -> void:
 	_show_next()
 
 
+## Buang semua kartu (dipakai saat permainan berakhir).
+func clear_all() -> void:
+	_queue.clear()
+	if not _current.is_empty() or visible:
+		_current = {}
+		hide()
+		Game.release(&"modal")
+
+
 func is_busy() -> bool:
 	return not _current.is_empty()
 

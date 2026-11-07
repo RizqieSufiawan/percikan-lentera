@@ -67,6 +67,10 @@ func _run() -> void:
 			await _wait(0.02)
 	dbg.handle_key(KEY_F12)
 	await _wait(1.6)
+	# Penutup peta (beberapa detik) dilewati.
+	if get_tree().current_scene and get_tree().current_scene.has_method("skip_outro"):
+		get_tree().current_scene.skip_outro()
+		await _wait(1.0)
 	var ended: bool = get_tree().current_scene != null and get_tree().current_scene.name == "End"
 	print("DEBUG_TEST " + ("PASS" if ended else "FAIL: layar akhir tidak muncul"))
 	get_tree().quit()
