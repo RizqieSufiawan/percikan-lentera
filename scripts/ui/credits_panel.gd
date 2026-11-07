@@ -3,16 +3,16 @@ extends Control
 
 signal closed
 
-## Isi nama tim di sini sebelum build dikirim.
-const TEAM := "Tim Percikan Lentera\n(isi nama anggota tim di scripts/ui/credits_panel.gd)\nS1 Fakultas Informatika, Universitas Telkom"
+## Nama tim dan anggota.
+const TEAM := "Tim Perceng Berani\nMuhammad Rizqie Sufiawan\nAruna Jannu Rezasyah\nMuhammad Nabil Gitaro\nS1 Rekayasa Perangkat Lunak, Fakultas Informatika\nUniversitas Telkom"
 
 ## [judul, isi]. Baris kosong di isi = jarak antar-paragraf.
 const SECTIONS := [
 	["Huruf", "Pixeloid Sans oleh GGBotNet, lisensi SIL Open Font License 1.1.\nm6x11 oleh Daniel Linssen (managore.itch.io/m6x11), bebas dipakai dengan mencantumkan kredit."],
 	["Data", "Badan Pusat Statistik (BPS), Statistik Potensi Desa Indonesia 2024 (Podes 2024): jumlah dan kondisi listrik desa per provinsi. \"Desa\" di permainan ini = wilayah setingkat desa: 75.753 desa, 8.486 kelurahan, dan 37 UPT/SPT, total 84.276.\nPerpres No. 22 Tahun 2017 tentang Rencana Umum Energi Nasional (RUEN), Lampiran I: potensi energi terbarukan per provinsi.\nPP No. 40 Tahun 2025 tentang Kebijakan Energi Nasional (KEN): target dan tonggak tahun.\nSiaran pers Kementerian ESDM yang dikutip di kartu peristiwa (nomor siaran pers tertulis di kartunya)."],
-	["Peta", "Garis pantai dan kedalaman laut: Natural Earth (naturalearthdata.com), domain publik.\nBatas provinsi: \"Indonesia GeoJSON & TopoJSON Maps (38 Provinces)\", lisensi CC BY 4.0. Diubah: disederhanakan menjadi 24 wilayah dan digambar ulang sebagai pixel art."],
+	["Peta", "Garis pantai dan kedalaman laut: Natural Earth (naturalearthdata.com), domain publik.\nBatas provinsi: \"Indonesia GeoJSON & TopoJSON Maps (38 Provinces)\", lisensi CC BY 4.0. Diubah: digambar ulang sebagai pixel art."],
 	["Gambar", "Semua pixel art (peta, kartu, ikon, UI, layar judul) dibuat untuk permainan ini."],
-	["Musik dan suara", "(isi sumber musik dan efek suara)"],
+	["Musik dan suara", "Musik dibuat sendiri oleh tim untuk permainan ini.\nEfek suara: (isi sumber efek suara)"],
 	["Dibuat dengan", "Godot Engine (godotengine.org), lisensi MIT."],
 ]
 

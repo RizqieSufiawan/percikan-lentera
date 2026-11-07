@@ -7,7 +7,7 @@
 
 [sub_resource type="Resource" id="k_0"]
 script = ExtResource("v_script")
-display_name = "Kampung Tebor"
+display_name = "Kampung Kitaro"
 traits = Array[StringName]([&"hutan_berkabut"])
 size = 296
 origin = "Papua Barat"
@@ -15,54 +15,28 @@ compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"bio
 
 [sub_resource type="Resource" id="k_1"]
 script = ExtResource("v_script")
-display_name = "Kampung Aribor"
+display_name = "Kampung Kiwani"
 traits = Array[StringName]([&"hutan_berkabut"])
 start_fossil = true
 size = 674
 origin = "Papua Barat"
 compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
 
-[sub_resource type="Resource" id="k_2"]
-script = ExtResource("v_script")
-display_name = "Kampung Menage"
-traits = Array[StringName]([&"hutan_berkabut"])
-size = 187
-origin = "Papua Barat Daya"
-compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_3"]
-script = ExtResource("v_script")
-display_name = "Kampung Wadoki"
-traits = Array[StringName]([&"hutan_berkabut"])
-start_fossil = true
-size = 435
-origin = "Papua Barat Daya"
-compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_4"]
-script = ExtResource("v_script")
-display_name = "Kampung Suaperi"
-traits = Array[StringName]([&"hutan_berkabut"])
-start_fossil = true
-size = 434
-origin = "Papua Barat Daya"
-compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
-
 [resource]
 script = ExtResource("p_script")
 id = &"pabar"
-display_name = "Papua Barat & Papua Barat Daya"
+display_name = "Papua Barat"
 short_name = "Papua Barat"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
-map_position = Vector2(1035, 336)
-label_offset = Vector2(1, -32)
-neighbors = Array[StringName]([&"papteng"])
-villages = 5
-fossil_villages = 3
-village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4")])
+map_position = Vector2(1066, 383)
+label_offset = Vector2(-7, -34)
+neighbors = Array[StringName]([&"pbd", &"papteng"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
 spread_mod = 0.9
 compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
-disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 8.1, &"badai_pesisir": 3.6, &"kemarau_panjang": 0.7, &"erupsi": 0.0, &"titik_api": 0.4})
-member_provinces = PackedStringArray("Papua Barat", "Papua Barat Daya")
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 10.3, &"badai_pesisir": 4.7, &"kemarau_panjang": 0.5, &"erupsi": 0.0, &"titik_api": 0.1})
+member_provinces = PackedStringArray("Papua Barat")
 note = ""

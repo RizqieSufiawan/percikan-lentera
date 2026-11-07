@@ -42,7 +42,9 @@ func _ready() -> void:
 	map.empty_clicked.connect(func(): province_panel.hide())
 	province_panel.visibility_changed.connect(func():
 		if not province_panel.visible:
-			map.set_selected(&""))
+			map.set_selected(&"")
+		_update_province_tab())
+	_build_province_tab()
 	_build_speed_buttons()
 	_build_legend()
 	_build_missions()
@@ -369,8 +371,90 @@ func _sync_map_village() -> void:
 
 func _select_province(id: StringName) -> void:
 	Game.sim.auto_build_focus = id
+	_last_province = id
 	map.set_selected(id)
 	province_panel.show_province(id)
+
+
+# ---------------------------------------------------------------- tab panel wilayah
+# Saat panel kanan tertutup, sebuah tab kecil menempel di tepi kanan layar. Klik tab = panel
+# wilayah terakhir yang dibuka meluncur masuk lagi (awal permainan: wilayah awal tim KKN).
+
+const PANEL_SLIDE := 0.22
+var _province_tab: Button
+var _province_tab_label: Label
+var _last_province: StringName = &""
+var _panel_base := Vector2.ZERO  # offset_left, offset_right panel wilayah saat diam
+
+
+func _build_province_tab() -> void:
+	_panel_base = Vector2(province_panel.offset_left, province_panel.offset_right)
+	_province_tab = Button.new()
+	_province_tab.focus_mode = Control.FOCUS_NONE
+	_province_tab.tooltip_text = "Buka lagi panel wilayah"
+	_province_tab.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	_province_tab.custom_minimum_size = Vector2(36, 160)
+	_province_tab.offset_left = -36
+	_province_tab.offset_right = 6  # sedikit masuk ke balik tepi layar, seperti tab laci
+	_province_tab.offset_top = -100
+	_province_tab.offset_bottom = 60
+	_province_tab.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_province_tab.pressed.connect(_open_last_province)
+	add_child(_province_tab)
+	move_child(_province_tab, province_panel.get_index())
+	# Teks tegak (dibaca dari bawah ke atas) di dalam tab.
+	_province_tab_label = Label.new()
+	_province_tab_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_province_tab_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_province_tab_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_province_tab_label.theme_type_variation = &"HudTitle"
+	_province_tab_label.size = Vector2(124, 22)
+	_province_tab_label.pivot_offset = Vector2(62, 11)
+	_province_tab_label.rotation = -PI / 2.0
+	_province_tab_label.position = Vector2(17 - 62, 92 - 11)
+	_province_tab.add_child(_province_tab_label)
+	var arrow := Label.new()
+	arrow.text = "<"
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arrow.add_theme_color_override("font_color", Palette.LIT)
+	arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	arrow.position = Vector2(0, 8)
+	arrow.size = Vector2(32, 18)
+	_province_tab.add_child(arrow)
+	_update_province_tab.call_deferred()
+
+
+func _update_province_tab() -> void:
+	if _province_tab == null:
+		return
+	var id := _last_province if _last_province != &"" else Game.sim.start_province
+	var st: Simulation.ProvinceState = Game.sim.provinces.get(id)
+	_province_tab_label.text = st.data.short_name if st else "Wilayah"
+	var want := not province_panel.visible and _outro_t < 0.0
+	if want and not _province_tab.visible:
+		# Tab muncul meluncur dari tepi kanan.
+		_province_tab.visible = true
+		_province_tab.modulate.a = 0.0
+		var tw := _province_tab.create_tween()
+		tw.tween_property(_province_tab, "modulate:a", 1.0, PANEL_SLIDE)
+	elif not want:
+		_province_tab.visible = false
+
+
+func _open_last_province() -> void:
+	Audio.sfx(&"click")
+	var id := _last_province if _last_province != &"" else Game.sim.start_province
+	if id == &"" or not Game.sim.provinces.has(id):
+		return
+	_select_province(id)
+	# Panel meluncur masuk dari kanan.
+	var base_l := _panel_base.x
+	var base_r := _panel_base.y
+	province_panel.offset_left = base_l + 300.0
+	province_panel.offset_right = base_r + 300.0
+	var tw := province_panel.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(province_panel, "offset_left", base_l, PANEL_SLIDE)
+	tw.parallel().tween_property(province_panel, "offset_right", base_r, PANEL_SLIDE)
 
 
 # ---------------------------------------------------------------- berita, event, tawaran
@@ -1096,6 +1180,8 @@ func _on_game_ended(result: StringName) -> void:
 		_spotlight.hide()
 	for n in ["StatsPanel", "MissionPanel", "ProvincePanel", "FeedPanel", "BottomBar", "Ticker", "Bubbles"]:
 		get_node(n).hide()
+	if _province_tab:
+		_province_tab.hide()
 	if _toast_box:
 		_toast_box.hide()
 	# Asal kloter yang sudah berenergi bersih: tempat kembang api diluncurkan.

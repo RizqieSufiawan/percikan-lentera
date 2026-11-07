@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/jawa.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/diy.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Sidokerto"
+traits = Array[StringName]([&"peternakan"])
+size = 18
+origin = "DIY"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Rejoagung"
+traits = Array[StringName]([&"lahan_terik"])
+start_fossil = true
+size = 420
+origin = "DIY"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"diy"
+display_name = "DI Yogyakarta"
+short_name = "DIY"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(435, 516)
+label_offset = Vector2(-3, -31)
+neighbors = Array[StringName]([&"jateng"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 7.5, &"badai_pesisir": 33.8, &"kemarau_panjang": 13.7, &"erupsi": 0.0, &"titik_api": 3.4})
+member_provinces = PackedStringArray("DI Yogyakarta")
+note = ""

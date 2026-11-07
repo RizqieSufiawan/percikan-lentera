@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_script")
 title = "Peta dan Kloter Desa"
-text = "Peta berisi 24 wilayah dari 38 provinsi, dengan 84.276 desa nyata (BPS, Podes 2024).\nKlik wilayah untuk membuka daftar kloter. Satu baris = sekitar 500 desa dari satu provinsi dengan ciri alam yang mirip."
+text = "Peta berisi 38 provinsi, dengan 84.276 desa nyata (BPS, Podes 2024).\nKlik wilayah untuk membuka daftar kloter. Satu baris = sekitar 500 desa dari satu provinsi dengan ciri alam yang mirip."
 image = ExtResource("1_img")

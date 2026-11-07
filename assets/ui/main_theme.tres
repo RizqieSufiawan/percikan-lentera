@@ -1,78 +1,47 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://cmirv2a4uhvvj"]
 
 [ext_resource type="FontVariation" path="res://assets/fonts/body.tres" id="f_body"]
 [ext_resource type="FontVariation" path="res://assets/fonts/body_bold.tres" id="f_bold"]
 [ext_resource type="FontVariation" path="res://assets/fonts/pixel.tres" id="f_pixel"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/panel.png" id="t_panel"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/panel_plain.png" id="t_panel_plain"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/tooltip.png" id="t_tooltip"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/btn_normal.png" id="t_btn_normal"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/btn_hover.png" id="t_btn_hover"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/btn_pressed.png" id="t_btn_pressed"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/btn_active.png" id="t_btn_active"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/btn_disabled.png" id="t_btn_disabled"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/tab_selected.png" id="t_tab_selected"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/tab_unselected.png" id="t_tab_unselected"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/tab_hovered.png" id="t_tab_hovered"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/bar_bg.png" id="t_bar_bg"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/bar_fill.png" id="t_bar_fill"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/scroll_track.png" id="t_scroll_track"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/scroll_grab.png" id="t_scroll_grab"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/scroll_grab_hl.png" id="t_scroll_grab_hl"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/hscroll_grab.png" id="t_hscroll_grab"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/hscroll_grab_hl.png" id="t_hscroll_grab_hl"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/hscroll_track.png" id="t_hscroll_track"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/field.png" id="t_field"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/field_focus.png" id="t_field_focus"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/toggle_on.png" id="t_toggle_on"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/toggle_off.png" id="t_toggle_off"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/slider_grab.png" id="t_slider_grab"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/slider_grab_hl.png" id="t_slider_grab_hl"]
-[ext_resource type="Texture2D" path="res://assets/ui/kit/arrow_down.png" id="t_arrow_down"]
+[ext_resource type="Texture2D" uid="uid://csqxa1git22m" path="res://assets/ui/kit/arrow_down.png" id="t_arrow_down"]
+[ext_resource type="Texture2D" uid="uid://ei1t537dhwms" path="res://assets/ui/kit/bar_bg.png" id="t_bar_bg"]
+[ext_resource type="Texture2D" uid="uid://djv7mbqfjimby" path="res://assets/ui/kit/bar_fill.png" id="t_bar_fill"]
+[ext_resource type="Texture2D" uid="uid://cus4yi6onv8ks" path="res://assets/ui/kit/btn_active.png" id="t_btn_active"]
+[ext_resource type="Texture2D" uid="uid://bl0mnf8skl70e" path="res://assets/ui/kit/btn_disabled.png" id="t_btn_disabled"]
+[ext_resource type="Texture2D" uid="uid://fgkjcfucew3r" path="res://assets/ui/kit/btn_hover.png" id="t_btn_hover"]
+[ext_resource type="Texture2D" uid="uid://c7lhmj8iswvak" path="res://assets/ui/kit/btn_normal.png" id="t_btn_normal"]
+[ext_resource type="Texture2D" uid="uid://bd4gyxh6sb8wb" path="res://assets/ui/kit/btn_pressed.png" id="t_btn_pressed"]
+[ext_resource type="Texture2D" uid="uid://bg7x54qfvtuh2" path="res://assets/ui/kit/field.png" id="t_field"]
+[ext_resource type="Texture2D" uid="uid://ojrd0ugt0263" path="res://assets/ui/kit/field_focus.png" id="t_field_focus"]
+[ext_resource type="Texture2D" uid="uid://bke4umcnyhvee" path="res://assets/ui/kit/hscroll_grab.png" id="t_hscroll_grab"]
+[ext_resource type="Texture2D" uid="uid://bv75x8egvdqyf" path="res://assets/ui/kit/hscroll_grab_hl.png" id="t_hscroll_grab_hl"]
+[ext_resource type="Texture2D" uid="uid://d2tuec462t3xn" path="res://assets/ui/kit/hscroll_track.png" id="t_hscroll_track"]
+[ext_resource type="Texture2D" uid="uid://dqrnbv81cwesd" path="res://assets/ui/kit/panel.png" id="t_panel"]
+[ext_resource type="Texture2D" uid="uid://crfdb874if4lg" path="res://assets/ui/kit/panel_plain.png" id="t_panel_plain"]
+[ext_resource type="Texture2D" uid="uid://oc1vpp0xd18r" path="res://assets/ui/kit/scroll_grab.png" id="t_scroll_grab"]
+[ext_resource type="Texture2D" uid="uid://dss3ob5uns41a" path="res://assets/ui/kit/scroll_grab_hl.png" id="t_scroll_grab_hl"]
+[ext_resource type="Texture2D" uid="uid://c14vgla06q44q" path="res://assets/ui/kit/scroll_track.png" id="t_scroll_track"]
+[ext_resource type="Texture2D" uid="uid://bky0mhs3n51i3" path="res://assets/ui/kit/slider_grab.png" id="t_slider_grab"]
+[ext_resource type="Texture2D" uid="uid://cg0vobawwy2rd" path="res://assets/ui/kit/slider_grab_hl.png" id="t_slider_grab_hl"]
+[ext_resource type="Texture2D" uid="uid://rr71hr35am7a" path="res://assets/ui/kit/tab_hovered.png" id="t_tab_hovered"]
+[ext_resource type="Texture2D" uid="uid://do4oyvlcp65kx" path="res://assets/ui/kit/tab_selected.png" id="t_tab_selected"]
+[ext_resource type="Texture2D" uid="uid://bpw0jfniunp0l" path="res://assets/ui/kit/tab_unselected.png" id="t_tab_unselected"]
+[ext_resource type="Texture2D" uid="uid://bg82atfwt78vw" path="res://assets/ui/kit/toggle_off.png" id="t_toggle_off"]
+[ext_resource type="Texture2D" uid="uid://vgi7pyjlgrd0" path="res://assets/ui/kit/toggle_on.png" id="t_toggle_on"]
+[ext_resource type="Texture2D" uid="uid://ct51w1pcdodi1" path="res://assets/ui/kit/tooltip.png" id="t_tooltip"]
 
-[sub_resource type="StyleBoxTexture" id="panel"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-texture = ExtResource("t_panel")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxTexture" id="panel_plain"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-texture = ExtResource("t_panel_plain")
-texture_margin_left = 12.0
-texture_margin_top = 12.0
-texture_margin_right = 12.0
-texture_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxTexture" id="tip"]
-content_margin_left = 8.0
-content_margin_top = 5.0
-content_margin_right = 8.0
-content_margin_bottom = 5.0
-texture = ExtResource("t_tooltip")
-texture_margin_left = 6.0
-texture_margin_top = 6.0
-texture_margin_right = 6.0
-texture_margin_bottom = 6.0
-
-[sub_resource type="StyleBoxTexture" id="btn_normal"]
+[sub_resource type="StyleBoxTexture" id="btn_disabled"]
 content_margin_left = 10.0
 content_margin_top = 6.0
 content_margin_right = 10.0
 content_margin_bottom = 10.0
-texture = ExtResource("t_btn_normal")
+texture = ExtResource("t_btn_disabled")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
 
 [sub_resource type="StyleBoxTexture" id="btn_hover"]
 content_margin_left = 10.0
@@ -96,12 +65,12 @@ texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 10.0
 
-[sub_resource type="StyleBoxTexture" id="btn_disabled"]
+[sub_resource type="StyleBoxTexture" id="btn_normal"]
 content_margin_left = 10.0
 content_margin_top = 6.0
 content_margin_right = 10.0
 content_margin_bottom = 10.0
-texture = ExtResource("t_btn_disabled")
+texture = ExtResource("t_btn_normal")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
@@ -117,6 +86,130 @@ texture_margin_left = 8.0
 texture_margin_top = 10.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="hgrab"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_hscroll_grab")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
+
+[sub_resource type="StyleBoxTexture" id="hgrab_hl"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_hscroll_grab_hl")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
+
+[sub_resource type="StyleBoxTexture" id="htrack"]
+content_margin_left = 0.0
+content_margin_top = 4.0
+content_margin_right = 0.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_hscroll_track")
+
+[sub_resource type="StyleBoxLine" id="hsep"]
+color = Color(0.31, 0.34, 0.59, 0.8)
+thickness = 2
+
+[sub_resource type="StyleBoxTexture" id="slider_fill"]
+content_margin_left = 0.0
+content_margin_top = 4.0
+content_margin_right = 0.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_bar_fill")
+texture_margin_top = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="slider"]
+content_margin_left = 0.0
+content_margin_top = 4.0
+content_margin_right = 0.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_bar_bg")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="field_focus"]
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+texture = ExtResource("t_field_focus")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="field"]
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+texture = ExtResource("t_field")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="panel"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("t_panel")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="panel_plain"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("t_panel_plain")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="bar_bg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = ExtResource("t_bar_bg")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="bar_fill"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = ExtResource("t_bar_fill")
+texture_margin_top = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="tab_hover"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+texture = ExtResource("t_tab_hovered")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxTexture" id="tab_sel"]
 content_margin_left = 10.0
@@ -140,49 +233,16 @@ texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxTexture" id="tab_hover"]
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_tab_hovered")
+[sub_resource type="StyleBoxTexture" id="tip"]
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+texture = ExtResource("t_tooltip")
 texture_margin_left = 6.0
 texture_margin_top = 6.0
 texture_margin_right = 6.0
-texture_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxTexture" id="bar_bg"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-texture = ExtResource("t_bar_bg")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxTexture" id="bar_fill"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-texture = ExtResource("t_bar_fill")
-texture_margin_left = 0.0
-texture_margin_top = 2.0
-texture_margin_right = 0.0
-texture_margin_bottom = 2.0
-
-[sub_resource type="StyleBoxTexture" id="vtrack"]
-content_margin_left = 4.0
-content_margin_top = 0.0
-content_margin_right = 4.0
-content_margin_bottom = 0.0
-texture = ExtResource("t_scroll_track")
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
+texture_margin_bottom = 6.0
 
 [sub_resource type="StyleBoxTexture" id="vgrab"]
 content_margin_left = 4.0
@@ -190,9 +250,7 @@ content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
 texture = ExtResource("t_scroll_grab")
-texture_margin_left = 0.0
 texture_margin_top = 4.0
-texture_margin_right = 0.0
 texture_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxTexture" id="vgrab_hl"]
@@ -201,93 +259,15 @@ content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
 texture = ExtResource("t_scroll_grab_hl")
-texture_margin_left = 0.0
 texture_margin_top = 4.0
-texture_margin_right = 0.0
 texture_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxTexture" id="htrack"]
-content_margin_left = 0.0
-content_margin_top = 4.0
-content_margin_right = 0.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_hscroll_track")
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-
-[sub_resource type="StyleBoxTexture" id="hgrab"]
+[sub_resource type="StyleBoxTexture" id="vtrack"]
 content_margin_left = 4.0
-content_margin_top = 4.0
+content_margin_top = 0.0
 content_margin_right = 4.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_hscroll_grab")
-texture_margin_left = 4.0
-texture_margin_top = 0.0
-texture_margin_right = 4.0
-texture_margin_bottom = 0.0
-
-[sub_resource type="StyleBoxTexture" id="hgrab_hl"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_hscroll_grab_hl")
-texture_margin_left = 4.0
-texture_margin_top = 0.0
-texture_margin_right = 4.0
-texture_margin_bottom = 0.0
-
-[sub_resource type="StyleBoxTexture" id="field"]
-content_margin_left = 8.0
-content_margin_top = 5.0
-content_margin_right = 8.0
-content_margin_bottom = 5.0
-texture = ExtResource("t_field")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxTexture" id="field_focus"]
-content_margin_left = 8.0
-content_margin_top = 5.0
-content_margin_right = 8.0
-content_margin_bottom = 5.0
-texture = ExtResource("t_field_focus")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxTexture" id="slider"]
-content_margin_left = 0.0
-content_margin_top = 4.0
-content_margin_right = 0.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_bar_bg")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxTexture" id="slider_fill"]
-content_margin_left = 0.0
-content_margin_top = 4.0
-content_margin_right = 0.0
-content_margin_bottom = 4.0
-texture = ExtResource("t_bar_fill")
-texture_margin_left = 0.0
-texture_margin_top = 2.0
-texture_margin_right = 0.0
-texture_margin_bottom = 2.0
-
-[sub_resource type="StyleBoxEmpty" id="empty"]
-
-[sub_resource type="StyleBoxLine" id="hsep"]
-color = Color(0.31, 0.34, 0.59, 0.8)
-thickness = 2
+content_margin_bottom = 0.0
+texture = ExtResource("t_scroll_track")
 
 [sub_resource type="StyleBoxLine" id="vsep"]
 color = Color(0.31, 0.34, 0.59, 0.8)
@@ -298,77 +278,77 @@ vertical = true
 default_font = ExtResource("f_body")
 default_font_size = 16
 Button/colors/font_color = Color(0.96, 0.92, 0.82, 1)
-Button/colors/font_hover_color = Color(0.96, 0.92, 0.82, 1)
-Button/colors/font_focus_color = Color(0.96, 0.92, 0.82, 1)
-Button/colors/font_pressed_color = Color(0.1, 0.07, 0.03, 1)
-Button/colors/font_hover_pressed_color = Color(0.1, 0.07, 0.03, 1)
 Button/colors/font_disabled_color = Color(0.55, 0.56, 0.66, 1)
+Button/colors/font_focus_color = Color(0.96, 0.92, 0.82, 1)
+Button/colors/font_hover_color = Color(0.96, 0.92, 0.82, 1)
+Button/colors/font_hover_pressed_color = Color(0.1, 0.07, 0.03, 1)
+Button/colors/font_pressed_color = Color(0.1, 0.07, 0.03, 1)
 Button/fonts/font = ExtResource("f_bold")
-Button/styles/normal = SubResource("btn_normal")
-Button/styles/hover = SubResource("btn_hover")
-Button/styles/pressed = SubResource("btn_pressed")
-Button/styles/hover_pressed = SubResource("btn_active")
 Button/styles/disabled = SubResource("btn_disabled")
 Button/styles/focus = SubResource("empty")
-CheckButton/icons/checked = ExtResource("t_toggle_on")
-CheckButton/icons/unchecked = ExtResource("t_toggle_off")
-CheckButton/icons/checked_disabled = ExtResource("t_toggle_on")
-CheckButton/icons/unchecked_disabled = ExtResource("t_toggle_off")
-CheckButton/colors/font_pressed_color = Color(0.96, 0.92, 0.82, 1)
+Button/styles/hover = SubResource("btn_hover")
+Button/styles/hover_pressed = SubResource("btn_active")
+Button/styles/normal = SubResource("btn_normal")
+Button/styles/pressed = SubResource("btn_pressed")
 CheckButton/colors/font_hover_pressed_color = Color(0.96, 0.92, 0.82, 1)
-CheckButton/styles/normal = SubResource("empty")
+CheckButton/colors/font_pressed_color = Color(0.96, 0.92, 0.82, 1)
+CheckButton/icons/checked = ExtResource("t_toggle_on")
+CheckButton/icons/checked_disabled = ExtResource("t_toggle_on")
+CheckButton/icons/unchecked = ExtResource("t_toggle_off")
+CheckButton/icons/unchecked_disabled = ExtResource("t_toggle_off")
 CheckButton/styles/hover = SubResource("empty")
-CheckButton/styles/pressed = SubResource("empty")
 CheckButton/styles/hover_pressed = SubResource("empty")
-HSeparator/styles/separator = SubResource("hsep")
-VSeparator/styles/separator = SubResource("vsep")
-HSlider/icons/grabber = ExtResource("t_slider_grab")
-HSlider/icons/grabber_highlight = ExtResource("t_slider_grab_hl")
-HSlider/styles/slider = SubResource("slider")
-HSlider/styles/grabber_area = SubResource("slider_fill")
-HSlider/styles/grabber_area_highlight = SubResource("slider_fill")
-HScrollBar/styles/scroll = SubResource("htrack")
+CheckButton/styles/normal = SubResource("empty")
+CheckButton/styles/pressed = SubResource("empty")
 HScrollBar/styles/grabber = SubResource("hgrab")
 HScrollBar/styles/grabber_highlight = SubResource("hgrab_hl")
 HScrollBar/styles/grabber_pressed = SubResource("hgrab_hl")
+HScrollBar/styles/scroll = SubResource("htrack")
+HSeparator/styles/separator = SubResource("hsep")
+HSlider/icons/grabber = ExtResource("t_slider_grab")
+HSlider/icons/grabber_highlight = ExtResource("t_slider_grab_hl")
+HSlider/styles/grabber_area = SubResource("slider_fill")
+HSlider/styles/grabber_area_highlight = SubResource("slider_fill")
+HSlider/styles/slider = SubResource("slider")
 HudTitle/base_type = &"Label"
 HudTitle/fonts/font = ExtResource("f_bold")
 Label/colors/font_color = Color(0.96, 0.92, 0.82, 1)
+LineEdit/colors/caret_color = Color(1, 0.77, 0.25, 1)
 LineEdit/colors/font_color = Color(0.96, 0.92, 0.82, 1)
 LineEdit/colors/font_placeholder_color = Color(0.55, 0.56, 0.66, 1)
-LineEdit/colors/caret_color = Color(1, 0.77, 0.25, 1)
-LineEdit/styles/normal = SubResource("field")
 LineEdit/styles/focus = SubResource("field_focus")
+LineEdit/styles/normal = SubResource("field")
 LineEdit/styles/read_only = SubResource("field")
-OptionButton/icons/arrow = ExtResource("t_arrow_down")
-OptionButton/colors/font_pressed_color = Color(0.96, 0.92, 0.82, 1)
 OptionButton/colors/font_hover_pressed_color = Color(0.96, 0.92, 0.82, 1)
+OptionButton/colors/font_pressed_color = Color(0.96, 0.92, 0.82, 1)
+OptionButton/icons/arrow = ExtResource("t_arrow_down")
 Panel/styles/panel = SubResource("panel")
 PanelContainer/styles/panel = SubResource("panel")
 PixelTitle/base_type = &"Label"
 PixelTitle/fonts/font = ExtResource("f_pixel")
 PopupMenu/colors/font_color = Color(0.96, 0.92, 0.82, 1)
 PopupMenu/colors/font_hover_color = Color(0.1, 0.07, 0.03, 1)
-PopupMenu/styles/panel = SubResource("panel_plain")
 PopupMenu/styles/hover = SubResource("btn_active")
+PopupMenu/styles/panel = SubResource("panel_plain")
 ProgressBar/colors/font_color = Color(0.96, 0.92, 0.82, 1)
 ProgressBar/font_sizes/font_size = 16
 ProgressBar/styles/background = SubResource("bar_bg")
 ProgressBar/styles/fill = SubResource("bar_fill")
 RichTextLabel/colors/default_color = Color(0.96, 0.92, 0.82, 1)
+TabContainer/colors/font_hovered_color = Color(0.96, 0.92, 0.82, 1)
 TabContainer/colors/font_selected_color = Color(1, 0.77, 0.25, 1)
 TabContainer/colors/font_unselected_color = Color(0.55, 0.56, 0.66, 1)
-TabContainer/colors/font_hovered_color = Color(0.96, 0.92, 0.82, 1)
 TabContainer/fonts/font = ExtResource("f_bold")
 TabContainer/styles/panel = SubResource("panel_plain")
+TabContainer/styles/tab_hovered = SubResource("tab_hover")
 TabContainer/styles/tab_selected = SubResource("tab_sel")
 TabContainer/styles/tab_unselected = SubResource("tab_unsel")
-TabContainer/styles/tab_hovered = SubResource("tab_hover")
 TabContainer/styles/tabbar_background = SubResource("empty")
 TooltipLabel/colors/font_color = Color(0.96, 0.92, 0.82, 1)
 TooltipLabel/font_sizes/font_size = 16
 TooltipPanel/styles/panel = SubResource("tip")
-VScrollBar/styles/scroll = SubResource("vtrack")
 VScrollBar/styles/grabber = SubResource("vgrab")
 VScrollBar/styles/grabber_highlight = SubResource("vgrab_hl")
 VScrollBar/styles/grabber_pressed = SubResource("vgrab_hl")
+VScrollBar/styles/scroll = SubResource("vtrack")
+VSeparator/styles/separator = SubResource("vsep")

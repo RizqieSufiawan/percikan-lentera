@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/papua.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/papsel.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Kampung Suanage"
+traits = Array[StringName]([&"hutan_berkabut"])
+size = 474
+origin = "Papua Selatan"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Kampung Mowani"
+traits = Array[StringName]([&"hutan_berkabut"])
+start_fossil = true
+size = 216
+origin = "Papua Selatan"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"papsel"
+display_name = "Papua Selatan"
+short_name = "Papua Sel."
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(1226, 474)
+label_offset = Vector2(0, -34)
+neighbors = Array[StringName]([&"papeg", &"papteng"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+start_resistance_mod = 2.0
+spread_mod = 0.8
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 10.7, &"badai_pesisir": 2.9, &"kemarau_panjang": 0.1, &"erupsi": 0.0, &"titik_api": 0.6})
+member_provinces = PackedStringArray("Papua Selatan")
+note = "Pesisir selatan yang terpencil. Libatkan tokoh adat."

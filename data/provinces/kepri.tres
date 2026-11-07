@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/kepri.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Tanjung Indah"
+traits = Array[StringName]([&"pesisir_berangin"])
+size = 81
+origin = "Kepri"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Simpang Raya"
+traits = Array[StringName]([&"pesisir_berangin", &"lahan_terik"])
+start_fossil = true
+size = 349
+origin = "Kepri"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"kepri"
+display_name = "Kepulauan Riau"
+short_name = "Kepri"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(270, 271)
+label_offset = Vector2(-5, -29)
+neighbors = Array[StringName]([&"riau"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 18.1, &"badai_pesisir": 27.7, &"kemarau_panjang": 4.2, &"erupsi": 0.0, &"titik_api": 6.7})
+member_provinces = PackedStringArray("Kepulauan Riau")
+note = ""

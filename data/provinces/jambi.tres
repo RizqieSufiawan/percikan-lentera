@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/jambi.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Koto Jaya"
+traits = Array[StringName]([&"limbah_perkebunan"])
+size = 332
+origin = "Jambi"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Koto Gadang"
+traits = Array[StringName]([&"lahan_terik", &"gunung_api"])
+start_fossil = true
+size = 418
+origin = "Jambi"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Desa Padang Permai"
+traits = Array[StringName]([&"lahan_terik", &"limbah_perkebunan"])
+start_fossil = true
+size = 418
+origin = "Jambi"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_3"]
+script = ExtResource("v_script")
+display_name = "Desa Simpang Indah"
+traits = Array[StringName]([&"lahan_terik", &"limbah_perkebunan"])
+start_fossil = true
+size = 417
+origin = "Jambi"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"jambi"
+display_name = "Jambi"
+short_name = "Jambi"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(213, 349)
+label_offset = Vector2(7, -33)
+neighbors = Array[StringName]([&"sumbar", &"riau", &"sumsel", &"bengkulu"])
+villages = 4
+fossil_villages = 3
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3")])
+spread_mod = 0.9
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.5, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 50.5, &"badai_pesisir": 1.3, &"kemarau_panjang": 2.5, &"erupsi": 0.0, &"titik_api": 3.2})
+member_provinces = PackedStringArray("Jambi")
+note = ""

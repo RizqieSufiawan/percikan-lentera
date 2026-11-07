@@ -7,7 +7,7 @@
 
 [sub_resource type="Resource" id="k_0"]
 script = ExtResource("v_script")
-display_name = "Kampung Yakuri"
+display_name = "Kampung Kiwani"
 traits = Array[StringName]([&"sungai_deras", &"lembah_tertutup"])
 size = 422
 origin = "Papua Tengah"
@@ -15,7 +15,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biom
 
 [sub_resource type="Resource" id="k_1"]
 script = ExtResource("v_script")
-display_name = "Kampung Kiperi"
+display_name = "Kampung Monage"
 traits = Array[StringName]([&"sungai_deras"])
 size = 421
 origin = "Papua Tengah"
@@ -23,87 +23,29 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biom
 
 [sub_resource type="Resource" id="k_2"]
 script = ExtResource("v_script")
-display_name = "Kampung Mokuri"
+display_name = "Kampung Medoki"
 traits = Array[StringName]([&"hutan_berkabut"])
 start_fossil = true
 size = 365
 origin = "Papua Tengah"
 compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
 
-[sub_resource type="Resource" id="k_3"]
-script = ExtResource("v_script")
-display_name = "Kampung Wanage"
-traits = Array[StringName]([&"sungai_deras"])
-size = 542
-origin = "Papua Pegunungan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_4"]
-script = ExtResource("v_script")
-display_name = "Kampung Yewani"
-traits = Array[StringName]([&"sungai_deras", &"lembah_tertutup"])
-size = 542
-origin = "Papua Pegunungan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_5"]
-script = ExtResource("v_script")
-display_name = "Kampung Arikuri"
-traits = Array[StringName]([&"sungai_deras"])
-size = 542
-origin = "Papua Pegunungan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_6"]
-script = ExtResource("v_script")
-display_name = "Kampung Yedoki"
-traits = Array[StringName]([&"sungai_deras", &"hutan_berkabut"])
-size = 542
-origin = "Papua Pegunungan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_7"]
-script = ExtResource("v_script")
-display_name = "Kampung Waperi"
-traits = Array[StringName]([&"hutan_berkabut"])
-start_fossil = true
-size = 466
-origin = "Papua Pegunungan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_8"]
-script = ExtResource("v_script")
-display_name = "Kampung Moperi"
-traits = Array[StringName]([&"hutan_berkabut"])
-size = 474
-origin = "Papua Selatan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
-[sub_resource type="Resource" id="k_9"]
-script = ExtResource("v_script")
-display_name = "Kampung Suawani"
-traits = Array[StringName]([&"hutan_berkabut"])
-start_fossil = true
-size = 216
-origin = "Papua Selatan"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-
 [resource]
 script = ExtResource("p_script")
 id = &"papteng"
-display_name = "Papua Tengah, Pegunungan & Selatan"
+display_name = "Papua Tengah"
 short_name = "Papua Tengah"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
-map_position = Vector2(1220, 442)
-label_offset = Vector2(0, -30)
-neighbors = Array[StringName]([&"pabar", &"papua"])
-villages = 10
-fossil_villages = 3
-village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4"), SubResource("k_5"), SubResource("k_6"), SubResource("k_7"), SubResource("k_8"), SubResource("k_9")])
+map_position = Vector2(1150, 413)
+label_offset = Vector2(-36, -29)
+neighbors = Array[StringName]([&"pabar", &"papua", &"papeg", &"papsel"])
+villages = 3
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2")])
 start_resistance_mod = 2.0
 spread_mod = 0.8
 compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 1.0, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 0.15})
-disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 5.6, &"badai_pesisir": 0.6, &"kemarau_panjang": 0.2, &"erupsi": 0.0, &"titik_api": 0.2})
-member_provinces = PackedStringArray("Papua Tengah", "Papua Pegunungan", "Papua Selatan")
-note = "Pegunungan terpencil dan pesisir selatan. Libatkan tokoh adat."
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 6.9, &"badai_pesisir": 0.4, &"kemarau_panjang": 0.6, &"erupsi": 0.0, &"titik_api": 0.2})
+member_provinces = PackedStringArray("Papua Tengah")
+note = "Pegunungan terpencil. Libatkan tokoh adat."

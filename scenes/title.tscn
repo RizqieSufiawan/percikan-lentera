@@ -1,8 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d1p5jvgq06wmj"]
 
-[ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dq8nj68jis4hh" path="res://scripts/ui/title_screen.gd" id="1_script"]
 
-[node name="Title" type="Control"]
+[node name="Title" type="Control" unique_id=1682722660]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Scenery" type="Control" parent="."]
+[node name="Scenery" type="Control" parent="." unique_id=1085923483]
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 1
@@ -22,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Shade" type="TextureRect" parent="."]
+[node name="Shade" type="TextureRect" parent="." unique_id=1047724299]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -32,9 +32,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 0
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=509555958]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -47,7 +46,7 @@ theme_override_constants/margin_left = 80
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_bottom = 56
 
-[node name="Column" type="VBoxContainer" parent="Margin"]
+[node name="Column" type="VBoxContainer" parent="Margin" unique_id=1747476015]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(380, 0)
 layout_mode = 2
@@ -56,31 +55,31 @@ mouse_filter = 2
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="GameTitle" type="Label" parent="Margin/Column"]
-theme_type_variation = &"PixelTitle"
+[node name="GameTitle" type="Label" parent="Margin/Column" unique_id=1829089870]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"PixelTitle"
 text = "Percikan
 Lentera"
 
-[node name="Subtitle" type="Label" parent="Margin/Column"]
+[node name="Subtitle" type="Label" parent="Margin/Column" unique_id=471709385]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Dari KKN menjadi komunitas energi desa"
 
-[node name="Tagline" type="Label" parent="Margin/Column"]
+[node name="Tagline" type="Label" parent="Margin/Column" unique_id=1017900440]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(480, 0)
 layout_mode = 2
-autowrap_mode = 3
 text = "84.276 desa menunggu. Semua berawal dari satu percikan."
+autowrap_mode = 3
 
-[node name="Gap" type="Control" parent="Margin/Column"]
+[node name="Gap" type="Control" parent="Margin/Column" unique_id=1276235557]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Buttons" type="VBoxContainer" parent="Margin/Column"]
+[node name="Buttons" type="VBoxContainer" parent="Margin/Column" unique_id=1927173760]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(380, 0)
 layout_mode = 2

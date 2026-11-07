@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sulawesi.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/gorontalo.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Lembang Rante"
+traits = Array[StringName]([&"sungai_deras"])
+size = 187
+origin = "Gorontalo"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Lembang Tinggi"
+traits = Array[StringName]([&"lahan_terik"])
+start_fossil = true
+size = 545
+origin = "Gorontalo"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"gorontalo"
+display_name = "Gorontalo"
+short_name = "Gorontalo"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(756, 279)
+label_offset = Vector2(2, -29)
+neighbors = Array[StringName]([&"sulut", &"sulteng"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 21.3, &"badai_pesisir": 3.7, &"kemarau_panjang": 26.6, &"erupsi": 0.7, &"titik_api": 0.4})
+member_provinces = PackedStringArray("Gorontalo")
+note = ""

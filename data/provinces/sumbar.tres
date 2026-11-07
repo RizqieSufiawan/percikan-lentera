@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/sumbar.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Nagari Padang Panjang"
+traits = Array[StringName]([&"sungai_deras", &"hutan_berkabut"])
+size = 451
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Nagari Sungai Gadang"
+traits = Array[StringName]([&"gunung_api"])
+start_fossil = true
+size = 418
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Nagari Batu Gadang"
+traits = Array[StringName]([&"lahan_terik", &"limbah_perkebunan"])
+start_fossil = true
+size = 417
+origin = "Sumbar"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"sumbar"
+display_name = "Sumatera Barat"
+short_name = "Sumbar"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(176, 330)
+label_offset = Vector2(-13, -46)
+neighbors = Array[StringName]([&"sumut", &"riau", &"jambi", &"bengkulu"])
+villages = 3
+fossil_villages = 2
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2")])
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 57.9, &"badai_pesisir": 6.4, &"kemarau_panjang": 2.9, &"erupsi": 8.5, &"titik_api": 1.2})
+member_provinces = PackedStringArray("Sumatera Barat")
+note = ""

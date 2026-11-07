@@ -140,24 +140,101 @@ def ridge(seed, base, amp, step):
     return ys
 
 
+VOLC_LIT = (78, 76, 146)    # lereng kanan yang menghadap bulan
+VOLC_LIT2 = (98, 94, 166)   # punggung alur yang paling terang
+VOLC_DARK = (36, 38, 86)    # lereng kiri (membelakangi bulan)
+VOLC_GULLY = (30, 32, 76)   # alur erosi
+VOLC_TREE = (34, 44, 88)    # hutan di kaki gunung
+
+
+def volcano_y(x, vx=196, vtop=62):
+    """Profil gunung api strato: curam di dekat puncak, landai di kaki (lereng cekung)."""
+    dx = abs(x - vx)
+    if dx <= 4:
+        # Kawah: dua bibir dengan cekungan dangkal di tengah.
+        return vtop + (1 if dx <= 2 else 0)
+    u = (dx - 4) / 112.0
+    return vtop + 70.0 * u ** 0.72
+
+
 def far_layer(bake_smoke=True):
     im, d = new()
     back = ridge(11, 120, 34, 18)
     front = ridge(23, 128, 22, 14)
     # Gunung api di tengah kanan (siluet khas Indonesia).
     vx, vtop = 196, 62
+    cone = [volcano_y(x, vx, vtop) for x in range(W)]
+    on_volc = [False] * W
     for x in range(W):
-        cone = vtop + abs(x - vx) * 0.62
-        if abs(x - vx) <= 4:
-            cone = vtop + 1 + (abs(x - vx) == 4)  # kawah datar
-        back[x] = min(back[x], cone)
+        if cone[x] < back[x]:
+            back[x] = cone[x]
+            on_volc[x] = True
+    rr = random.Random(77)
+    # Alur erosi: garis menurun dari dekat kawah, tiap alur punya posisi relatif di lereng (0..1).
+    gullies = [(-1, 0.3, 30), (-1, 0.62, 22), (1, 0.22, 36), (1, 0.5, 30), (1, 0.78, 20)]  # (sisi, posisi, panjang)
     for x in range(W):
-        for y in range(int(back[x]), 152):
-            px(im, x, y, FAR0)
-        # Sisi yang menghadap bulan (kanan atas) sedikit lebih terang.
-        if x > vx - 2 and x < vx + 40 and back[x] < 110:
-            for y in range(int(back[x]), int(back[x]) + 2):
-                px(im, x, y, VOLC_RIM)
+        top = int(back[x])
+        dx = x - vx
+        # Pengaruh pencahayaan gunung memudar halus ke pegunungan di sampingnya (tanpa tepi tegak).
+        w = max(0.0, min(1.0, (70.0 - abs(dx)) / 30.0))
+        for y in range(top, 152):
+            if w <= 0.0 or y > 120:
+                px(im, x, y, FAR0)
+                continue
+            # Lereng kanan terkena bulan: makin dekat ke tepi siluet makin terang (dithering halus).
+            depth = y - top
+            fade = w * max(0.0, 1.0 - max(0, y - 100) / 20.0)
+            # Batas terang-gelap di punggung gunung dibuat bertahap (dithering selebar ~12 piksel),
+            # condong sedikit ke kiri di bagian bawah seperti bayangan pada kerucut.
+            side = max(0.0, min(1.0, (dx + 3 + depth * 0.12) / 12.0))
+            if dither_pick(x, y, side):
+                t = (max(0.0, 1.0 - depth / 26.0) * 0.85 + 0.15) * fade
+                col = fine_mix(FAR0, VOLC_LIT, t, x, y)
+            else:
+                t = (1.0 - min(1.0, depth / 20.0)) * 0.5
+                col = fine_mix(FAR0, VOLC_DARK, (0.65 - t) * fade, x, y)
+            px(im, x, y, col)
+    # Alur: untuk tiap baris, posisi x alur = vx + sisi * lebar lereng di baris itu * posisi relatif.
+    for side, rel, ln in gullies:
+        wob = rr.uniform(0, 6.28)
+        y_end = vtop + 4 + ln
+        for y in range(vtop + 4, y_end):
+            # Ujung alur memudar (putus-putus).
+            if y > y_end - 6 and y % 2:
+                continue
+            # Lebar setengah gunung di baris y (balik dari profil).
+            u = ((y - vtop) / 70.0) ** (1 / 0.72)
+            half = 4 + u * 112.0
+            gx = int(round(vx + side * (2 + (half - 2) * rel) + math.sin(y * 0.35 + wob) * 0.8))
+            if not (0 <= gx < W) or not on_volc[gx] or y < back[gx] + 1:
+                continue
+            lit = side > 0
+            px(im, gx, y, VOLC_GULLY if lit else (30, 32, 72))
+            # Punggung alur di sisi bulan: satu piksel terang di kanannya.
+            if lit and (y % 3) and y < 108:
+                px(im, gx + 1, y, VOLC_LIT2 if y < 90 else VOLC_LIT)
+    # Bibir kawah terkena cahaya + aliran lava lama yang samar di lereng kiri atas.
+    for x in range(vx - 4, vx + 6):
+        px(im, x, int(back[x]), VOLC_LIT2 if x >= vx - 1 else VOLC_LIT)
+    for k in range(10):
+        lx = vx - 3 - k * 0.7 + math.sin(k * 0.9) * 0.6
+        px(im, int(lx), vtop + 3 + k, (84, 58, 104) if k < 6 else (62, 50, 98))
+    # Hutan di kaki gunung: deretan pucuk pohon kecil (gelap) di atas garis kabut.
+    for x in range(W):
+        if not on_volc[x]:
+            continue
+        ty = 104 + int(3 * math.sin(x * 0.11)) + int(2 * math.sin(x * 0.37))
+        if ty < back[x] + 3:
+            continue
+        bump = 1 + (x * 7 % 5 == 0) + (x * 13 % 7 == 0)
+        for y in range(ty - bump, 118):
+            if y >= back[x]:
+                c = VOLC_TREE if y < ty + 6 else FAR0
+                if y >= ty + 2 and y < ty + 6 and not dither_pick(x, y, 0.5):
+                    c = FAR0
+                px(im, x, y, c)
+        if x - vx > 0 and bump >= 2:
+            px(im, x, ty - bump, (52, 60, 112))  # pucuk terkena bulan
     for x in range(W):
         for y in range(int(front[x]), 152):
             px(im, x, y, FAR1)
@@ -380,25 +457,31 @@ def palm(im, d, x, base, h, lean, sway=0.0, flutter=0.0):
     for k in range(h):
         t = k / float(h)
         pts.append((x + lean * t * t * h * 0.3 + sway * t * t * 4.5, base - k))
+    # Batang gemuk dan meruncing: 7 piksel di pangkal, 4 di pucuk.
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
-        d.line([(x0, y0), (x1, y1)], fill=NEAR, width=3 if y0 > base - h * 0.5 else 2)
-    # Cincin batang kelapa (sedikit lebih terang).
+        t = (base - y0) / float(h)
+        w = 7 if t < 0.15 else (6 if t < 0.4 else (5 if t < 0.75 else 4))
+        d.line([(x0, y0), (x1, y1)], fill=NEAR, width=w)
+    # Cincin batang kelapa (sedikit lebih terang, di sisi kanan yang terkena bulan).
     for k in range(4, h - 4, 4):
-        px(im, pts[k][0] + 1, pts[k][1], NEAR2)
+        t = k / float(h)
+        px(im, pts[k][0] + (3 if t < 0.4 else 2), pts[k][1], NEAR2)
+        px(im, pts[k][0] + (2 if t < 0.4 else 1), pts[k][1], NEAR2)
     cx, cy = pts[-1]
     # Pelepah: garis melengkung ke bawah dengan anak daun yang menggantung.
-    for i, (a, ln) in enumerate(((-2.75, 17), (-2.3, 15), (-1.75, 11), (-1.25, 11), (-0.75, 15), (-0.3, 17), (0.35, 13), (2.8, 13))):
+    for i, (a, ln) in enumerate(((-2.8, 21), (-2.35, 19), (-1.8, 13), (-1.3, 13), (-0.8, 19), (-0.3, 21), (0.4, 16), (2.75, 16))):
         # Angin: pelepah ikut condong ke arah ayunan, ujungnya sedikit berkibar.
         a += sway * 0.18 + flutter * 0.06 * math.sin(i * 1.9)
         prev = (cx, cy)
         for s_ in range(1, ln):
             fx = cx + math.cos(a) * s_ * 1.25
             fy = cy + math.sin(a) * s_ * 0.55 + s_ * s_ * 0.045
-            d.line([prev, (fx, fy)], fill=NEAR, width=2 if s_ < ln * 0.6 else 1)
-            if s_ > 2 and s_ % 2 == 0:
-                drop = 2 + (s_ * 3) // ln
-                d.line([(fx, fy), (fx + math.cos(a) * 0.8, fy + drop)], fill=NEAR)
+            d.line([prev, (fx, fy)], fill=NEAR, width=3 if s_ < ln * 0.3 else (2 if s_ < ln * 0.75 else 1))
+            if s_ > 3 and s_ % 2 == 0:
+                drop = 3 + (s_ * 4) // ln
+                d.line([(fx, fy), (fx + math.cos(a) * 1.0, fy + drop)], fill=NEAR, width=2 if s_ < ln * 0.65 else 1)
             prev = (fx, fy)
+    d.ellipse([cx - 4, cy - 3, cx + 4, cy + 4], fill=NEAR)
     d.ellipse([cx - 2, cy - 1, cx + 2, cy + 2], fill=NEAR2)
 
 

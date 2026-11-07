@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/papua.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/pbd.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Kampung Kiwani"
+traits = Array[StringName]([&"hutan_berkabut"])
+size = 187
+origin = "Papua Barat Daya"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Kampung Kibawi"
+traits = Array[StringName]([&"hutan_berkabut"])
+start_fossil = true
+size = 435
+origin = "Papua Barat Daya"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Kampung Tenage"
+traits = Array[StringName]([&"hutan_berkabut"])
+start_fossil = true
+size = 434
+origin = "Papua Barat Daya"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"pbd"
+display_name = "Papua Barat Daya"
+short_name = "PBD"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(1021, 331)
+label_offset = Vector2(-6, -31)
+neighbors = Array[StringName]([&"pabar"])
+villages = 3
+fossil_villages = 2
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2")])
+spread_mod = 0.9
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 0.15, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 6.2, &"badai_pesisir": 2.5, &"kemarau_panjang": 0.9, &"erupsi": 0.0, &"titik_api": 0.7})
+member_provinces = PackedStringArray("Papua Barat Daya")
+note = ""

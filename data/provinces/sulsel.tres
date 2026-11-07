@@ -7,7 +7,7 @@
 
 [sub_resource type="Resource" id="k_0"]
 script = ExtResource("v_script")
-display_name = "Desa Lembang Bangun"
+display_name = "Desa Tompo Sapiri"
 traits = Array[StringName]([&"sungai_deras"])
 size = 618
 origin = "Sulsel"
@@ -15,7 +15,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biom
 
 [sub_resource type="Resource" id="k_1"]
 script = ExtResource("v_script")
-display_name = "Desa Salu Lipu"
+display_name = "Desa Bonto Rante"
 traits = Array[StringName]([&"pesisir_berangin"])
 start_fossil = true
 size = 489
@@ -24,7 +24,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biom
 
 [sub_resource type="Resource" id="k_2"]
 script = ExtResource("v_script")
-display_name = "Desa Wana Lipu"
+display_name = "Desa Bonto Lotong"
 traits = Array[StringName]([&"hutan_berkabut"])
 start_fossil = true
 size = 489
@@ -33,7 +33,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biom
 
 [sub_resource type="Resource" id="k_3"]
 script = ExtResource("v_script")
-display_name = "Desa Mata Rappo"
+display_name = "Desa Lembang Rappo"
 traits = Array[StringName]([&"lahan_terik"])
 start_fossil = true
 size = 488
@@ -42,7 +42,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biom
 
 [sub_resource type="Resource" id="k_4"]
 script = ExtResource("v_script")
-display_name = "Desa Bonto Rante"
+display_name = "Desa Lembang Bangun"
 traits = Array[StringName]([&"lembah_tertutup"])
 start_fossil = true
 size = 488
@@ -51,46 +51,29 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biom
 
 [sub_resource type="Resource" id="k_5"]
 script = ExtResource("v_script")
-display_name = "Desa Lembang Rante"
+display_name = "Desa Salu Lipu"
 traits = Array[StringName]([&"lahan_terik"])
 start_fossil = true
 size = 488
 origin = "Sulsel"
 compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.15})
 
-[sub_resource type="Resource" id="k_6"]
-script = ExtResource("v_script")
-display_name = "Desa Mata Lalong"
-traits = Array[StringName]([&"limbah_perkebunan"])
-size = 191
-origin = "Sulbar"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
-
-[sub_resource type="Resource" id="k_7"]
-script = ExtResource("v_script")
-display_name = "Desa Bonto Bangun"
-traits = Array[StringName]([&"gunung_api"])
-start_fossil = true
-size = 459
-origin = "Sulbar"
-compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
-
 [resource]
 script = ExtResource("p_script")
 id = &"sulsel"
-display_name = "Sulawesi Selatan & Barat"
+display_name = "Sulawesi Selatan"
 short_name = "Sulsel"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
-map_position = Vector2(680, 377)
-label_offset = Vector2(-11, -31)
-neighbors = Array[StringName]([&"sulteng", &"sultra"])
-villages = 8
-fossil_villages = 6
-village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4"), SubResource("k_5"), SubResource("k_6"), SubResource("k_7")])
+map_position = Vector2(690, 398)
+label_offset = Vector2(-1, 0)
+neighbors = Array[StringName]([&"sulteng", &"sulbar", &"sultra"])
+villages = 6
+fossil_villages = 5
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4"), SubResource("k_5")])
 start_resistance_mod = -1.0
 spread_mod = 1.1
 compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.15})
-disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 21.1, &"badai_pesisir": 11.9, &"kemarau_panjang": 9.3, &"erupsi": 0.0, &"titik_api": 2.3})
-member_provinces = PackedStringArray("Sulawesi Selatan", "Sulawesi Barat")
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 20.4, &"badai_pesisir": 12.4, &"kemarau_panjang": 10.0, &"erupsi": 0.0, &"titik_api": 2.3})
+member_provinces = PackedStringArray("Sulawesi Selatan")
 note = ""

@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/babel.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Simpang Hijau"
+traits = Array[StringName]([&"hutan_berkabut", &"limbah_perkebunan"])
+size = 71
+origin = "Babel"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Muara Mulia"
+traits = Array[StringName]([&"pesisir_berangin", &"lahan_terik"])
+start_fossil = true
+size = 322
+origin = "Babel"
+compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.5})
+
+[resource]
+script = ExtResource("p_script")
+id = &"babel"
+display_name = "Kepulauan Bangka Belitung"
+short_name = "Babel"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(306, 349)
+label_offset = Vector2(-2, -27)
+neighbors = Array[StringName]([&"sumsel"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+spread_mod = 0.9
+compat_override = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 1.0, &"panas_bumi": 0.5})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 13.0, &"badai_pesisir": 20.9, &"kemarau_panjang": 4.6, &"erupsi": 0.0, &"titik_api": 15.3})
+member_provinces = PackedStringArray("Kepulauan Bangka Belitung")
+note = ""

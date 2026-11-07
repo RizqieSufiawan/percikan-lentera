@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/jawa.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/dki.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Kelurahan Pulo Kelapa"
+traits = Array[StringName]([&"lahan_terik"])
+start_fossil = true
+size = 267
+origin = "DKI Jakarta"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+
+[resource]
+script = ExtResource("p_script")
+id = &"dki"
+display_name = "DKI Jakarta"
+short_name = "DKI"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(334, 466)
+label_offset = Vector2(0, -30)
+neighbors = Array[StringName]([&"banten", &"jabar"])
+villages = 1
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0")])
+start_resistance_mod = 2.0
+spread_mod = 1.1
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 1.0, &"angin": 0.15, &"panas_bumi": 0.15})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 36.0, &"badai_pesisir": 2.2, &"kemarau_panjang": 0.0, &"erupsi": 0.0, &"titik_api": 0.0})
+member_provinces = PackedStringArray("DKI Jakarta")
+note = "Padat, menyebar cepat, tapi tekanan energi lama lebih besar."

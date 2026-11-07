@@ -241,7 +241,8 @@ func _make_provinces() -> void:
 
 # ---------------------------------------------------------------- simpan & muat
 
-const SAVE_VERSION := 1
+## 2 = peta 38 provinsi (simpanan versi 1 dari peta 24 wilayah tidak cocok lagi).
+const SAVE_VERSION := 2
 const _SAVE_FIELDS := ["community_name", "auto_build", "auto_build_focus", "start_province", "start_energy",
 	"tick_count", "stage", "kkn_active", "points", "money", "welfare", "blue", "red", "owned_upgrades", "flags",
 	"known_compat", "event_targets", "counters", "completed_missions", "event_cooldowns", "offers_made",

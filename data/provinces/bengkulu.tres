@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sumatra.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/bengkulu.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Batu Hijau"
+traits = Array[StringName]([&"lahan_terik"])
+size = 354
+origin = "Bengkulu"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Tanjung Lestari"
+traits = Array[StringName]([&"limbah_perkebunan"])
+start_fossil = true
+size = 580
+origin = "Bengkulu"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_2"]
+script = ExtResource("v_script")
+display_name = "Desa Padang Jaya"
+traits = Array[StringName]([&"gunung_api"])
+start_fossil = true
+size = 580
+origin = "Bengkulu"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"bengkulu"
+display_name = "Bengkulu"
+short_name = "Bengkulu"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(199, 383)
+label_offset = Vector2(4, -26)
+neighbors = Array[StringName]([&"sumbar", &"jambi", &"sumsel", &"lampung"])
+villages = 3
+fossil_villages = 2
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2")])
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 16.2, &"badai_pesisir": 1.5, &"kemarau_panjang": 8.5, &"erupsi": 0.0, &"titik_api": 0.2})
+member_provinces = PackedStringArray("Bengkulu")
+note = ""

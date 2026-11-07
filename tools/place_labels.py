@@ -45,7 +45,7 @@ def main():
                 items.append([fn, s, mp, a, name])
     # Wilayah paling kecil ditempatkan dulu (pilihannya paling sedikit).
     items.sort(key=lambda it: it[3].sum())
-    taken = np.zeros_like(items[0][3])
+    placed = []  # (x, y, setengah lebar) pusat teks label yang sudah ditempatkan
     for it in items:
         fn, s, mp, mask, name = it
         # Jarak ke tepi; arah mendatar dibobot 0.5 (kotak label ~2x lebih lebar dari tinggi).
@@ -53,13 +53,20 @@ def main():
         yy, xx = np.mgrid[0:mask.shape[0], 0:mask.shape[1]]
         near = np.hypot(xx - mp[0], (yy - mp[1]) * 1.2)
         score = np.minimum(dt, 18.0) - near * 0.04
-        score[~mask] = -1e9
-        # Hindari kotak label lain.
-        score[taken] -= 1000
+        # Wilayah kecil (mis. DKI, DIY) boleh menaruh label sedikit di laut/daratan tetangga dekatnya,
+        # dengan penalti, daripada bertumpuk dengan label lain.
+        out_d = ndimage.distance_transform_edt(~mask)
+        score[~mask] = -60.0 - out_d[~mask] * 2.0
+        score[out_d > 46] = -1e9
+        # Hindari kotak label lain: nama + persen (2 baris, tinggi ~32 px), lebar sesuai panjang nama.
+        hw = max(14, len(name) * 4 + 4)
+        for (px_, py_, phw) in placed:
+            x0, x1 = max(0, px_ - phw - hw - 4), px_ + phw + hw + 4
+            y0, y1 = max(0, py_ - 34), py_ + 34
+            score[y0:y1, x0:x1] -= 1000
         y, x = np.unravel_index(np.argmax(score), score.shape)
         label = (round(x - mp[0]), round(y - TEXT_DY - mp[1]))
-        bw, bh = BOX
-        taken[max(0, y - bh):y + bh, max(0, x - bw):x + bw] = True
+        placed.append((int(x), int(y), hw))
         print("%-14s %-14s teks di (%4d,%4d)  ruang %.1f  label_offset %s" % (fn, name, x, y, dt[y, x], label))
         line = "label_offset = Vector2(%d, %d)" % label
         if re.search(r"^label_offset = .*$", s, re.M):

@@ -7,7 +7,7 @@
 
 [sub_resource type="Resource" id="k_0"]
 script = ExtResource("v_script")
-display_name = "Desa Bonto Lotong"
+display_name = "Desa Tompo Bangun"
 traits = Array[StringName]([&"lembah_tertutup", &"sungai_deras"])
 size = 238
 origin = "Sulut"
@@ -15,7 +15,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"bio
 
 [sub_resource type="Resource" id="k_1"]
 script = ExtResource("v_script")
-display_name = "Desa Lembang Lipu"
+display_name = "Desa Salu Lotong"
 traits = Array[StringName]([&"pesisir_berangin"])
 start_fossil = true
 size = 534
@@ -24,7 +24,7 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"bio
 
 [sub_resource type="Resource" id="k_2"]
 script = ExtResource("v_script")
-display_name = "Desa Tana Sapiri"
+display_name = "Desa Bulu Lalong"
 traits = Array[StringName]([&"gunung_api"])
 start_fossil = true
 size = 533
@@ -33,44 +33,27 @@ compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"bio
 
 [sub_resource type="Resource" id="k_3"]
 script = ExtResource("v_script")
-display_name = "Desa Mata Bangun"
+display_name = "Desa Bonto Tinggi"
 traits = Array[StringName]([&"pesisir_berangin"])
 start_fossil = true
 size = 533
 origin = "Sulut"
 compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 1.0})
 
-[sub_resource type="Resource" id="k_4"]
-script = ExtResource("v_script")
-display_name = "Desa Wana Sapiri"
-traits = Array[StringName]([&"sungai_deras"])
-size = 187
-origin = "Gorontalo"
-compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
-
-[sub_resource type="Resource" id="k_5"]
-script = ExtResource("v_script")
-display_name = "Desa Wana Tinggi"
-traits = Array[StringName]([&"lahan_terik"])
-start_fossil = true
-size = 545
-origin = "Gorontalo"
-compat = Dictionary[StringName, float]({&"plts": 1.0, &"mikrohidro": 1.0, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
-
 [resource]
 script = ExtResource("p_script")
 id = &"sulut"
-display_name = "Sulawesi Utara & Gorontalo"
+display_name = "Sulawesi Utara"
 short_name = "Sulut"
 island = ExtResource("p_island")
 region_mask = ExtResource("p_region")
-map_position = Vector2(782, 283)
-label_offset = Vector2(6, -30)
-neighbors = Array[StringName]([&"sulteng"])
-villages = 6
-fossil_villages = 4
-village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3"), SubResource("k_4"), SubResource("k_5")])
-compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.5, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 1.0})
-disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 16.5, &"badai_pesisir": 6.0, &"kemarau_panjang": 8.8, &"erupsi": 1.4, &"titik_api": 0.4})
-member_provinces = PackedStringArray("Sulawesi Utara", "Gorontalo")
+map_position = Vector2(808, 280)
+label_offset = Vector2(18, -50)
+neighbors = Array[StringName]([&"gorontalo"])
+villages = 4
+fossil_villages = 3
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1"), SubResource("k_2"), SubResource("k_3")])
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.15, &"angin": 1.0, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 14.5, &"badai_pesisir": 6.9, &"kemarau_panjang": 1.7, &"erupsi": 1.6, &"titik_api": 0.4})
+member_provinces = PackedStringArray("Sulawesi Utara")
 note = ""

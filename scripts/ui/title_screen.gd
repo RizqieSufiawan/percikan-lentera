@@ -65,6 +65,10 @@ var _windows: Array = []
 var _house_light: Dictionary = {}  # x rumah -> terang rata-rata jendelanya (untuk pantulan di danau)
 var _chimney: Array = []  # asap dapur: {p, age}
 var _shooting := {}
+var _wisp := {}  # awan tipis yang lewat di depan bulan: {x, y, len, sp, ph}
+var _next_wisp := 6.0
+var _birds := {}  # rombongan burung melintasi bulan: {x, y, sp, n}
+var _next_birds := 14.0
 var _next_shooting := 4.0
 var _par := Vector2.ZERO
 var _time := 0.0
@@ -352,6 +356,7 @@ func _process(delta: float) -> void:
 		_shooting["t"] += delta
 		if _shooting["t"] > 0.9:
 			_shooting = {}
+	_update_moon(delta)
 	for r in _ripples:
 		r["x"] = fposmod(r["x"] + r["sp"] * delta, 330.0)
 	for cl in _clouds:
@@ -367,6 +372,7 @@ func _process(delta: float) -> void:
 func _draw_sky_fx() -> void:
 	var c: Control = _fx[0]
 	var px := _pix(c)
+	_draw_moon_life(c, px)
 	for st in _stars:
 		# Kelip: gelombang pelan ditambah kedip cepat sesekali (seperti bintang sungguhan).
 		var w := 0.5 + 0.5 * sin(_time * st["sp"] + st["ph"])
@@ -385,6 +391,97 @@ func _draw_sky_fx() -> void:
 		for k in 10:
 			var q := head - dir * px * k * 1.5
 			c.draw_rect(Rect2((q / px).floor() * px, Vector2(px, px)), Color(1, 0.95, 0.8, (1.0 - k / 10.0) * sin(t * PI)))
+
+
+# ---------------------------------------------------------------- bulan
+
+const MOON_R := 11.0  # jari-jari bulan (make_title_bg.py)
+
+
+func _update_moon(delta: float) -> void:
+	_next_wisp -= delta
+	if _wisp.is_empty() and _next_wisp <= 0.0:
+		var ln := _rng.randi_range(34, 50)
+		var x_start := MOON.x - MOON_R - ln - 26.0
+		_wisp = {"x": x_start, "x0": x_start, "x1": MOON.x + MOON_R + 26.0, "y": MOON.y + _rng.randf_range(-6.0, 7.0),
+			"len": ln, "sp": _rng.randf_range(2.2, 3.2), "ph": _rng.randf() * TAU}
+	if not _wisp.is_empty():
+		_wisp["x"] += _wisp["sp"] * delta
+		if _wisp["x"] > _wisp["x1"]:
+			_wisp = {}
+			_next_wisp = _rng.randf_range(10.0, 18.0)
+	_next_birds -= delta
+	if _birds.is_empty() and _next_birds <= 0.0:
+		_birds = {"x": MOON.x - 34.0, "y": MOON.y + _rng.randf_range(-6.0, 6.0), "sp": _rng.randf_range(7.0, 10.0),
+			"n": _rng.randi_range(2, 4), "t": 0.0}
+	if not _birds.is_empty():
+		_birds["x"] += _birds["sp"] * delta
+		_birds["t"] += delta
+		if _birds["x"] > MOON.x + 40.0:
+			_birds = {}
+			_next_birds = _rng.randf_range(22.0, 40.0)
+
+
+## Bulan "bernapas": cincin cahaya tipis berdenyut pelan, awan tipis sesekali lewat di depannya
+## (tampak keperakan saat menutupi bulan), dan rombongan burung kecil sesekali melintas.
+func _draw_moon_life(c: Control, px: float) -> void:
+	var breath := 0.5 + 0.5 * sin(_time * 0.8)
+	# Cincin cahaya dengan dither: piksel berselang di tepi bulan, terang-redup bergantian.
+	for k in 72:
+		var a := TAU * k / 72.0
+		var g := (MOON + Vector2(cos(a), sin(a)) * (MOON_R + 1.6)).floor()
+		if int(g.x + g.y) % 2 == 0:
+			continue
+		var shimmer := 0.5 + 0.5 * sin(_time * 1.7 + a * 3.0)
+		_art(c, px, g, Color(0.95, 0.93, 0.82, (0.10 + 0.22 * breath) * (0.6 + 0.4 * shimmer)))
+	# Kilau kecil berpindah di tepi kanan atas bulan (sisi yang paling terang).
+	var gl := fmod(_time * 0.35, 1.0)
+	if gl < 0.25:
+		var a2 := lerpf(-1.9, -0.2, gl / 0.25)
+		var g2 := (MOON + Vector2(cos(a2), sin(a2)) * (MOON_R - 1.0)).floor()
+		_art(c, px, g2, Color(1, 1, 0.94, sin(gl / 0.25 * PI) * 0.9))
+	if not _wisp.is_empty():
+		# Awan tipis memanjang: tebal di tengah, meruncing di ujung, tepi atas bergelombang dan
+		# disinari bulan. Saat menutupi bulan warnanya abu keperakan dan tembus pandang.
+		var ln: int = _wisp["len"]
+		var x0 := floorf(_wisp["x"])
+		var cy := floorf(_wisp["y"])
+		var ph: float = _wisp["ph"]
+		# Muncul dan hilang perlahan (memudar), bukan tiba-tiba.
+		var prog: float = (_wisp["x"] - _wisp["x0"]) / (_wisp["x1"] - _wisp["x0"])
+		var fade := smoothstep(0.0, 0.3, prog) * (1.0 - smoothstep(0.7, 1.0, prog))
+		for i in ln:
+			var u := float(i) / float(ln - 1)
+			var h := 5.5 * pow(sin(u * PI), 0.7) + 1.1 * sin(u * 7.0 + ph) + 0.5 * sin(u * 19.0 + ph * 2.0)
+			if h < 0.8:
+				continue
+			var top := int(roundf(cy - h * 0.65))
+			var bot := int(roundf(cy + h * 0.35))
+			for y in range(top, bot + 1):
+				var g := Vector2(x0 + i, y)
+				if (u < 0.08 or u > 0.92) and int(g.x + g.y) % 2 == 0:
+					continue
+				var on_moon := g.distance_to(MOON) <= MOON_R + 0.3
+				var col: Color
+				if y == top:
+					col = Color8(214, 208, 192, 210) if on_moon else Color8(128, 122, 176, 190)
+				elif on_moon:
+					col = Color8(150, 146, 156, 150 if y == bot else 205)
+				else:
+					col = Color8(50, 48, 98, 130 if y == bot else 190)
+				col.a *= fade
+				_art(c, px, g, col)
+	if not _birds.is_empty():
+		for b in _birds["n"]:
+			var bx: float = _birds["x"] - b * 5.0 - (b % 2) * 1.0
+			var by: float = _birds["y"] + (b % 2) * 2.0 + sin(_birds["t"] * 1.3 + b) * 0.8
+			var flap := int(_birds["t"] * 7.0 + b * 1.7) % 2 == 0
+			var g := Vector2(floorf(bx), floorf(by))
+			var col := Color8(22, 22, 46)
+			# Siluet burung 5 piksel: sayap naik (^ ^) dan turun bergantian.
+			var wy := -1.0 if flap else 1.0
+			for o in [Vector2(-2, wy), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, wy)]:
+				_art(c, px, g + o, col)
 
 
 func _new_lantern(anywhere: bool) -> Dictionary:

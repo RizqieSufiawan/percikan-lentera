@@ -166,7 +166,12 @@ func _read_save(slot: String) -> Dictionary:
 	if f == null:
 		return {}
 	var v = f.get_var()
-	return v if v is Dictionary and v.has("sim") else {}
+	if not (v is Dictionary and v.has("sim")):
+		return {}
+	# Simpanan dari versi peta lama (24 wilayah) tidak bisa dipakai: dianggap kosong.
+	if int(v["sim"].get("version", 0)) != Simulation.SAVE_VERSION:
+		return {}
+	return v
 
 
 ## {} jika slot kosong. Selain itu meta: name, date, year, province, energy, access, saved_at.

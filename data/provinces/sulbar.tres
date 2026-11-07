@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="ProvinceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/province_data.gd" id="p_script"]
+[ext_resource type="Resource" path="res://data/islands/sulawesi.tres" id="p_island"]
+[ext_resource type="Texture2D" path="res://assets/map/regions/sulbar.png" id="p_region"]
+[ext_resource type="Script" path="res://scripts/data/village_data.gd" id="v_script"]
+
+[sub_resource type="Resource" id="k_0"]
+script = ExtResource("v_script")
+display_name = "Desa Bulu Bangun"
+traits = Array[StringName]([&"limbah_perkebunan"])
+size = 191
+origin = "Sulbar"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[sub_resource type="Resource" id="k_1"]
+script = ExtResource("v_script")
+display_name = "Desa Wana Lipu"
+traits = Array[StringName]([&"gunung_api"])
+start_fossil = true
+size = 459
+origin = "Sulbar"
+compat = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+
+[resource]
+script = ExtResource("p_script")
+id = &"sulbar"
+display_name = "Sulawesi Barat"
+short_name = "Sulbar"
+island = ExtResource("p_island")
+region_mask = ExtResource("p_region")
+map_position = Vector2(667, 378)
+label_offset = Vector2(0, -30)
+neighbors = Array[StringName]([&"sulteng", &"sulsel"])
+villages = 2
+fossil_villages = 1
+village_list = Array[ExtResource("v_script")]([SubResource("k_0"), SubResource("k_1")])
+start_resistance_mod = -1.0
+spread_mod = 1.1
+compat_override = Dictionary[StringName, float]({&"plts": 0.5, &"mikrohidro": 0.15, &"biomassa": 0.5, &"angin": 0.5, &"panas_bumi": 1.0})
+disaster_rates = Dictionary[StringName, float]({&"banjir_bandang": 24.8, &"badai_pesisir": 10.0, &"kemarau_panjang": 6.2, &"erupsi": 0.0, &"titik_api": 2.3})
+member_provinces = PackedStringArray("Sulawesi Barat")
+note = ""

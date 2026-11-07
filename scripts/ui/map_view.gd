@@ -96,6 +96,9 @@ func build() -> void:
 	_sea.material = sea_mat
 	add_child(_sea)
 	_region_layer = _make_layer("Regions")
+	# Efek peta (kapal, awan, kembang api) tidak boleh keluar dari kotak peta, mis. di layar Persiapan
+	# yang petanya hanya mengisi bagian tengah layar.
+	clip_contents = true
 	_ambient = AMBIENT_SCRIPT.new()
 	_ambient.name = "Ambient"
 	add_child(_ambient)
@@ -206,8 +209,15 @@ func _prepare_region(p: ProvinceData) -> void:
 	var bm := BitMap.new()
 	bm.create_from_image_alpha(img, 0.5)
 	_bitmaps[p.id] = bm
+	# Hemat GPU: shader wilayah hanya dijalankan di kotak sekitar wilayahnya (+ tepi untuk garis
+	# sorotan di laut), bukan di seluruh layar. UV shader tetap koordinat peta penuh (AtlasTexture).
+	var used := img.get_used_rect().grow(8).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
+	var atlas := AtlasTexture.new()
+	atlas.atlas = p.region_mask
+	atlas.region = Rect2(used)
 	var r := TextureRect.new()
-	r.texture = p.region_mask
+	r.texture = atlas
+	r.set_meta("ref_rect", Rect2(Vector2(used.position) * REF / Vector2(img.get_size()), Vector2(used.size) * REF / Vector2(img.get_size())))
 	r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	r.stretch_mode = TextureRect.STRETCH_SCALE
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -274,8 +284,9 @@ func _layout() -> void:
 		n.position = to_screen(p.map_position + p.label_offset) - Vector2(n.size.x / 2.0, 16)
 		var r: TextureRect = _regions.get(p.id)
 		if r:
-			r.position = map_offset()
-			r.size = REF * map_scale()
+			var rr: Rect2 = r.get_meta("ref_rect", Rect2(Vector2.ZERO, REF))
+			r.position = map_offset() + rr.position * map_scale()
+			r.size = rr.size * map_scale()
 	if _sea:
 		var sm: ShaderMaterial = _sea.material
 		sm.set_shader_parameter("map_pos", map_offset())
