@@ -74,6 +74,7 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="RegionLabel" type="Label" parent="TopPanel/VBox/Header"]
+theme_type_variation = &"PixelTitle"
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Nusantara"
@@ -114,6 +115,7 @@ layout_mode = 2
 
 [node name="ResIcon" type="TextureRect" parent="TopPanel/VBox/ResRow"]
 custom_minimum_size = Vector2(16, 16)
+texture_filter = 2
 layout_mode = 2
 texture = ExtResource("13_res")
 expand_mode = 1
@@ -121,7 +123,7 @@ stretch_mode = 5
 
 [node name="ResText" type="Label" parent="TopPanel/VBox/ResRow"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Resistensi"
 
 [node name="ResistanceBar" type="Control" parent="TopPanel/VBox/ResRow"]
@@ -137,7 +139,7 @@ script = ExtResource("4_res")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 2
 
 [node name="StatsPanel" type="PanelContainer" parent="."]
@@ -150,31 +152,38 @@ mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="StatsPanel"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 1
 
 [node name="CommunityName" type="Label" parent="StatsPanel/VBox"]
+theme_type_variation = &"HudTitle"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text_overrun_behavior = 3
 
-[node name="DateLabel" type="Label" parent="StatsPanel/VBox"]
+[node name="DateRow" type="HBoxContainer" parent="StatsPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DateLabel" type="Label" parent="StatsPanel/VBox/DateRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 
 [node name="StageLabel" type="Label" parent="StatsPanel/VBox"]
 unique_name_in_owner = true
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-autowrap_mode = 3
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text_overrun_behavior = 3
 
 [node name="PointsRow" type="HBoxContainer" parent="StatsPanel/VBox"]
 layout_mode = 2
 
 [node name="Icon" type="TextureRect" parent="StatsPanel/VBox/PointsRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture_filter = 2
 layout_mode = 2
 texture = ExtResource("9_pts")
 expand_mode = 1
@@ -183,7 +192,7 @@ stretch_mode = 5
 [node name="PointsLabel" type="Label" parent="StatsPanel/VBox/PointsRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 16
 
 [node name="MoneyRow" type="HBoxContainer" parent="StatsPanel/VBox"]
 layout_mode = 2
@@ -191,7 +200,8 @@ tooltip_text = "Ekonomi: dana untuk aksi fisik. Nol terlalu lama = kalah."
 mouse_filter = 1
 
 [node name="Icon" type="TextureRect" parent="StatsPanel/VBox/MoneyRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture_filter = 2
 layout_mode = 2
 texture = ExtResource("10_money")
 expand_mode = 1
@@ -200,12 +210,12 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="StatsPanel/VBox/MoneyRow"]
 custom_minimum_size = Vector2(92, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Ekonomi"
 
 [node name="MoneyBar" type="ProgressBar" parent="StatsPanel/VBox/MoneyRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 14)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -216,7 +226,8 @@ tooltip_text = "Kesejahteraan warga. Nol = kalah."
 mouse_filter = 1
 
 [node name="Icon" type="TextureRect" parent="StatsPanel/VBox/WelfareRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture_filter = 2
 layout_mode = 2
 texture = ExtResource("11_welf")
 expand_mode = 1
@@ -225,12 +236,12 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="StatsPanel/VBox/WelfareRow"]
 custom_minimum_size = Vector2(92, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Kesejahteraan"
 
 [node name="WelfareBar" type="ProgressBar" parent="StatsPanel/VBox/WelfareRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 14)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -241,7 +252,8 @@ tooltip_text = "Kekuatan Komunitas rata-rata di wilayah yang sudah memakai energ
 mouse_filter = 1
 
 [node name="Icon" type="TextureRect" parent="StatsPanel/VBox/CommunityRow"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
+texture_filter = 2
 layout_mode = 2
 texture = ExtResource("12_comm")
 expand_mode = 1
@@ -250,12 +262,12 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="StatsPanel/VBox/CommunityRow"]
 custom_minimum_size = Vector2(92, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "Komunitas"
 
 [node name="CommunityBar" type="ProgressBar" parent="StatsPanel/VBox/CommunityRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 14)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -271,16 +283,19 @@ mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="MissionPanel"]
 layout_mode = 2
+theme_override_constants/separation = 1
 
 [node name="Title" type="Label" parent="MissionPanel/VBox"]
+theme_type_variation = &"HudTitle"
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Misi KKN"
 
 [node name="KknTimeLabel" type="Label" parent="MissionPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 
 [node name="MissionList" type="VBoxContainer" parent="MissionPanel/VBox"]
 unique_name_in_owner = true
@@ -311,10 +326,11 @@ theme_override_constants/separation = 4
 layout_mode = 2
 
 [node name="PName" type="Label" parent="ProvincePanel/VBox/TitleRow"]
+theme_type_variation = &"HudTitle"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text_overrun_behavior = 3
 
 [node name="PClose" type="Button" parent="ProvincePanel/VBox/TitleRow"]
@@ -327,14 +343,14 @@ unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.7)
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="PVillages" type="Label" parent="ProvincePanel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="CommRow" type="HBoxContainer" parent="ProvincePanel/VBox"]
@@ -344,7 +360,7 @@ mouse_filter = 1
 
 [node name="Label" type="Label" parent="ProvincePanel/VBox/CommRow"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 text = "Komunitas"
 
 [node name="PCommunity" type="ProgressBar" parent="ProvincePanel/VBox/CommRow"]
@@ -359,7 +375,7 @@ unique_name_in_owner = true
 modulate = Color(0.62, 0.8, 1, 1)
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="ActionList" type="HBoxContainer" parent="ProvincePanel/VBox"]
@@ -373,7 +389,7 @@ layout_mode = 2
 [node name="VillagesTitle" type="Label" parent="ProvincePanel/VBox"]
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 text = "Kloter desa (klik untuk melihat ciri desa)"
 
 [node name="VillageScroll" type="ScrollContainer" parent="ProvincePanel/VBox"]
@@ -399,14 +415,14 @@ theme_override_constants/separation = 3
 [node name="VName" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text_overrun_behavior = 3
 
 [node name="VStatus" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="VTraits" type="Label" parent="ProvincePanel/VBox/VillageDetail"]
@@ -414,7 +430,7 @@ unique_name_in_owner = true
 modulate = Color(0.85, 0.92, 1, 1)
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="VBuildList" type="VBoxContainer" parent="ProvincePanel/VBox/VillageDetail"]
@@ -428,7 +444,7 @@ visible = false
 modulate = Color(1, 1, 1, 0.75)
 custom_minimum_size = Vector2(264, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="FeedPanel" type="PanelContainer" parent="."]
@@ -452,17 +468,18 @@ theme_override_constants/separation = 4
 layout_mode = 2
 
 [node name="Title" type="Label" parent="FeedPanel/VBox/Header"]
+theme_type_variation = &"HudTitle"
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 text = "Peristiwa"
 
 [node name="FeedPrev" type="Button" parent="FeedPanel/VBox/Header"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 16
 tooltip_text = "Peristiwa sebelumnya"
 text = "<"
 
@@ -470,14 +487,14 @@ text = "<"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(38, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="FeedNext" type="Button" parent="FeedPanel/VBox/Header"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 16
 tooltip_text = "Peristiwa berikutnya"
 text = ">"
 
@@ -493,7 +510,7 @@ stretch_mode = 5
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 max_lines_visible = 2
 
@@ -501,7 +518,7 @@ max_lines_visible = 2
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.65)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 16
 text_overrun_behavior = 3
 
 [node name="BottomBar" type="PanelContainer" parent="."]
@@ -598,12 +615,13 @@ layout_mode = 2
 [node name="Tag" type="Label" parent="Ticker/HBox"]
 modulate = Color(1, 0.77, 0.25, 1)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 text = "BERITA"
 
 [node name="TickerIcon" type="TextureRect" parent="Ticker/HBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(20, 20)
+texture_filter = 2
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -612,7 +630,7 @@ stretch_mode = 5
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 text_overrun_behavior = 3
 
 [node name="UpgradeDim" type="ColorRect" parent="."]
@@ -650,10 +668,11 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Title" type="Label" parent="UpgradePanel/VBox/Header"]
+theme_type_variation = &"PixelTitle"
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 20
-text = "Pohon Upgrade (game dijeda)"
+theme_override_font_sizes/font_size = 18
+text = "Pohon Upgrade"
 
 [node name="UPoints" type="Label" parent="UpgradePanel/VBox/Header"]
 unique_name_in_owner = true
@@ -673,12 +692,13 @@ theme_override_constants/separation = 12
 [node name="Tabs" type="TabContainer" parent="UpgradePanel/VBox/Body"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 size_flags_horizontal = 3
 
 [node name="Detail" type="PanelContainer" parent="UpgradePanel/VBox/Body"]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+clip_contents = true
 
 [node name="VBox" type="VBoxContainer" parent="UpgradePanel/VBox/Body/Detail"]
 layout_mode = 2
@@ -694,27 +714,33 @@ stretch_mode = 5
 
 [node name="UName" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
-[node name="UDesc" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
+[node name="UDesc" type="RichTextLabel" parent="UpgradePanel/VBox/Body/Detail/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 13
-autowrap_mode = 3
+theme_override_colors/default_color = Color(0.96, 0.92, 0.82, 1)
+theme_override_font_sizes/normal_font_size = 16
+scroll_following = false
 
 [node name="UCost" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
 unique_name_in_owner = true
 modulate = Color(1, 0.77, 0.25, 1)
+custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
 
 [node name="UState" type="Label" parent="UpgradePanel/VBox/Body/Detail/VBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="BuyBtn" type="Button" parent="UpgradePanel/VBox/Body/Detail/VBox"]
@@ -760,9 +786,10 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="MTitle" type="Label" parent="Modal/Center/Card/VBox"]
+theme_type_variation = &"PixelTitle"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -785,7 +812,7 @@ unique_name_in_owner = true
 modulate = Color(0.62, 0.8, 1, 1)
 custom_minimum_size = Vector2(516, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="MButtons" type="HFlowContainer" parent="Modal/Center/Card/VBox"]

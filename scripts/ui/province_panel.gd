@@ -2,6 +2,8 @@ extends PanelContainer
 ## Panel kanan: info wilayah, aksi tingkat wilayah, daftar kloter desa, dan detail kloter terpilih
 ## (ciri desa + tombol bangun per energi). Satu kloter = +-500 desa nyata dari satu provinsi asal.
 
+const UiKit := preload("res://scripts/ui/ui_kit.gd")
+
 const STATUS_NAMES := ["Gelap", "Fosil", "Rapuh", "Mandiri"]
 const STATUS_HELP := [
 	"Belum berlistrik.",
@@ -52,7 +54,7 @@ func _ready() -> void:
 		b.custom_minimum_size = Vector2(0, 38)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 11)
+		b.add_theme_font_size_override("font_size", 16)
 		b.pressed.connect(_on_action.bind(a))
 		b.mouse_entered.connect(_show_hint.bind(a))
 		b.mouse_exited.connect(func(): hint_label.hide())
@@ -82,7 +84,7 @@ func _build_village_rows() -> void:
 		b.clip_text = true
 		b.toggle_mode = true
 		b.custom_minimum_size = Vector2(0, 26)
-		b.add_theme_font_size_override("font_size", 12)
+		b.add_theme_font_size_override("font_size", 16)
 		b.pressed.connect(_select_village.bind(v.index))
 		village_list.add_child(b)
 		_village_buttons.append(b)
@@ -174,13 +176,9 @@ func _style_building_row(b: Button, v: Simulation.VillageState) -> void:
 	var col: Color = e.color if e else Palette.LIT
 	var selected := v.index == village_index
 	for st in ["normal", "hover", "pressed", "hover_pressed"]:
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = col.darkened(0.55 if selected or st.begins_with("hover") else 0.72)
-		sb.border_color = Color.WHITE if selected else col
-		sb.set_border_width_all(2)
+		var sb := UiKit.box(col.darkened(0.55 if selected or st.begins_with("hover") else 0.72),
+			Color.WHITE if selected else col, 2, 4, 4)
 		sb.border_width_left = 6
-		sb.set_corner_radius_all(3)
-		sb.set_content_margin_all(4)
 		sb.content_margin_left = 10
 		b.add_theme_stylebox_override(st, sb)
 	b.add_theme_color_override("font_color", col.lightened(0.45))
@@ -259,7 +257,7 @@ func _refresh_build_buttons(s: Simulation.ProvinceState, v: Simulation.VillageSt
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.clip_text = true
 		b.custom_minimum_size = Vector2(0, 26)
-		b.add_theme_font_size_override("font_size", 12)
+		b.add_theme_font_size_override("font_size", 16)
 		var label: String = en.display_name if en else String(eid)
 		if sim.is_compat_known(province_id, v.index, eid):
 			label += " [%s]" % Palette.compat_word(sim.village_compat(s, v, eid)).to_lower()

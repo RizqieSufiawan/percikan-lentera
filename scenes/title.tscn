@@ -57,6 +57,7 @@ theme_override_constants/separation = 4
 alignment = 1
 
 [node name="GameTitle" type="Label" parent="Margin/Column"]
+theme_type_variation = &"PixelTitle"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Percikan

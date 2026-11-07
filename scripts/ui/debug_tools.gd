@@ -43,13 +43,13 @@ func _ready() -> void:
 	_help.visible = false
 	var help_label := Label.new()
 	help_label.text = HELP
-	help_label.add_theme_font_size_override("font_size", 13)
+	help_label.add_theme_font_size_override("font_size", 16)
 	_help.add_child(help_label)
 	add_child(_help)
 	_status = Label.new()
 	_status.text = "DEBUG aktif: tekan F1"
 	_status.modulate = Color(1, 0.6, 0.6)
-	_status.add_theme_font_size_override("font_size", 12)
+	_status.add_theme_font_size_override("font_size", 16)
 	_status.add_theme_constant_override("outline_size", 4)
 	_status.add_theme_color_override("font_outline_color", Color.BLACK)
 	_status.anchor_left = 1.0

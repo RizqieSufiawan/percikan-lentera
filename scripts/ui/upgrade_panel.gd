@@ -4,12 +4,17 @@ extends PanelContainer
 ## harus dibeli dulu), kolom = cabang, garis = syarat "requires". Node berupa ikon + nama di bawahnya. Gaya Plague Inc: semua cabang bisa dibeli, tapi setiap pembelian
 ## membuat upgrade berikutnya lebih mahal (GameConfig.upgrade_cost_growth).
 
-const COL_W := 88.0
-const ROW_H := 122.0
+const UiKit := preload("res://scripts/ui/ui_kit.gd")
+
+const COL_MIN := 88.0  # lebar kolom tersempit (tab Sumber Energi, 10 cabang)
+const COL_MAX := 128.0
+const TREE_W := 880.0  # lebar area pohon tanpa digulir mendatar
+const ROW_H := 130.0
 const NODE_SIZE := Vector2(52, 52)
-const LABEL_W := 84.0
-const LABEL_H := 56.0
+const LABEL_H := 64.0  # nama (2 baris) + efek + harga, font m6x11 16 px
 const PAD := Vector2(4, 6)
+const ICON_POINTS := preload("res://assets/icons/stats/points.png")
+const ICON_MONEY := preload("res://assets/icons/stats/money.png")
 
 var _selected: UpgradeData
 var _buttons: Dictionary = {}  # UpgradeData -> Button
@@ -19,7 +24,7 @@ var _canvases: Array[Control] = []
 @onready var points_label: Label = %UPoints
 @onready var u_icon: TextureRect = %UIcon
 @onready var u_name: Label = %UName
-@onready var u_desc: Label = %UDesc
+@onready var u_desc: RichTextLabel = %UDesc  # bisa digulir: panjang teks tidak mengubah ukuran panel
 @onready var u_cost: Label = %UCost
 @onready var u_state: Label = %UState
 @onready var buy_button: Button = %BuyBtn
@@ -39,7 +44,7 @@ var _tab_hint: Label
 func _ready() -> void:
 	%UClose.pressed.connect(close)
 	_tab_hint = Label.new()
-	_tab_hint.add_theme_font_size_override("font_size", 13)
+	_tab_hint.add_theme_font_size_override("font_size", 16)
 	_tab_hint.add_theme_color_override("font_color", Palette.LIT)
 	_tab_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var vbox: VBoxContainer = tabs.get_parent().get_parent()
@@ -73,9 +78,8 @@ func _make_button(u: UpgradeData) -> Button:
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.max_lines_visible = 2
 	l.clip_text = true
-	l.custom_minimum_size = Vector2(LABEL_W, 0)
-	l.add_theme_font_size_override("font_size", 10)
-	l.add_theme_constant_override("line_spacing", -3)
+	l.add_theme_font_size_override("font_size", 16)
+	l.add_theme_constant_override("line_spacing", 0)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.set_meta("label", l)
 	# Efek utama di bawah nama, mis. "+25% listrik".
@@ -83,15 +87,17 @@ func _make_button(u: UpgradeData) -> Button:
 	fx.text = UpgradeText.short(u)
 	fx.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	fx.clip_text = true
-	fx.add_theme_font_size_override("font_size", 10)
+	fx.add_theme_font_size_override("font_size", 16)
 	fx.add_theme_color_override("font_color", Palette.LIT)
 	fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.set_meta("effect", fx)
-	# Harga terkini (ikut naik sesuai pengali tiap upgrade yang dibeli).
-	var pr := Label.new()
-	pr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	pr.clip_text = true
-	pr.add_theme_font_size_override("font_size", 10)
+	# Harga terkini (ikut naik sesuai pengali tiap upgrade yang dibeli): ikon Poin/Ekonomi + angka.
+	var pr := RichTextLabel.new()
+	pr.bbcode_enabled = true
+	pr.scroll_active = false
+	pr.autowrap_mode = TextServer.AUTOWRAP_OFF
+	pr.clip_contents = true
+	pr.add_theme_font_size_override("normal_font_size", 16)
 	pr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.set_meta("price", pr)
 	return b
@@ -142,7 +148,10 @@ func _build_tree(scroll: ScrollContainer, category: int) -> void:
 			next_row[0] += 1
 	# Pohon ke bawah: cabang = kolom, kedalaman = baris.
 	var canvas := Control.new()
-	canvas.custom_minimum_size = Vector2(PAD.x * 2 + next_row[0] * COL_W, PAD.y * 2 + (_max(depth) + 1) * ROW_H)
+	# Tab dengan sedikit cabang mendapat kolom lebih lebar supaya teks tidak terpotong.
+	var col_w: float = clampf(floorf(TREE_W / maxf(1.0, next_row[0])), COL_MIN, COL_MAX)
+	var label_w := col_w - 4.0
+	canvas.custom_minimum_size = Vector2(PAD.x * 2 + next_row[0] * col_w, PAD.y * 2 + (_max(depth) + 1) * ROW_H)
 	canvas.set_meta("list", list)
 	canvas.draw.connect(_draw_links.bind(canvas))
 	# Pohon kecil ditaruh di tengah tab.
@@ -154,22 +163,22 @@ func _build_tree(scroll: ScrollContainer, category: int) -> void:
 	_canvases.append(canvas)
 	for u in list:
 		var b := _make_button(u)
-		var cell := PAD + Vector2(row.get(u, 0) * COL_W, depth[u] * ROW_H)
+		var cell := PAD + Vector2(row.get(u, 0) * col_w, depth[u] * ROW_H)
 		canvas.add_child(b)
-		b.position = cell + Vector2((COL_W - NODE_SIZE.x) / 2.0, 0)
+		b.position = cell + Vector2((col_w - NODE_SIZE.x) / 2.0, 0)
 		b.size = NODE_SIZE
 		var l: Label = b.get_meta("label")
 		canvas.add_child(l)
-		l.position = cell + Vector2((COL_W - LABEL_W) / 2.0, NODE_SIZE.y + 2)
-		l.size = Vector2(LABEL_W, 28)
+		l.position = cell + Vector2((col_w - label_w) / 2.0, NODE_SIZE.y + 1)
+		l.size = Vector2(label_w, 32)
 		var fx: Label = b.get_meta("effect")
 		canvas.add_child(fx)
-		fx.position = cell + Vector2((COL_W - LABEL_W) / 2.0, NODE_SIZE.y + 29)
-		fx.size = Vector2(LABEL_W, 14)
-		var pr: Label = b.get_meta("price")
+		fx.position = cell + Vector2((col_w - label_w) / 2.0, NODE_SIZE.y + 32)
+		fx.size = Vector2(label_w, 16)
+		var pr: RichTextLabel = b.get_meta("price")
 		canvas.add_child(pr)
-		pr.position = cell + Vector2((COL_W - LABEL_W) / 2.0, NODE_SIZE.y + 43)
-		pr.size = Vector2(LABEL_W, 14)
+		pr.position = cell + Vector2((col_w - label_w) / 2.0, NODE_SIZE.y + 48)
+		pr.size = Vector2(label_w, 17)
 
 
 func _place(u: UpgradeData, r: int, children: Dictionary, row: Dictionary, next_row: Array) -> void:
@@ -247,14 +256,14 @@ func refresh() -> void:
 		b.modulate = col
 		l.modulate = col
 		b.get_meta("effect").modulate = col
-		var pr: Label = b.get_meta("price")
+		var pr: RichTextLabel = b.get_meta("price")
 		if state == "owned":
-			pr.text = "dimiliki"
+			pr.text = "[center]dimiliki[/center]"
 		else:
-			var ptxt := "%d Poin" % sim.upgrade_cost(u)
+			var ptxt := "[center][img=14x14]%s[/img] %d" % [ICON_POINTS.resource_path, sim.upgrade_cost(u)]
 			if u.cost_money > 0:
-				ptxt += " + %d Eko" % u.cost_money
-			pr.text = ptxt
+				ptxt += "  [img=14x14]%s[/img] %d" % [ICON_MONEY.resource_path, u.cost_money]
+			pr.text = ptxt + "[/center]"
 		pr.modulate = col
 		# Ikon yang dimiliki diberi bingkai hijau, yang terpilih bingkai krem.
 		b.add_theme_stylebox_override("normal", _node_style(state == "owned", u == _selected))
@@ -264,13 +273,8 @@ func refresh() -> void:
 
 
 func _node_style(owned: bool, selected: bool) -> StyleBoxFlat:
-	var st := StyleBoxFlat.new()
-	st.bg_color = Color(0.13, 0.15, 0.3)
-	st.set_corner_radius_all(6)
-	st.set_border_width_all(3 if selected else 2)
-	st.border_color = Palette.CREAM if selected else (Palette.INDEPENDENT if owned else Color(0.35, 0.37, 0.5))
-	st.set_content_margin_all(6)
-	return st
+	var border := Palette.CREAM if selected else (Palette.INDEPENDENT if owned else Color(0.35, 0.37, 0.5))
+	return UiKit.box(Color(0.13, 0.15, 0.3), border, 4 if selected else 2, 6, 6)
 
 
 func _select(u: UpgradeData) -> void:
@@ -288,6 +292,7 @@ func _show_detail() -> void:
 	u_icon.texture = u.icon
 	u_name.text = u.display_name
 	var why := UpgradeText.purpose(u)
+	u_desc.scroll_to_line(0)
 	u_desc.text = ("Gunanya: %s\n\n" % why if why != "" else "") + "Efek:\n- " + "\n- ".join(UpgradeText.lines(u)) + "\n\n" + u.description
 	var pts := Game.sim.upgrade_cost(u)
 	var cost := "Biaya: %d Poin" % pts

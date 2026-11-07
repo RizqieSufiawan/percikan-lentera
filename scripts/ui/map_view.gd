@@ -455,7 +455,7 @@ func _update_region_styles() -> void:
 				if s.seed:
 					tint = Color(Palette.BLUE.r, Palette.BLUE.g, Palette.BLUE.b, 0.35)
 				elif not sim.is_reachable(s):
-					tint = Color(0.05, 0.06, 0.12, 0.3)
+					tint = Color(0.05, 0.06, 0.12, 0.12)  # tipis: jangan sampai mirip daratan negara tetangga
 		var mat: ShaderMaterial = _regions[id].material
 		mat.set_shader_parameter("region_tint", tint)
 		var is_sel: bool = id == selected
@@ -538,20 +538,19 @@ func _get_tooltip(at_position: Vector2) -> String:
 	var cfg := Game.db.config
 	var stage := "macet, warga belum membangun sendiri" if s.community < cfg.auto_build_min_community \
 		else ("warga membangun sendiri" if s.community < cfg.independence_threshold else "desa bisa Mandiri")
-	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\n\nKomunitas %d%% (%s).\nKlik wilayah untuk melihat bar Komunitas: garis %d = warga membangun sendiri, %d = desa jadi Mandiri." % [s.data.display_name,
+	var text := "%s%s\n%s desa: %s mandiri, %s rapuh, %s fosil, %s gelap\nKomunitas %d%% (%s)" % [s.data.display_name,
 		("\nProvinsi: " + members) if members != "" else "", Simulation.ribu(s.total_desa()), Simulation.ribu(s.independent_desa),
-		Simulation.ribu(s.lit_desa), Simulation.ribu(s.fossil_desa), Simulation.ribu(s.dark_desa), int(s.community), stage,
-		int(cfg.auto_build_min_community), int(cfg.independence_threshold)]
+		Simulation.ribu(s.lit_desa), Simulation.ribu(s.fossil_desa), Simulation.ribu(s.dark_desa), int(s.community), stage]
 	var cell := cell_at(at_position)
 	if not cell.is_empty() and cell[0] == id:
 		var v: Simulation.VillageState = s.villages[cell[1]]
 		var st: String = ["gelap", "fosil", "rapuh", "mandiri"][v.status]
 		var en := Game.db.get_energy(v.energy)
-		text += "\n\nKloter: %s (%s desa, %s%s)" % [v.name(), Simulation.ribu(v.data.size if v.data else 1), st,
+		text += "\nKloter: %s (%s desa, %s%s)" % [v.name(), Simulation.ribu(v.data.size if v.data else 1), st,
 			(", " + en.display_name) if en and v.is_clean() else ""]
 	var hints := Game.db.trait_summary(s.data)
 	if hints != "":
-		text += "\n\nCIRI DESA\n" + hints
+		text += "\nCiri desa:\n" + hints
 	return text
 
 

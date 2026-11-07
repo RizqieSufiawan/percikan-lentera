@@ -1,0 +1,7 @@
+m6x11 - font pixel oleh Daniel Linssen (managore)
+https://managore.itch.io/m6x11
+
+Lisensi menurut halaman resmi: "free to use with attribution" (bebas dipakai dengan mencantumkan kredit).
+Kredit wajib dicantumkan di layar kredit/panduan game dan di proposal:
+  Font "m6x11" oleh Daniel Linssen (managore.itch.io).
+Ukuran yang dianjurkan: kelipatan 16 (16, 32, 48).

@@ -45,9 +45,10 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="EndTitle" type="Label" parent="Center/Panel/VBox"]
+theme_type_variation = &"PixelTitle"
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 27
 horizontal_alignment = 1
 
 [node name="EndReason" type="Label" parent="Center/Panel/VBox"]
@@ -60,7 +61,7 @@ autowrap_mode = 3
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.7)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 autowrap_mode = 3
 

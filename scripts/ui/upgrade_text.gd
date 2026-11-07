@@ -20,9 +20,9 @@ static func describe(key: String, v: float) -> Array:
 		var parts := key.split(":")
 		var en := _energy_name(parts[1])
 		match parts[0]:
-			"output": return ["+%s hasil desa" % _pct(v), "Desa %s menghasilkan %s lebih banyak Poin dan Ekonomi" % [en, _pct(v)],
+			"output": return ["+%s hasil" % _pct(v), "Desa %s menghasilkan %s lebih banyak Poin dan Ekonomi" % [en, _pct(v)],
 				"Lebih banyak Poin & Ekonomi dari desa yang memakai %s." % en]
-			"quality": return ["+%s tahan rusak" % _pct(v), "Pembangkit %s %s lebih jarang rusak, juga saat bencana" % [en, _pct(v)],
+			"quality": return ["+%s awet" % _pct(v), "Pembangkit %s %s lebih jarang rusak, juga saat bencana" % [en, _pct(v)],
 				"Desa %s lebih jarang padam." % en]
 			"build": return ["+%s cepat" % _pct(v), "Warga memasang %s %s lebih cepat" % [en, _pct(v)],
 				"Kloter baru %s lebih cepat menyala." % en]
@@ -85,7 +85,7 @@ static func short(u: UpgradeData) -> String:
 	if u.flags.has(&"internet"):
 		return "internet desa"
 	if u.id == &"rute_udara":
-		return "pesawat semua pulau"
+		return "rute pesawat"
 	var best := ""
 	var best_v := -1.0
 	for k in u.modifiers:

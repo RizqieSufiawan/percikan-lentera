@@ -283,10 +283,22 @@ def make_refined(a):
     # menimpa Indonesia, dan celah tipis di PERBATASAN DARAT (mis. Kalimantan-Malaysia) diisi sebagai
     # daratan tetangga, supaya tidak muncul "laut" berbuih di tengah pulau.
     foreign = land_lr & ~indo_full
+    # Tetangga yang dipisah LAUT dari Indonesia (Semenanjung Malaysia, Singapura, Thailand di barat
+    # 106 BT; Australia di selatan 10,5 LS) diberi jarak minimal 2 piksel dari wilayah Indonesia, supaya
+    # selat (mis. Selat Malaka) tetap terlihat walau bentuk wilayah game sedikit berbeda dari peta dunia.
+    yy_lr, xx_lr = np.mgrid[0:h, 0:w]
+    west_x = proj(106.0, 0.0)[0] / PIXEL
+    south_y = proj(120.0, -10.5)[1] / PIXEL
+    sea_neighbour = (xx_lr < west_x) | (yy_lr > south_y)
+    foreign &= ~(sea_neighbour & ndimage.binary_dilation(indo_full, iterations=2))
     both = foreign | indo_full
     near_f = ndimage.binary_dilation(foreign, iterations=3)
     near_i = ndimage.binary_dilation(indo_full, iterations=3)
-    gap = ndimage.binary_closing(both, structure=np.ones((3, 3)), iterations=3) & ~both & near_f & near_i
+    # Hanya celah yang di peta dunia (Natural Earth, SEMUA negara termasuk Indonesia) memang daratan:
+    # perbatasan darat sungguhan (Kalimantan, Papua, Timor). Selat seperti Selat Malaka tetap laut.
+    world = rasterize(os.path.join(a.ne, "10m_cultural", "ne_10m_admin_0_countries.shp"), proj, W, H)
+    world_lr = world.reshape(h, PIXEL, w, PIXEL).mean(axis=(1, 3)) > 0.5
+    gap = ndimage.binary_closing(both, structure=np.ones((3, 3)), iterations=3) & ~both & near_f & near_i & world_lr
     land_lr = foreign | gap | indo_full
     d_lr = ndimage.gaussian_filter(d_lr, sigma=2.2)
     pal = np.array(REFINED["sea"], dtype=np.uint8)

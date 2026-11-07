@@ -183,10 +183,10 @@ func _style_texts() -> void:
 	title.add_theme_constant_override("shadow_offset_x", 0)
 	title.add_theme_constant_override("shadow_offset_y", 5)
 	var sub: Label = %Subtitle
-	sub.add_theme_font_size_override("font_size", 18)
+	sub.add_theme_font_size_override("font_size", 16)
 	sub.add_theme_color_override("font_color", Palette.CREAM)
 	var tag: Label = %Tagline
-	tag.add_theme_font_size_override("font_size", 14)
+	tag.add_theme_font_size_override("font_size", 16)
 	tag.add_theme_color_override("font_color", Palette.MUTED)
 
 
@@ -199,70 +199,67 @@ func _button_style(bg: Color, bar: Color) -> StyleBoxFlat:
 	st.content_margin_right = 16
 	st.content_margin_top = 8
 	st.content_margin_bottom = 8
-	st.set_corner_radius_all(2)
+	st.set_corner_radius_all(4)
+	st.corner_detail = 1  # sudut terpotong ala kit pixel
+	st.anti_aliasing = false
 	return st
 
 
-func _make_button(text: String, primary: bool) -> Button:
+func _make_button(text: String, _primary: bool) -> Button:
+	# Semua tombol sama: hanya teks. Blok kuning mengikuti tombol yang ditunjuk (mouse atau
+	# keyboard); bila tidak ada yang ditunjuk, tidak ada blok kuning.
 	var b := Button.new()
 	b.text = text
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.custom_minimum_size = Vector2(380, 52 if primary else 42)
-	b.add_theme_font_size_override("font_size", 20 if primary else 17)
+	b.custom_minimum_size = Vector2(400, 44)
+	b.add_theme_font_size_override("font_size", 16)
 	b.focus_mode = Control.FOCUS_ALL
-	if primary:
-		# Tombol utama: lentera menyala (kuning, teks gelap).
-		b.add_theme_stylebox_override("normal", _button_style(Palette.LIT, Palette.CREAM))
-		b.add_theme_stylebox_override("hover", _button_style(Palette.LIT.lightened(0.15), Palette.CREAM))
-		b.add_theme_stylebox_override("pressed", _button_style(Palette.LIT.darkened(0.12), Palette.CREAM))
-		b.add_theme_stylebox_override("focus", _button_style(Color(0, 0, 0, 0), Palette.CREAM))
-		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
-			b.add_theme_color_override(c, Palette.NIGHT)
-	else:
-		# Tombol biasa: teks saja, garis kuning dan latar tipis saat disorot.
-		var clear := Color(0, 0, 0, 0)
-		b.add_theme_stylebox_override("normal", _button_style(clear, clear))
-		b.add_theme_stylebox_override("hover", _button_style(Color(Palette.LIT, 0.14), Palette.LIT))
-		b.add_theme_stylebox_override("pressed", _button_style(Color(Palette.LIT, 0.24), Palette.LIT))
-		b.add_theme_stylebox_override("focus", _button_style(Color(Palette.LIT, 0.14), Palette.LIT))
-		b.add_theme_stylebox_override("disabled", _button_style(clear, clear))
-		b.add_theme_color_override("font_color", Palette.CREAM)
-		b.add_theme_color_override("font_hover_color", Palette.LIT)
-		b.add_theme_color_override("font_focus_color", Palette.LIT)
-		b.add_theme_color_override("font_pressed_color", Palette.LIT)
+	var clear := Color(0, 0, 0, 0)
+	var lit := _button_style(Palette.LIT, Palette.CREAM)
+	b.add_theme_stylebox_override("normal", _button_style(clear, clear))
+	b.add_theme_stylebox_override("hover", lit)
+	b.add_theme_stylebox_override("focus", lit)
+	b.add_theme_stylebox_override("pressed", _button_style(Palette.LIT.darkened(0.12), Palette.CREAM))
+	b.add_theme_stylebox_override("disabled", _button_style(clear, clear))
+	b.add_theme_color_override("font_color", Palette.CREAM)
+	for c in ["font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+		b.add_theme_color_override(c, Palette.NIGHT)
 	b.mouse_entered.connect(func(): if not b.disabled: b.grab_focus())
+	b.mouse_exited.connect(func(): if b.has_focus(): b.release_focus())
 	%Buttons.add_child(b)
 	_buttons.append(b)
 	return b
 
 
-## Teks kecil di tombol: di kanan, atau di baris kedua (below) untuk teks panjang seperti data simpanan.
-func _add_detail(b: Button, text: String, col: Color, below := false) -> void:
+## Keterangan tombol (mis. data simpanan) di sisi kanan, hanya tampil saat tombol ditunjuk.
+func _add_detail(b: Button, text: String, col: Color, _below := false) -> void:
 	var l := Label.new()
 	l.text = text
-	l.add_theme_font_size_override("font_size", 12)
+	l.add_theme_font_size_override("font_size", 16)
 	l.add_theme_color_override("font_color", col)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.clip_text = true
-	if below:
-		# Tombol dipertinggi dan teks utama digeser ke atas agar baris kedua muat.
-		b.custom_minimum_size.y = 66
-		for st in ["normal", "hover", "pressed", "focus"]:
-			var box: StyleBox = b.get_theme_stylebox(st).duplicate()
-			box.content_margin_bottom = 26
-			b.add_theme_stylebox_override(st, box)
-		l.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-		l.offset_left = 20
-		l.offset_right = -14
-		l.offset_top = -28
-		l.offset_bottom = -10
-	else:
-		l.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
-		l.offset_left = -200
-		l.offset_right = -14
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
+	l.offset_left = -300
+	l.offset_right = -14
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.visible = false
 	b.add_child(l)
+	b.focus_entered.connect(func(): l.visible = true)
+	b.focus_exited.connect(func(): l.visible = false)
+
+
+## Panah atas/bawah saat belum ada tombol yang ditunjuk: mulai dari tombol pertama/terakhir.
+func _unhandled_input(event: InputEvent) -> void:
+	if _buttons.is_empty() or get_viewport().gui_get_focus_owner() != null:
+		return
+	if event.is_action_pressed("ui_down") or event.is_action_pressed("ui_focus_next"):
+		_buttons[0].grab_focus()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_up") or event.is_action_pressed("ui_focus_prev"):
+		_buttons[-1].grab_focus()
+		get_viewport().set_input_as_handled()
 
 
 func _build_buttons() -> void:
@@ -275,15 +272,13 @@ func _build_buttons() -> void:
 		var info := "%s · %s" % [m.get("name", ""), m.get("date", "")]
 		if m.has("access"):
 			info += " · %d%% desa menyala" % roundi(100.0 * float(m["access"]))
-		_add_detail(cont, info, Color(Palette.NIGHT, 0.75), true)
+		_add_detail(cont, info, Color(Palette.NIGHT, 0.75))
 		cont.pressed.connect(func():
 			Audio.sfx(&"click")
 			if Game.load_game(last):
 				Game.goto("game"))
 	var start := _make_button("Permainan Baru", not has_save)
 	start.pressed.connect(_on_start)
-	if not Game.intro_seen:
-		_add_detail(start, "dengan cerita pembuka", Color(Palette.NIGHT, 0.7) if not has_save else Palette.MUTED)
 	var load_btn := _make_button("Muat Permainan", false)
 	load_btn.pressed.connect(func():
 		Audio.sfx(&"click")
@@ -301,7 +296,6 @@ func _build_buttons() -> void:
 	if OS.get_name() != "Web":
 		var quit := _make_button("Keluar", false)
 		quit.pressed.connect(func(): get_tree().quit())
-	_buttons[0].grab_focus()
 
 
 func _play_intro() -> void:

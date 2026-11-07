@@ -27,7 +27,7 @@ func _ready() -> void:
 	panel.add_child(box)
 	var title := Label.new()
 	title.text = "Simpan Permainan" if save_mode else "Muat Permainan"
-	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_font_size_override("font_size", 32)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	_rows = VBoxContainer.new()
@@ -53,7 +53,7 @@ func _fill() -> void:
 		var l := Label.new()
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		l.text = "%s\n%s" % [Game.slot_name(slot), _describe(m)]
-		l.add_theme_font_size_override("font_size", 14)
+		l.add_theme_font_size_override("font_size", 16)
 		row.add_child(l)
 		var act := Button.new()
 		act.custom_minimum_size = Vector2(110, 40)

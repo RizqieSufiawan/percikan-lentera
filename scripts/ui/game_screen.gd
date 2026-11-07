@@ -1,6 +1,8 @@
 extends Control
 ## Layar utama permainan: menghubungkan simulasi dengan peta, HUD, panel, dan kartu.
 
+const UiKit := preload("res://scripts/ui/ui_kit.gd")
+
 var _news_by_trigger: Dictionary = {}
 var _bubble_timer: float = 0.0
 var _mission_labels: Dictionary = {}
@@ -104,6 +106,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if modal.is_busy():
 		return
+	# Selama tutorial menyorot sesuatu, tombol pintas lain ditahan (kecuali U untuk membuka Pohon
+	# Upgrade saat itu yang diarahkan, dan Esc untuk menu).
+	if _spotlight and _spotlight.visible and event.keycode != KEY_U and event.keycode != KEY_ESCAPE:
+		get_viewport().set_input_as_handled()
+		return
 	match event.keycode:
 		KEY_SPACE:
 			Game.set_speed(0 if Game.speed > 0 else 1)
@@ -191,6 +198,7 @@ func _welfare_row() -> HBoxContainer:
 		label.text = "Kesejahteraan"
 		label.custom_minimum_size.x = 0
 		row.get_node("Icon").custom_minimum_size = Vector2(16, 16)
+		row.get_node("Icon").texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		var bar: ProgressBar = row.get_node("WelfareBar")
 		bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return row
@@ -243,14 +251,14 @@ func _build_legend() -> void:
 		item.add_child(sw)
 		var l := Label.new()
 		l.text = LEGEND_SHORT.get(e.id, e.display_name)
-		l.add_theme_font_size_override("font_size", 11)
+		l.add_theme_font_size_override("font_size", 16)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		item.add_child(l)
 		row.add_child(item)
 		_legend_items[e.id] = item
 	var note := Label.new()
 	note.text = "garis = rapuh, penuh = mandiri"
-	note.add_theme_font_size_override("font_size", 11)
+	note.add_theme_font_size_override("font_size", 16)
 	note.add_theme_color_override("font_color", Palette.MUTED)
 	note.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(note)
@@ -315,6 +323,7 @@ func _build_missions() -> void:
 	for m in Game.db.missions:
 		var l := Label.new()
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.add_theme_font_size_override("font_size", 16)
 		list.add_child(l)
 		_mission_labels[m.id] = [l, m]
 
@@ -329,7 +338,8 @@ func _refresh_missions() -> void:
 		var l: Label = _mission_labels[id][0]
 		var m: MissionData = _mission_labels[id][1]
 		var done := sim.completed_missions.has(id)
-		l.text = ("[x] " if done else "[ ] ") + m.text + ("" if done else "  (+%d P)" % int(m.reward_points))
+		# Spasi tak terputus: "(+3 P)" tidak terpotong ke baris baru.
+		l.text = ("[x] " if done else "[ ] ") + m.text + ("" if done else "\u00a0\u00a0(+%d\u00a0P)" % int(m.reward_points))
 		l.modulate = Palette.INDEPENDENT if done else Palette.CREAM
 
 
@@ -489,8 +499,17 @@ func _make_collapsible(panel: PanelContainer) -> void:
 	btn.text = "-"
 	btn.tooltip_text = "Lipat / buka panel (Tab = semua)"
 	btn.focus_mode = Control.FOCUS_NONE
-	btn.custom_minimum_size = Vector2(26, 22)
-	btn.add_theme_font_size_override("font_size", 12)
+	btn.custom_minimum_size = Vector2(20, 18)
+	btn.add_theme_font_size_override("font_size", 16)
+	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# Tombol kecil: margin isi tema dikurangi supaya baris judul panel tidak ikut tinggi.
+	for st in ["normal", "hover", "pressed", "disabled"]:
+		var sb: StyleBox = btn.get_theme_stylebox(st).duplicate()
+		sb.content_margin_top = 0
+		sb.content_margin_bottom = 0
+		sb.content_margin_left = 4
+		sb.content_margin_right = 4
+		btn.add_theme_stylebox_override(st, sb)
 	btn.pressed.connect(func(): _set_collapsed(panel, not panel.get_meta("collapsed", false)))
 	row.add_child(btn)
 	panel.set_meta("toggle", btn)
@@ -565,7 +584,7 @@ var _pulse_tween: Tween
 
 func _build_reveal() -> void:
 	_simple_label = Label.new()
-	_simple_label.add_theme_font_size_override("font_size", 13)
+	_simple_label.add_theme_font_size_override("font_size", 16)
 	_simple_label.add_theme_color_override("font_color", Palette.MUTED)
 	_simple_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	%LitLabel.get_parent().add_child(_simple_label)
@@ -745,7 +764,9 @@ func _hint_steps() -> Array:
 		_step("6/%d  KOMUNITAS = kesiapan warga merawat listriknya sendiri (0-100). Naik saat tim KKN melatih warga dan dari desa yang sudah bersih. Di %d warga mulai membangun sendiri; di %d desa Rapuh jadi Mandiri. Klik wilayah mana pun untuk melihat barnya di peta." % [n, roundi(cfg.auto_build_min_community), roundi(cfg.independence_threshold)],
 			_rect_of("ProvincePanel/VBox/CommRow")),
 		_step("7/%d  KLOTER = kelompok ratusan desa nyata. Tiap kloter punya ciri (sungai deras, lahan terik, ...) yang menentukan energi yang cocok. Klik kloter lain untuk membandingkan." % n,
-			_rect_of("ProvincePanel"),
+			func(up: bool) -> Rect2:
+				var r: Rect2 = _rect_of("ProvincePanel").call(up)
+				return r.merge(map.province_rect(sim.start_province)) if r.size != Vector2.ZERO else r,
 			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0),
 		_step("8/%d  SEBARAN OTOMATIS. Kamu tidak membangun sendiri. Setelah pembangkit pertama menyala, warga kloter tetangga (paling jauh 2 kloter) yang energinya cocok ikut membangun. Awalnya lambat, makin banyak desa bersih makin cepat." % n,
 			func(up: bool): return Rect2() if up else map.province_rect(sim.start_province)),
@@ -825,11 +846,7 @@ func _ensure_hint_panel() -> void:
 	if _hint_panel:
 		return
 	_hint_panel = PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.1, 0.03, 0.96)
-	style.border_color = Palette.LIT
-	style.set_border_width_all(2)
-	style.set_content_margin_all(10)
+	var style := UiKit.box(Color(0.12, 0.1, 0.03, 0.96), Palette.LIT, 2, 4, 10)
 	_hint_panel.add_theme_stylebox_override("panel", style)
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 6)
@@ -840,7 +857,7 @@ func _ensure_hint_panel() -> void:
 	_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_label.custom_minimum_size = Vector2(470, 0)
 	_hint_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_hint_label.add_theme_font_size_override("font_size", 13)
+	_hint_label.add_theme_font_size_override("font_size", 16)
 	row.add_child(_hint_label)
 	var close := Button.new()
 	close.text = "x"
@@ -1017,18 +1034,14 @@ func toast(text: String, accent: Color = Palette.LIT) -> void:
 		old.queue_free()
 	var panel := PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.2, 0.92)
-	style.border_color = accent
-	style.set_border_width_all(2)
-	style.set_content_margin_all(8)
+	var style := UiKit.box(Color(0.08, 0.09, 0.2, 0.92), accent, 2, 4, 8)
 	panel.add_theme_stylebox_override("panel", style)
 	var label := Label.new()
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.custom_minimum_size = Vector2(500, 0)
-	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_font_size_override("font_size", 16)
 	panel.add_child(label)
 	_toast_box.add_child(panel)
 	var tw := panel.create_tween()
@@ -1175,7 +1188,7 @@ func _float_text(text: String, pos: Vector2) -> void:
 # ---------------------------------------------------------------- menu & panduan
 
 func _open_menu() -> void:
-	modal.show_card("Jeda", null, "Permainan dijeda.", "", ["Lanjut", "Simpan", "Pengaturan", "Panduan", "Menu Utama"], _on_menu_choice)
+	modal.show_card("Jeda", null, "", "", ["Lanjut", "Simpan", "Pengaturan", "Panduan", "Menu Utama"], _on_menu_choice)
 
 
 func _on_menu_choice(i: int) -> void:

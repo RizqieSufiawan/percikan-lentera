@@ -123,6 +123,12 @@ func _run() -> void:
 	upg.open()
 	await _wait(0.3)
 	await _shot("05_upgrades")
+	var utabs: TabContainer = upg.get_node("%Tabs")
+	for t in range(1, utabs.get_tab_count()):
+		utabs.current_tab = t
+		await _wait(0.2)
+		await _shot("05_upgrades_tab%d" % t)
+	utabs.current_tab = 0
 	upg.close()
 
 	# Main cepat sampai pertengahan permainan, jawab semua kartu dengan pilihan pertama.

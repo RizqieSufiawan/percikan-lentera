@@ -14,9 +14,13 @@ var _in_callback: bool = false
 
 
 const CARD_W := 600.0
+## Kartu tanpa teks dan gambar (menu jeda) = menu ramping: tombol bertumpuk ke bawah.
+const MENU_W := 300.0
+const MENU_BTN_W := 240.0
 const IMG_SIZE := Vector2(256, 144)
 var _scroll: ScrollContainer
 var _fit_pending := false
+var _card: Control
 
 
 func _ready() -> void:
@@ -24,6 +28,7 @@ func _ready() -> void:
 	# Kartu dibuat ringkas: teks panjang (berita, tonggak) bisa digulir, gambar lebih kecil.
 	var vbox: VBoxContainer = body_label.get_parent()
 	var card: Control = vbox.get_parent()
+	_card = card
 	card.custom_minimum_size = Vector2(CARD_W, 0)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	image_rect.custom_minimum_size = IMG_SIZE
@@ -86,9 +91,12 @@ func _show_next() -> void:
 	for c in buttons_box.get_children():
 		c.queue_free()
 	var labels: Array = _current["buttons"]
+	var menu: bool = _current["body"] == "" and _current["fact"] == "" and _current["image"] == null
+	_card.custom_minimum_size.x = MENU_W if menu else CARD_W
+	_scroll.visible = not menu
 	# Menu dengan banyak tombol: lebar seragam supaya susunan tidak berubah saat teks tombol
-	# berganti (mis. "Musik: Nyala" -> "Musik: Mati").
-	var w := 200.0 if labels.size() >= 4 else 160.0
+	# berganti (mis. "Musik: Nyala" -> "Musik: Mati"). Menu ramping: satu tombol per baris.
+	var w := MENU_BTN_W if menu else (200.0 if labels.size() >= 4 else 160.0)
 	for i in labels.size():
 		var b := Button.new()
 		b.text = labels[i]
@@ -104,7 +112,7 @@ func _show_next() -> void:
 ## Tinggi area teks = isi teks, tapi tidak melebihi sisa layar (selebihnya digulir).
 func _fit_scroll() -> void:
 	_fit_pending = false
-	if _scroll == null or not visible:
+	if _scroll == null or not visible or not _scroll.visible:
 		return
 	_scroll.scroll_vertical = 0
 	var content := body_label.get_combined_minimum_size().y
