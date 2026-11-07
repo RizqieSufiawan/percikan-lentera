@@ -5,8 +5,12 @@ Digambar di kanvas 320x180 lalu diperbesar 4x (1280x720, NEAREST). Lapisan:
     title_far.png   gunung jauh + gunung api + kabut
     title_mid.png   bukit, sawah terasering, desa, tiang listrik, panel surya, air terjun, danau
     title_near.png  siluet depan: pohon kelapa dan rumput
-Baling-baling turbin, bintang berkelip, dan lentera digambar di Godot (title_screen.gd);
-posisi turbin dicetak di akhir agar bisa disalin ke skrip.
+Yang bergerak digambar di Godot (title_screen.gd), jadi TIDAK ikut dicetak di lapisan:
+asap gunung api, bintang terang (berkelip), riak danau, pantulan bulan dan lampu rumah, pohon kelapa (bergoyang),
+air terjun (mengalir), baling-baling turbin, lentera. Pohon kelapa dibuat sebagai lembar sprite
+title_palms.png (PALM_FRAMES frame berjajar, ukuran 1x piksel seni) dari fungsi palm() yang sama.
+title_background.png (gambar gabungan untuk tempat lain) tetap berisi semuanya dalam keadaan diam.
+Posisi turbin dicetak di akhir agar bisa disalin ke skrip.
 
 Pakai:  python3 tools/make_title_bg.py
 """
@@ -58,7 +62,8 @@ def dither_pick(x, y, t):
 
 # ---------------------------------------------------------------- langit
 
-def sky_layer():
+def sky_layer(bake_bright=True):
+    R.seed(101)
     im, d = new(True)
     # Gradasi bertingkat: malam pekat di atas, sedikit hangat di cakrawala (fajar yang akan datang).
     stops = [0, 30, 58, 84, 104, 120, 134]
@@ -87,6 +92,8 @@ def sky_layer():
         roll = R.random()
         if roll < 0.62:
             px(im, x, y, mix(im.getpixel((x, y))[:3], (170, 170, 210), 0.6))
+        elif not bake_bright:
+            continue  # bintang terang digambar & berkelip di Godot
         elif roll < 0.94:
             px(im, x, y, (220, 220, 236))
         else:
@@ -122,7 +129,7 @@ def ridge(seed, base, amp, step):
     return ys
 
 
-def far_layer():
+def far_layer(bake_smoke=True):
     im, d = new()
     back = ridge(11, 120, 34, 18)
     front = ridge(23, 128, 22, 14)
@@ -143,8 +150,8 @@ def far_layer():
     for x in range(W):
         for y in range(int(front[x]), 152):
             px(im, x, y, FAR1)
-    # Asap tipis dari kawah, melebar dan condong ke kanan.
-    for k in range(20):
+    # Asap tipis dari kawah, melebar dan condong ke kanan (di menu digambar bergerak oleh Godot).
+    for k in range(20 if bake_smoke else 0):
         cx = vx + k * 0.55 + math.sin(k * 0.45) * 1.5
         cy = vtop - 2 - k * 0.9
         r = 1.0 + k * 0.2
@@ -170,6 +177,36 @@ def hill_y(x):
     return 144 - 32 * math.exp(-((x - 266) / 58.0) ** 2) - 9 * math.exp(-((x - 70) / 60.0) ** 2)
 
 
+ROCK, ROCK_LIT, ROCK_DARK, TREE = (30, 46, 62), (52, 72, 86), (22, 34, 48), (22, 36, 52)
+FALL_TOP = 124
+FALL_HI, FALL_MID, FALL_EDGE = (168, 204, 234), (116, 156, 204), (70, 102, 150)
+
+
+def shoulder_y(x):
+    """Punggung bahu bukit air terjun: tonjolan landai yang menyatu dengan bukit kiri & kanan."""
+    top = min(hill_y(x), 141 - 19 * math.exp(-((x - 164) / 16.0) ** 2))
+    if 161 <= x <= 166:
+        top += 1  # celah tempat sungai keluar
+    return int(top)
+
+
+def fall_span(y):
+    """Kolom air terjun per baris (x0, x1), atau None. Sama dengan title_screen.gd _fall_span()."""
+    if y < FALL_TOP:
+        return None
+    if y < 128:
+        return (162, 164)  # pancuran atas, keluar dari bawah celah pepohonan
+    if y < 130:
+        return (161, 165)
+    if y == 130:
+        return (160, 166)  # limpasan di birai
+    if y < 137:
+        return (161, 165)
+    if y < 143:
+        return (161, 166)
+    return (160, 167)  # melebar dekat kolam
+
+
 def rumah(im, d, x, y, lit=True, w=11):
     """Rumah panggung: badan di atas tiang, atap pelana, jendela menyala."""
     top = y - 9
@@ -190,7 +227,8 @@ def rumah(im, d, x, y, lit=True, w=11):
         d.rectangle([x + 2, top + 4, x + 3, top + 5], fill=(30, 30, 50))
 
 
-def mid_layer():
+def mid_layer(bake_water=True):
+    R.seed(202)
     im, d = new()
     # Bukit dan tanah sampai tepi danau.
     for x in range(W):
@@ -199,30 +237,56 @@ def mid_layer():
             col = HILL1 if y < hy + 2 else HILL0
             px(im, x, y, col)
     # Sawah terasering di lereng kanan: garis kontur lebih terang.
-    for x in range(180, W):
+    for x in range(180 if bake_water else W, W):  # di menu, garis teras digambar bergerak oleh Godot
         hy = hill_y(x)
         for k in range(1, 8):
             y = int(hy + k * 3 + math.sin(x * 0.08 + k) * 0.8)
             if y < LAKE_Y - 2 and (x + k) % 9 != 0:
                 px(im, x, y, HILL2)
-    # Tebing kecil + air terjun (mikrohidro) di kiri desa.
-    cliff = [(150, LAKE_Y), (152, 126), (158, 120), (170, 118), (176, 124), (178, LAKE_Y)]
-    d.polygon(cliff, fill=(30, 46, 62))
-    d.line([(152, 126), (158, 120), (170, 118)], fill=HILL2)
-    for _ in range(40):
-        rx, ry = R.randrange(152, 177), R.randrange(122, LAKE_Y - 1)
-        if abs(rx - 164) > 2:
-            px(im, rx, ry, (40, 58, 74))
-    for y in range(119, LAKE_Y):
-        for x in (163, 164, 165):
-            px(im, x, y, WATER_F if (y + x * 3) % 5 else WATER_F2)
-    for x in range(158, 171):  # buih di kaki air terjun
-        if R.random() < 0.7:
-            px(im, x, LAKE_Y - 1 - R.randrange(2), WATER_F)
+    # Bahu bukit berhutan + air terjun bertingkat (mikrohidro) di kiri desa. Bahu ini naik landai
+    # dari bukit kiri dan turun menyambung ke bukit kanan, jadi air terjun terasa bagian dari bukit.
+    for x in range(126, 192):
+        top = shoulder_y(x)
+        for y in range(top, LAKE_Y):
+            face = abs(x - 164) < min(9.0, 4.0 + (y - top) * 0.45) and y > top + 2
+            px(im, x, y, ROCK if face else (HILL1 if y < top + 2 else HILL0))
+    # Muka batu berlapis: birai pendek, tepi kanan atas terkena cahaya bulan.
+    for y in range(127, LAKE_Y - 2, 4):
+        x = 155 + R.randrange(3)
+        while x < 174:
+            ln = R.randint(2, 4)
+            for xx in range(x, x + ln):
+                if not (158 <= xx <= 168):
+                    px(im, xx, y, ROCK_LIT)
+                    px(im, xx, y + 1, ROCK_DARK)
+            x += ln + R.randint(2, 4)
+    for y in range(127, LAKE_Y):
+        px(im, 159 if y < 137 else 158, y, ROCK_DARK)  # bayangan di kiri aliran
+    if bake_water:
+        for y in range(FALL_TOP, LAKE_Y):
+            span = fall_span(y)
+            if span is None:
+                continue
+            x0, x1 = span
+            for x in range(x0, x1 + 1):
+                if x in (x0, x1):
+                    col = FALL_EDGE
+                else:
+                    col = FALL_HI if (y + x * 5) % 4 == 0 else FALL_MID
+                px(im, x, y, col)
+        for x in range(156, 172):  # buih kolam di kaki air terjun
+            if R.random() < 0.7:
+                px(im, x, LAKE_Y - 1 - R.randrange(2), WATER_F)
+    # Rumpun pohon di atas bahu bukit (celah di tengah = tempat sungai keluar).
+    for bx, r in ((140, 3), (148, 4), (156, 3), (170, 3), (177, 4), (185, 3)):
+        by = shoulder_y(bx) - 1
+        d.ellipse([bx - r, by - r, bx + r, by + r // 2], fill=TREE)
+        px(im, bx + r - 2, by - r + 1, HILL2)
+        px(im, bx + r - 1, by - r + 2, HILL2)
     # Rumah turbin air kecil di samping air terjun.
-    d.rectangle([170, LAKE_Y - 7, 176, LAKE_Y - 1], fill=WALL2)
-    d.polygon([(169, LAKE_Y - 7), (173, LAKE_Y - 10), (177, LAKE_Y - 7)], fill=ROOF)
-    px(im, 172, LAKE_Y - 5, LAMP)
+    d.rectangle([172, LAKE_Y - 7, 178, LAKE_Y - 1], fill=WALL2)
+    d.polygon([(171, LAKE_Y - 7), (175, LAKE_Y - 10), (179, LAKE_Y - 7)], fill=ROOF)
+    px(im, 174, LAKE_Y - 5, LAMP)
     # Panel surya berjajar di lereng.
     for k, x in enumerate((206, 216, 226)):
         y = int(hill_y(x + 4)) + 1
@@ -265,6 +329,9 @@ def mid_layer():
         t = (y - LAKE_Y) / float(H - LAKE_Y)
         for x in range(W):
             px(im, x, y, LAKE1 if dither_pick(x, y, (1 - t) * 0.5) else LAKE0)
+    if not bake_water:
+        d.line([(0, LAKE_Y), (W, LAKE_Y)], fill=(40, 60, 96))
+        return im, turbine_hub
     for y in range(LAKE_Y + 1, H, 2):
         x = R.randrange(6)
         while x < W:
@@ -287,11 +354,11 @@ def mid_layer():
 
 # ---------------------------------------------------------------- siluet depan
 
-def palm(im, d, x, base, h, lean):
+def palm(im, d, x, base, h, lean, sway=0.0, flutter=0.0):
     pts = []
     for k in range(h):
         t = k / float(h)
-        pts.append((x + lean * t * t * h * 0.3, base - k))
+        pts.append((x + lean * t * t * h * 0.3 + sway * t * t * 4.5, base - k))
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
         d.line([(x0, y0), (x1, y1)], fill=NEAR, width=3 if y0 > base - h * 0.5 else 2)
     # Cincin batang kelapa (sedikit lebih terang).
@@ -299,7 +366,9 @@ def palm(im, d, x, base, h, lean):
         px(im, pts[k][0] + 1, pts[k][1], NEAR2)
     cx, cy = pts[-1]
     # Pelepah: garis melengkung ke bawah dengan anak daun yang menggantung.
-    for a, ln in ((-2.75, 17), (-2.3, 15), (-1.75, 11), (-1.25, 11), (-0.75, 15), (-0.3, 17), (0.35, 13), (2.8, 13)):
+    for i, (a, ln) in enumerate(((-2.75, 17), (-2.3, 15), (-1.75, 11), (-1.25, 11), (-0.75, 15), (-0.3, 17), (0.35, 13), (2.8, 13))):
+        # Angin: pelepah ikut condong ke arah ayunan, ujungnya sedikit berkibar.
+        a += sway * 0.18 + flutter * 0.06 * math.sin(i * 1.9)
         prev = (cx, cy)
         for s_ in range(1, ln):
             fx = cx + math.cos(a) * s_ * 1.25
@@ -312,7 +381,8 @@ def palm(im, d, x, base, h, lean):
     d.ellipse([cx - 2, cy - 1, cx + 2, cy + 2], fill=NEAR2)
 
 
-def near_layer():
+def near_layer(bake_palms=True):
+    R.seed(303)
     im, d = new()
     # Tanah depan di kiri dan kanan bawah, dengan rumput.
     for x in range(W):
@@ -323,8 +393,9 @@ def near_layer():
         if x % 3 == 0:
             for y in range(y0 - R.randint(1, 4), y0):
                 px(im, x + R.randint(-1, 1), y, NEAR)
-    palm(im, d, 24, 172, 96, 0.9)
-    palm(im, d, 54, 172, 66, -0.5)
+    if bake_palms:
+        palm(im, d, 24, 172, 96, 0.9)
+        palm(im, d, 54, 172, 66, -0.5)
     # Semak di kanan bawah.
     for bx, by, br in ((296, 168, 7), (308, 166, 9), (318, 167, 6)):
         d.ellipse([bx - br, by - br * 0.7, bx + br, by + br], fill=NEAR)
@@ -335,21 +406,40 @@ def near_layer():
     return im
 
 
+PALM_FRAMES = 16
+PALM_BOX = (0, 52, 108, 128)  # x, y, lebar, tinggi (piksel seni) potongan lembar sprite
+
+
+def palm_sheet():
+    """Dua pohon kelapa berayun: satu putaran sinus penuh dalam PALM_FRAMES frame (bisa diulang)."""
+    bx, by, bw, bh = PALM_BOX
+    sheet = Image.new("RGBA", (bw * PALM_FRAMES, bh), (0, 0, 0, 0))
+    for f in range(PALM_FRAMES):
+        ph = f / PALM_FRAMES * math.tau
+        im, d = new()
+        palm(im, d, 24, 172, 96, 0.9, math.sin(ph), math.sin(ph * 2))
+        palm(im, d, 54, 172, 66, -0.5, math.sin(ph + 0.9) * 0.8, math.sin(ph * 2 + 1.3))
+        sheet.paste(im.crop((bx, by, bx + bw, by + bh)), (f * bw, 0))
+    return sheet
+
+
 def save(im, name):
     im.resize((W * SCALE, H * SCALE), Image.NEAREST).save(os.path.join(OUT, name))
     print("tulis", name)
 
 
 def main():
-    sky, far = sky_layer(), far_layer()
-    mid, hub = mid_layer()
-    near = near_layer()
+    far = far_layer(False)
+    sky, mid, near = sky_layer(False), mid_layer(False)[0], near_layer(False)
+    hub = mid_layer(False)[1]
     for im, name in ((sky, "title_sky.png"), (far, "title_far.png"), (mid, "title_mid.png"), (near, "title_near.png")):
         save(im, name)
+    palm_sheet().save(os.path.join(OUT, "title_palms.png"))
+    print("tulis title_palms.png", PALM_FRAMES, "frame, kotak", PALM_BOX)
     print("hub turbin (layar):", (hub[0] * SCALE + SCALE // 2, hub[1] * SCALE + SCALE // 2))
-    # Gabungan satu gambar (dipakai juga sebagai title_background.png untuk tempat lain).
-    comp = sky.copy()
-    for lay in (far, mid, near):
+    # Gabungan satu gambar diam (dipakai juga sebagai title_background.png untuk tempat lain).
+    comp = sky_layer(True)
+    for lay in (far_layer(True), mid_layer(True)[0], near_layer(True)):
         comp.alpha_composite(lay)
     save(comp.convert("RGB"), "title_background.png")
 

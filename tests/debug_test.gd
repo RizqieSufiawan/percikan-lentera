@@ -41,7 +41,7 @@ func _run() -> void:
 		[KEY_F6, true, false], [KEY_F7, false, false], [KEY_F8, false, false],
 		[KEY_F9, false, false], [KEY_F9, true, false], [KEY_F9, false, true],
 		[KEY_F10, false, false], [KEY_F11, false, false], [KEY_F11, true, false],
-		[KEY_HOME, false, false], [KEY_END, false, false],
+		[KEY_DELETE, false, false], [KEY_DELETE, true, false], [KEY_HOME, false, false], [KEY_END, false, false],
 	]
 	for i in Game.db.events.size():
 		keys.append([KEY_F3, false, false])
