@@ -8,5 +8,6 @@
 script = ExtResource("2_cpmv7")
 trigger = &"village_down"
 headline = "Krisis di {province}: desa yang belum kuat kembali gelap."
+feed_title = "Krisis: desa kembali gelap"
 icon = ExtResource("1_xhyig")
 image = ExtResource("2_cnjrf")

@@ -8,6 +8,7 @@
 script = ExtResource("2_eeldp")
 trigger = &"offer_target_failed"
 headline = "Target pemerintah gagal. Kepercayaan pemerintah turun."
+feed_title = "Target pemerintah gagal"
 important = true
 icon = ExtResource("1_52x55")
 image = ExtResource("2_05wj7")

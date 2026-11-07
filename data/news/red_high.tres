@@ -8,6 +8,7 @@
 script = ExtResource("2_btgev")
 trigger = &"red_high"
 headline = "Kepentingan energi lama mulai bergerak menghambat program."
+feed_title = "Kepentingan lama bergerak"
 important = true
 icon = ExtResource("1_pnlap")
 image = ExtResource("2_bhiew")

@@ -705,23 +705,45 @@ func _house_y(x: float) -> int:
 const BAYER4 := [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 
 
+## Rumus sawah SAMA dengan tools/make_title_bg.py (terrace_y, terrace_kind): ubah keduanya.
+const TERR_X0 := 188
+const TERR_D := [3, 7, 11, 16, 21, 27, 34]
+
+
+func _terrace_y(x: int, k: int) -> int:
+	return int(_hill(x) + TERR_D[k] + sin(x * 0.07 + k * 1.3) * 0.8)
+
+
+func _terrace_water(x: int, k: int) -> bool:
+	var seg := (x + k * 7) / 17
+	return (seg * 7 + k * 3) % 4 == 0
+
+
 func _draw_grass(c: Control, px: float) -> void:
-	var tiers := [Color8(44, 66, 78), Color8(56, 82, 92), Color8(72, 100, 106)]
-	for x in range(180, 320):
-		var hy := _hill(x)
-		# Dua hembusan dengan panjang berbeda supaya tidak terasa berulang kaku.
+	# Angin dari kiri menyibak padi: kilau terang yang menyapu ke kanan di semua petak padi
+	# (petak berair tidak ikut). Tepi kilau memakai dithering Bayer, bukan gradasi halus.
+	var tiers := [Color8(40, 60, 70), Color8(48, 70, 78), Color8(58, 82, 88)]
+	for x in range(TERR_X0, 320):
 		var t := x * 0.035 - _time * 0.75
 		var g := pow(maxf(0.0, sin(t)), 3.0) + 0.5 * pow(maxf(0.0, sin(t * 0.6 + 2.0)), 4.0)
 		g = clampf(g, 0.0, 1.0) * 2.0  # 0..2 = tingkat warna
-		for k in range(1, 8):
-			var y := int(hy + k * 3 + sin(x * 0.08 + k) * 0.8)
-			if y >= LAKE_Y - 2 or (x + k) % 9 == 0:
+		if g < 0.06:
+			continue
+		for k in TERR_D.size():
+			var y0 := _terrace_y(x, k)
+			if y0 >= LAKE_Y - 1:
+				break
+			if _terrace_water(x, k) or (x + k * 7) % 17 == 0:
 				continue
-			var lvl := int(g)
-			var frac := g - lvl
-			if frac * 16.0 > BAYER4[(y % 4) * 4 + (x % 4)] + 0.5:
-				lvl += 1
-			_art(c, px, Vector2(x, y), tiers[mini(lvl, 2)])
+			var y1 := _terrace_y(x, k + 1) if k + 1 < TERR_D.size() else LAKE_Y
+			# Hanya baris atas tiap petak (pucuk padi) yang tersibak, supaya halus.
+			for y in range(y0 + 2, mini(mini(y1, LAKE_Y), y0 + 4)):
+				var lvl := int(g)
+				var frac := g - lvl
+				if frac * 16.0 > BAYER4[(y % 4) * 4 + (x % 4)] + 0.5:
+					lvl += 1
+				if lvl > 0:
+					_art(c, px, Vector2(x, y), tiers[mini(lvl, 3) - 1])
 
 
 func _update_houses(delta: float) -> void:

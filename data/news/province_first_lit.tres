@@ -8,5 +8,6 @@
 script = ExtResource("2_x17mj")
 trigger = &"province_first_lit"
 headline = "Lampu energi bersih pertama menyala di {kloter}, {province}!"
+feed_title = "Lampu bersih pertama menyala"
 icon = ExtResource("1_53qds")
 image = ExtResource("2_wn6lp")

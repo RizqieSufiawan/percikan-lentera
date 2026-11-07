@@ -8,6 +8,7 @@
 script = ExtResource("2_708co")
 trigger = &"stage_6"
 headline = "Tahap 6: Gerakan nasional. Desa-desa saling memantik."
+feed_title = "Tahap 6: Gerakan nasional"
 important = true
 icon = ExtResource("1_3gxdq")
 image = ExtResource("2_7q8px")

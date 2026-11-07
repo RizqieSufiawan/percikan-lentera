@@ -8,6 +8,7 @@
 script = ExtResource("2_4hxur")
 trigger = &"seed_ignited"
 headline = "Warga {village}, {province}, membangun pembangkit pertama mereka sendiri!"
+feed_title = "Warga membangun sendiri!"
 important = true
 icon = ExtResource("1_mc6pb")
 image = ExtResource("2_8e3up")

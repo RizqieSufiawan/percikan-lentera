@@ -10,3 +10,6 @@ extends Resource
 @export var icon: Texture2D
 ## Gambar di kotak Peristiwa (kiri bawah). Kosong = berita ini tidak masuk kotak.
 @export var image: Texture2D
+## Judul ringkas untuk kotak Peristiwa (maks. 2 baris). Kosong = pakai headline.
+## Headline lengkap tetap tampil saat gambar di kotak itu disorot.
+@export var feed_title: String

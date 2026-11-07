@@ -8,6 +8,7 @@
 script = ExtResource("2_cptlo")
 trigger = &"stage_3"
 headline = "Tahap 3: Desa tetangga mulai tertarik ikut menyala."
+feed_title = "Tahap 3: Desa tetangga ikut"
 important = true
 icon = ExtResource("1_6q04j")
 image = ExtResource("2_dxjej")

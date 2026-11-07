@@ -71,6 +71,16 @@ func _make_button(u: UpgradeData) -> Button:
 	b.tooltip_text = u.display_name
 	b.pressed.connect(_select.bind(u))
 	_buttons[u] = b
+	# Lencana centang di sudut kanan atas: hanya tampil untuk upgrade yang sudah dibeli.
+	var badge := TextureRect.new()
+	badge.texture = _check_badge()
+	badge.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.position = Vector2(NODE_SIZE.x - 14, -6)
+	badge.size = Vector2(20, 20)
+	badge.visible = false
+	b.add_child(badge)
+	b.set_meta("badge", badge)
 	# Nama di bawah ikon (maksimal dua baris).
 	var l := Label.new()
 	l.text = u.display_name
@@ -246,35 +256,77 @@ func refresh() -> void:
 		var b: Button = _buttons[u]
 		var l: Label = b.get_meta("label")
 		var state := sim.upgrade_state(u)
+		var owned := state == "owned"
+		var locked := state.begins_with("Butuh") or state.begins_with("Terbuka") or state.begins_with("Belum")
+		# Empat keadaan dibuat jelas berbeda:
+		#   dimiliki       : kotak hijau penuh + centang, teks hijau, harga diganti "DIMILIKI"
+		#   bisa dibeli    : bingkai emas, teks terang
+		#   belum cukup    : bingkai biasa, teks abu terang
+		#   terkunci       : semua redup
 		var col := Color.WHITE
-		if state == "owned":
-			col = Palette.INDEPENDENT.lightened(0.3)
-		elif state.begins_with("Butuh") or state.begins_with("Terbuka") or state.begins_with("Belum"):
-			col = Color(0.5, 0.5, 0.56)
+		if owned:
+			col = Palette.INDEPENDENT.lightened(0.35)
+		elif locked:
+			col = Color(0.45, 0.45, 0.52)
 		elif state != "":
-			col = Color(0.8, 0.8, 0.86)  # terbuka tapi Poin/Ekonomi belum cukup
-		b.modulate = col
+			col = Color(0.78, 0.78, 0.84)  # terbuka tapi Poin/Ekonomi belum cukup
+		b.modulate = Color.WHITE if owned else col
 		l.modulate = col
 		b.get_meta("effect").modulate = col
+		b.get_meta("badge").visible = owned
 		var pr: RichTextLabel = b.get_meta("price")
-		if state == "owned":
-			pr.text = "[center]dimiliki[/center]"
+		if owned:
+			pr.text = "[center][color=#7be495]DIMILIKI[/color][/center]"
 		else:
 			var ptxt := "[center][img=14x14]%s[/img] %d" % [ICON_POINTS.resource_path, sim.upgrade_cost(u)]
 			if u.cost_money > 0:
 				ptxt += "  [img=14x14]%s[/img] %d" % [ICON_MONEY.resource_path, u.cost_money]
 			pr.text = ptxt + "[/center]"
-		pr.modulate = col
-		# Ikon yang dimiliki diberi bingkai hijau, yang terpilih bingkai krem.
-		b.add_theme_stylebox_override("normal", _node_style(state == "owned", u == _selected))
+		pr.modulate = Color.WHITE if owned else col
+		var style := _node_style(owned, state == "", u == _selected)
+		for st in ["normal", "hover", "pressed"]:
+			b.add_theme_stylebox_override(st, style)
 	for c in _canvases:
 		c.queue_redraw()
 	_show_detail()
 
 
-func _node_style(owned: bool, selected: bool) -> StyleBoxFlat:
-	var border := Palette.CREAM if selected else (Palette.INDEPENDENT if owned else Color(0.35, 0.37, 0.5))
-	return UiKit.box(Color(0.13, 0.15, 0.3), border, 4 if selected else 2, 6, 6)
+func _node_style(owned: bool, buyable: bool, selected: bool) -> StyleBoxFlat:
+	var bg := Color(0.13, 0.15, 0.3)
+	var border := Color(0.35, 0.37, 0.5)
+	var w := 2
+	if owned:
+		bg = Color(0.12, 0.36, 0.2)
+		border = Palette.INDEPENDENT.lightened(0.25)
+		w = 3
+	elif buyable:
+		border = Palette.LIT
+	if selected:
+		border = Palette.CREAM
+		w = 4
+	return UiKit.box(bg, border, w, 6, 6)
+
+
+static var _badge_tex: ImageTexture
+
+
+## Lencana centang pixel art 10x10 (hijau, garis gelap, centang krem), dibuat sekali.
+static func _check_badge() -> ImageTexture:
+	if _badge_tex:
+		return _badge_tex
+	var img := Image.create(10, 10, false, Image.FORMAT_RGBA8)
+	var dark := Color8(10, 30, 18)
+	var green := Color8(70, 190, 105)
+	for y in 10:
+		for x in 10:
+			var d := Vector2(x - 4.5, y - 4.5).length()
+			if d <= 4.6:
+				img.set_pixel(x, y, dark if d > 3.7 else green)
+	for p in [Vector2i(2, 5), Vector2i(3, 6), Vector2i(4, 7), Vector2i(5, 6), Vector2i(6, 5), Vector2i(7, 4), Vector2i(7, 3),
+			Vector2i(3, 5), Vector2i(4, 6), Vector2i(5, 5), Vector2i(6, 4)]:
+		img.set_pixelv(p, Color8(245, 236, 209))
+	_badge_tex = ImageTexture.create_from_image(img)
+	return _badge_tex
 
 
 func _select(u: UpgradeData) -> void:

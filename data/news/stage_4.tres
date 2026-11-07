@@ -8,6 +8,7 @@
 script = ExtResource("2_75d2l")
 trigger = &"stage_4"
 headline = "Tahap 4: Pemerintah daerah mulai memperhatikan program ini."
+feed_title = "Tahap 4: Pemda memperhatikan"
 important = true
 icon = ExtResource("1_ob1ox")
 image = ExtResource("2_oavqc")

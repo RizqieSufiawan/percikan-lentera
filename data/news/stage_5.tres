@@ -8,6 +8,7 @@
 script = ExtResource("2_job2j")
 trigger = &"stage_5"
 headline = "Tahap 5: Jaringan antar-desa terbentuk."
+feed_title = "Tahap 5: Jaringan antar-desa"
 important = true
 icon = ExtResource("1_wmsnq")
 image = ExtResource("2_vrgbs")

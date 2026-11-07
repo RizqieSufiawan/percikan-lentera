@@ -66,8 +66,9 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if handle_key(event.keycode, event.shift_pressed, event.ctrl_pressed):
-			get_viewport().set_input_as_handled()
+		var vp := get_viewport()  # simpan dulu: tombol debug bisa mengganti layar
+		if handle_key(event.keycode, event.shift_pressed, event.ctrl_pressed) and vp:
+			vp.set_input_as_handled()
 
 
 ## Dipisah dari input supaya bisa dipanggil dari tes.

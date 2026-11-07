@@ -325,6 +325,60 @@ def rumah(im, d, x, y, lit=True, w=11):
         d.rectangle([x + 2, top + 4, x + 3, top + 5], fill=(30, 30, 50))
 
 
+# ---------------------------------------------------------------- sawah terasering
+# Rumus yang SAMA dipakai scripts/ui/title_screen.gd (kilau angin di atas padi): ubah keduanya.
+TERR_X0 = 188                  # sawah mulai di kanan bahu bukit
+TERR_D = (3, 7, 11, 16, 21, 27, 34)  # jarak tiap pematang dari punggung bukit (makin ke bawah makin renggang)
+TERR_LIP = (54, 78, 84)       # bibir pematang terkena cahaya bulan
+TERR_RISE = (16, 26, 38)       # dinding teras (bayangan) di bawah bibir
+TERR_RICE = ((28, 44, 56), (34, 52, 64))   # padi: dua nada (dithering)
+TERR_WATER = ((18, 28, 58), (24, 36, 72))  # sawah berair memantulkan langit malam
+TERR_GLINT = (78, 94, 138)
+
+
+def terrace_y(x, k):
+    return int(hill_y(x) + TERR_D[k] + math.sin(x * 0.07 + k * 1.3) * 0.8)
+
+
+def terrace_kind(x, k):
+    """'water' atau 'rice' per petak; petak = potongan 14-20 piksel, bergeser tiap baris."""
+    seg = (x + k * 7) // 17
+    return "water" if (seg * 7 + k * 3) % 4 == 0 else "rice"
+
+
+def draw_terraces(im):
+    for x in range(TERR_X0, W):
+        hy = hill_y(x)
+        for k in range(len(TERR_D)):
+            y0 = terrace_y(x, k)
+            y1 = terrace_y(x, k + 1) if k + 1 < len(TERR_D) else LAKE_Y
+            if y0 >= LAKE_Y - 1:
+                break
+            # Dinding teras di bawah bibir pematang: 1 piksel gelap.
+            px(im, x, y0, TERR_LIP)
+            if y0 + 1 < LAKE_Y:
+                px(im, x, y0 + 1, TERR_RISE)
+            kind = terrace_kind(x, k)
+            seg_edge = (x + k * 7) % 17 == 0  # pematang kecil pemisah petak
+            for y in range(y0 + 2, min(y1, LAKE_Y)):
+                if seg_edge:
+                    px(im, x, y, TERR_RISE if y > y0 + 2 else TERR_LIP)
+                    continue
+                depth = (y - y0 - 2) / max(1.0, y1 - y0 - 3)
+                if kind == "water":
+                    c = TERR_WATER[1] if dither_pick(x, y, 0.55 - depth * 0.5) else TERR_WATER[0]
+                    # Pantulan cahaya bulan kecil di permukaan air.
+                    if (x * 13 + y * 7 + k) % 23 == 0:
+                        c = TERR_GLINT
+                else:
+                    c = TERR_RICE[1] if dither_pick(x, y, 0.6 - depth * 0.55) else TERR_RICE[0]
+                px(im, x, y, c)
+        # Kaki bukit dekat danau sedikit lebih gelap (bayangan), dengan dithering.
+        for y in range(LAKE_Y - 4, LAKE_Y):
+            if dither_pick(x, y, (y - (LAKE_Y - 4)) / 4.0 * 0.6):
+                px(im, x, y, HILL0)
+
+
 def mid_layer(bake_water=True):
     R.seed(202)
     im, d = new()
@@ -334,13 +388,7 @@ def mid_layer(bake_water=True):
         for y in range(hy, LAKE_Y):
             col = HILL1 if y < hy + 2 else HILL0
             px(im, x, y, col)
-    # Sawah terasering di lereng kanan: garis kontur lebih terang.
-    for x in range(180 if bake_water else W, W):  # di menu, garis teras digambar bergerak oleh Godot
-        hy = hill_y(x)
-        for k in range(1, 8):
-            y = int(hy + k * 3 + math.sin(x * 0.08 + k) * 0.8)
-            if y < LAKE_Y - 2 and (x + k) % 9 != 0:
-                px(im, x, y, HILL2)
+    draw_terraces(im)
     # Bahu bukit berhutan + air terjun bertingkat (mikrohidro) di kiri desa. Bahu ini naik landai
     # dari bukit kiri dan turun menyambung ke bukit kanan, jadi air terjun terasa bagian dari bukit.
     for x in range(126, 192):

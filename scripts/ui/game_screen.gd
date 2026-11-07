@@ -101,8 +101,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	if _outro_t >= 0.0:
-		_finish_outro(false)
+		# Tandai dulu: _finish_outro bisa langsung pindah ke layar akhir (node ini keluar dari pohon,
+		# get_viewport() jadi null).
 		get_viewport().set_input_as_handled()
+		_finish_outro(false)
 		return
 	# Esc juga menutup: menu jeda = Lanjut, panduan = tutup.
 	if event.keycode == KEY_ESCAPE and modal.is_busy():
@@ -396,8 +398,9 @@ func _build_province_tab() -> void:
 	_province_tab.custom_minimum_size = Vector2(36, 160)
 	_province_tab.offset_left = -36
 	_province_tab.offset_right = 6  # sedikit masuk ke balik tepi layar, seperti tab laci
-	_province_tab.offset_top = -100
-	_province_tab.offset_bottom = 60
+	# Di atas tengah layar (laut utara Papua), supaya tidak menutupi Papua dan gelembung di sana.
+	_province_tab.offset_top = -250
+	_province_tab.offset_bottom = -90
 	_province_tab.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_province_tab.pressed.connect(_open_last_province)
 	add_child(_province_tab)
@@ -482,7 +485,8 @@ func _on_news(trigger: StringName, ctx: Dictionary) -> void:
 	var text := n.headline.format(ctx)
 	if n.image:
 		var where: String = ctx["province"] if ctx["province"] != "" else "Nusantara"
-		feed.push(n.image, text, "%s  |  %s" % [where, Game.sim.date_text()], text)
+		var short := n.feed_title.format(ctx) if n.feed_title != "" else text
+		feed.push(n.image, short, "%s  |  %s" % [where, Game.sim.date_text()], text)
 	if n.important and Game.news_popups_enabled:
 		Audio.sfx(&"news")
 		var where: String = ctx["province"] if ctx["province"] != "" else "Nusantara"
@@ -535,7 +539,7 @@ func _on_offer(o: GovOfferData) -> void:
 		lines.append("- Target: %d kloter desa baru berenergi bersih dalam %d minggu (gagal = Resistensi merah naik)" % [o.target_villages, Game.sim.weeks_of(o.target_ticks)])
 	lines.append("")
 	lines.append("Jika ditolak: tawaran bisa datang lagi nanti, isinya mengikuti kondisimu saat itu.")
-	feed.push(o.image, "Tawaran Pemerintah: " + o.title, "Pemerintah  |  " + Game.sim.date_text(), o.body)
+	feed.push(o.image, "Tawaran: " + o.title, "Pemerintah  |  " + Game.sim.date_text(), o.body)
 	var tier_names := {&"rapuh": "Kondisi rapuh", &"biasa": "Kondisi biasa", &"lancar": "Kondisi lancar"}
 	modal.show_card("Tawaran Pemerintah: " + o.title, o.image, "\n".join(lines),
 		"Skor Kelayakan: %d (%s)" % [int(Game.sim.eligibility_score()), tier_names.get(o.tier, "")], ["Terima", "Tolak"],

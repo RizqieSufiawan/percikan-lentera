@@ -8,6 +8,7 @@
 script = ExtResource("2_ch1h3")
 trigger = &"province_independent"
 headline = "{province} kini sebagian besar mandiri! Komunitas warga mengambil alih."
+feed_title = "{province} kini mandiri"
 important = true
 icon = ExtResource("1_lgshv")
 image = ExtResource("2_7lufj")

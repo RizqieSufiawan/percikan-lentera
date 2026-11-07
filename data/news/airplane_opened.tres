@@ -8,6 +8,7 @@
 script = ExtResource("2_gikta")
 trigger = &"airplane_opened"
 headline = "Rute pesawat dibuka. Peralatan bisa dikirim ke pulau yang jauh."
+feed_title = "Rute pesawat dibuka"
 important = true
 icon = ExtResource("1_y07td")
 image = ExtResource("2_vjf2b")
