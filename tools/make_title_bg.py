@@ -28,6 +28,8 @@ R = random.Random(2026)
 
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 
+SKY_STEPS = 4  # tingkat perantara antar warna langit & air (1 = dithering kasar seperti dulu)
+MIST_STEPS = 5  # tingkat kepekatan kabut
 SKY = [(8, 10, 30), (14, 18, 46), (24, 28, 70), (40, 40, 98), (70, 56, 116), (122, 78, 120), (176, 104, 112)]
 FAR0, FAR1, MIST = (44, 46, 100), (58, 60, 120), (86, 78, 136)
 VOLC_RIM = (74, 70, 138)
@@ -60,6 +62,16 @@ def dither_pick(x, y, t):
     return t * 16 > BAYER[y % 4][x % 4] + 0.5
 
 
+def fine_mix(a, b, t, x, y, steps=4):
+    """Campuran a->b sebesar t dengan `steps` tingkat perantara + dithering di antara tingkat yang
+    bersebelahan. Pola titik tetap ada (pixel art) tapi selisih warnanya kecil, jadi terlihat halus."""
+    q = max(0.0, min(1.0, t)) * steps
+    lvl = int(q)
+    if lvl < steps and dither_pick(x, y, q - lvl):
+        lvl += 1
+    return mix(a, b, lvl / float(steps))
+
+
 # ---------------------------------------------------------------- langit
 
 def sky_layer(bake_bright=True):
@@ -73,7 +85,7 @@ def sky_layer(bake_bright=True):
             k += 1
         t = min(1.0, max(0.0, (y - stops[k]) / (stops[k + 1] - stops[k])))
         for x in range(W):
-            px(im, x, y, SKY[k + 1] if dither_pick(x, y, t) else SKY[k])
+            px(im, x, y, fine_mix(SKY[k], SKY[k + 1], t, x, y, SKY_STEPS))
     # Pendar bulan: cincin dithering yang makin tipis.
     mx, my = 252, 38
     for y in range(0, 100):
@@ -81,9 +93,8 @@ def sky_layer(bake_bright=True):
             dist = math.hypot(x - mx, y - my)
             if 11 < dist < 40:
                 t = (1 - (dist - 11) / 29) ** 1.6 * 0.55
-                if dither_pick(x, y, t):
-                    base = im.getpixel((x, y))[:3]
-                    px(im, x, y, mix(base, (120, 120, 170), 0.35))
+                base = im.getpixel((x, y))[:3]
+                px(im, x, y, fine_mix(base, (120, 120, 170), t * 0.35 / 0.55 * 1.0, x, y, SKY_STEPS * 2))
     # Bintang: kebanyakan redup, beberapa terang, segelintir berbentuk silang.
     for _ in range(170):
         x, y = R.randrange(W), R.randrange(0, 112)
@@ -159,12 +170,22 @@ def far_layer(bake_smoke=True):
             for xx in range(int(cx - r), int(cx + r) + 1):
                 if math.hypot(xx - cx, yy - cy) <= r and dither_pick(xx, yy, 0.5 * (1 - k / 20.0)):
                     px(im, xx, yy, (92, 86, 140))
-    # Kabut di kaki gunung.
-    for y in range(118, 140):
-        t = (y - 118) / 22.0
+    # Kabut di kaki gunung: menebal halus ke bawah sampai dasar lapisan (tanpa tepi mendatar).
+    # Di atas langit kosong kabut dibuat semi-transparan bertingkat, di atas gunung dicampur warnanya.
+    for y in range(116, 152):
+        t = min(1.0, (y - 116) / 24.0) * 0.75
         for x in range(W):
-            if dither_pick(x, y, t * 0.75):
-                px(im, x, y, MIST)
+            q = t * MIST_STEPS
+            lvl = int(q)
+            if lvl < MIST_STEPS and dither_pick(x, y, q - lvl):
+                lvl += 1
+            if lvl == 0:
+                continue
+            base = im.getpixel((x, y))
+            if base[3] == 0:
+                px(im, x, y, MIST + (int(255 * lvl / MIST_STEPS),))
+            else:
+                px(im, x, y, mix(base[:3], MIST, lvl / float(MIST_STEPS)))
     return im
 
 
@@ -328,7 +349,7 @@ def mid_layer(bake_water=True):
     for y in range(LAKE_Y, H):
         t = (y - LAKE_Y) / float(H - LAKE_Y)
         for x in range(W):
-            px(im, x, y, LAKE1 if dither_pick(x, y, (1 - t) * 0.5) else LAKE0)
+            px(im, x, y, fine_mix(LAKE0, LAKE1, (1 - t) * 0.5, x, y, SKY_STEPS))
     if not bake_water:
         d.line([(0, LAKE_Y), (W, LAKE_Y)], fill=(40, 60, 96))
         return im, turbine_hub

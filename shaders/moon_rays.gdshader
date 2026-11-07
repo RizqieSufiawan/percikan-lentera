@@ -31,14 +31,14 @@ void fragment() {
 			+ pow(max(0.0, sin(ang * 10.0 - TIME * 0.008 + 1.3)), 9.0) * 0.45;
 		// Gelombang terang bergerak keluar (r - waktu): cahaya terasa memancar dari bulan.
 		float wave = 0.35 + 0.65 * pow(0.5 + 0.5 * sin(r * 0.2 - TIME * 1.1), 2.0);
-		rays *= smoothstep(moon_r, moon_r + 5.0, r) * exp(-(r - moon_r) / 34.0) * wave;
+		rays *= smoothstep(moon_r, moon_r + 5.0, r) * exp(-(r - moon_r) / 28.0) * wave;
 		float halo = exp(-(r - moon_r) / 8.0) * (0.8 + 0.2 * sin(r * 0.35 - TIME * 1.1));
-		float v = clamp(rays * 0.75 + halo * 0.7, 0.0, 1.0) * 3.0;
-		// Kuantisasi 3 tingkat + dithering di antaranya.
+		float v = clamp(rays * 0.75 + halo * 0.7, 0.0, 1.0) * 16.0;
+		// Kuantisasi 16 tingkat + dithering di antaranya: tetap per piksel seni, tapi halus.
 		float lvl = floor(v);
 		if (v - lvl > bayer(g)) {
 			lvl += 1.0;
 		}
-		COLOR = vec4(tint * strength * (lvl / 3.0), 1.0);
+		COLOR = vec4(tint * strength * (lvl / 16.0), 1.0);
 	}
 }
