@@ -142,7 +142,7 @@ func _build_scenery() -> void:
 		tr.texture = load(LAYERS[i][0])
 		tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		tr.stretch_mode = TextureRect.STRETCH_SCALE if i == 0 else TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		%Scenery.add_child(tr)
 		if i == 0:
@@ -177,12 +177,18 @@ func _layout_layers() -> void:
 		var d: float = LAYERS[i][1]
 		tr.size = vs + Vector2.ONE * MARGIN * 2.0
 		tr.position = (Vector2(-MARGIN, -MARGIN) - _par * MARGIN * d + Vector2(0, _pan * PAN_DEPTH[i])).round()
+		if i == 0:
+			# Langit TIDAK dipotong: digambar utuh (bisa lebih besar dari lapisan) supaya baris
+			# teratasnya selalu menyambung dengan langit atas (_hisky), di layar seluas apa pun.
+			var k := maxf(tr.size.x / IMG.x, tr.size.y / IMG.y)
+			tr.position += ((tr.size - IMG * k) / 2.0).round()
+			tr.size = (IMG * k).round()
 	if _hisky:
 		# Tepat di atas gambar langit, dengan skala yang sama.
 		var tr0 := _layers[0]
 		var k0 := maxf(tr0.size.x / IMG.x, tr0.size.y / IMG.y)
 		_hisky.size = Vector2(IMG.x, HIGH_H * 4.0) * k0
-		_hisky.position = _map(tr0, Vector2.ZERO) - Vector2(0, _hisky.size.y)
+		_hisky.position = Vector2(0, -_hisky.size.y)
 	if _rays:
 		# Tepat menutup gambar langit di dalam lapisannya (gambar diperbesar & dipotong "cover").
 		var tr0 := _layers[0]
