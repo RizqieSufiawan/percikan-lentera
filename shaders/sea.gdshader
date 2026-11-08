@@ -13,6 +13,15 @@ uniform vec2 ref_size = vec2(1280.0, 720.0);
 uniform float amount = 1.0;
 // Gambar laut lebih luas dari peta: tambahan sekian piksel referensi di tiap sisi (tools/make_sea.py).
 uniform vec2 sea_ext = vec2(320.0, 180.0);
+// Suasana malam seperti menu utama (1 = malam pekat, 0 = terang). Makin banyak desa memakai
+// energi bersih, makin terang (diatur scripts/ui/map_view.gd).
+uniform float night = 0.0;
+
+vec3 night_sea(vec3 c) {
+	// Laut malam: gelap, biru keunguan (selaras danau di menu utama).
+	vec3 n = c * vec3(0.42, 0.40, 0.62);
+	return mix(n, vec3(0.05, 0.06, 0.17), 0.25);
+}
 
 float hash(vec2 v) {
 	return fract(sin(dot(v, vec2(127.1, 311.7))) * 43758.5453);
@@ -28,6 +37,7 @@ void fragment() {
 	c.rgb = mix(c.rgb, vec3(23.0, 55.0, 94.0) / 255.0, fade);
 	vec2 gp = floor(suv * ref_size / pixel);
 	bool water = c.b > c.r + 0.08 && c.b > 0.15;
+	c.rgb = mix(c.rgb, night_sea(c.rgb), night);
 	if (water) {
 		// Setiap kilau hidup beberapa detik di posisi acak, lalu pindah.
 		float phase = TIME * 0.35 + hash(vec2(gp.y, 7.0)) * 10.0;
@@ -35,7 +45,8 @@ void fragment() {
 		float h = hash(gp + vec2(slot * 13.0, slot * 7.0));
 		if (h < 0.0025 * amount) {
 			float glow = sin(fract(phase) * 3.14159);
-			c.rgb = mix(c.rgb, vec3(0.75, 0.9, 1.0), 0.6 * glow);
+			// Malam: kilau jadi pantulan bulan, lebih jarang tapi tetap terang.
+			c.rgb = mix(c.rgb, mix(vec3(0.75, 0.9, 1.0), vec3(0.8, 0.82, 1.0), night), 0.6 * glow);
 		}
 	}
 	COLOR = vec4(c.rgb, 1.0);

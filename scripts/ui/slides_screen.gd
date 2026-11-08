@@ -1,8 +1,11 @@
 extends Control
 ## Slide intro cerita / panduan. Isi dari data/slides/*.tres (urutan di database.tres).
 
+const CLOUD_TRANSITION := preload("res://scripts/ui/cloud_transition.gd")
+
 var _slides: Array[SlideData] = []
 var _index: int = 0
+var _leaving := false
 
 
 func _ready() -> void:
@@ -11,9 +14,16 @@ func _ready() -> void:
 	%NextBtn.pressed.connect(func(): _go(_index + 1))
 	%SkipBtn.pressed.connect(_finish)
 	_go(0)
+	if CLOUD_TRANSITION.resting != null:
+		# Datang dari menu lewat awan: awan jadi latar, slide muncul pelan di atasnya.
+		$Bg.color = Color(Palette.NIGHT, 0.5)
+		modulate.a = 0.0
+		create_tween().tween_property(self, "modulate:a", 1.0, 0.5)
 
 
 func _go(i: int) -> void:
+	if _leaving:
+		return
 	Audio.sfx(&"click")
 	if i >= _slides.size():
 		_finish()
@@ -41,6 +51,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _finish() -> void:
+	if _leaving:
+		return
+	_leaving = true
 	if Game.slides_mode == "intro":
 		Game.intro_seen = true
-	Game.goto(Game.slides_next)
+	if CLOUD_TRANSITION.resting == null:
+		Game.goto(Game.slides_next)
+		return
+	# Slide memudar, awan naik menutup lagi, peta dimuat di baliknya, lalu awan membuka.
+	var tw := create_tween()
+	tw.tween_property(self, "modulate:a", 0.0, 0.35)
+	tw.tween_callback(func(): CLOUD_TRANSITION.resume(func(): Game.goto(Game.slides_next)))

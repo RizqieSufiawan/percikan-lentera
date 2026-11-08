@@ -32,6 +32,14 @@ uniform sampler2D cell_rank : filter_nearest;
 uniform sampler2D cell_mix : filter_nearest;
 uniform float selected_cell = -1.0;
 uniform float lights = 1.0;
+// Suasana malam (1 = malam pekat, 0 = terang): tanah yang belum bersih ikut gelap, sedangkan
+// desa berenergi bersih dan lampunya tetap terang, jadi terlihat menyala di tengah malam.
+uniform float night = 0.0;
+
+vec3 night_land(vec3 c) {
+	vec3 n = c * vec3(0.46, 0.44, 0.62);
+	return mix(n, vec3(0.08, 0.08, 0.2), 0.2);
+}
 
 float hash(vec2 v) {
 	return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
@@ -76,6 +84,7 @@ void fragment() {
 		vec4 geo = texture(cell_geom, vec2(u, 0.5));
 		c = mix(color_dark.rgb, color_fossil.rgb, geo.a);
 		c = mix(c, region_tint.rgb, region_tint.a);
+		c = mix(c, night_land(c), night);
 		// Kloter menyala titik demi titik (1 titik peta ~ 9 desa), bukan sekaligus.
 		bool on = texture(cell_rank, auv).r < geo.z;
 		if (col.a > 0.5 && on) {

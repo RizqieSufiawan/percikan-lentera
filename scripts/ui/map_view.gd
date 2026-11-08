@@ -73,6 +73,11 @@ var _selected_cell: int = -1
 var _region_layer: Control
 var _overlay: Control
 var _sea: ColorRect
+## Suasana malam peta: 1 = malam pekat (awal permainan), 0 = terang (semua desa bersih).
+var night := 1.0
+var _night_target := 1.0
+var _night_ready := false
+const NIGHT_AMBIENT := Color(0.55, 0.56, 0.8)  # warna awan/kapal di peta saat malam
 ## Awan, perahu, burung, asap fosil, dan percikan energi bersih (scripts/ui/map_ambient.gd).
 var _ambient: Control
 
@@ -118,6 +123,7 @@ func build() -> void:
 		nodes[p.id] = n
 		if p.region_mask:
 			_prepare_region(p)
+	set_night(1.0)
 	tooltip_text = "peta"  # isi sebenarnya dari _get_tooltip()
 	resized.connect(_layout)
 	_layout.call_deferred()
@@ -328,6 +334,12 @@ func set_selected_village(id: StringName, index: int) -> void:
 
 func refresh() -> void:
 	var sim := Game.sim
+	# Makin banyak desa memakai energi bersih, makin terang. Dipangkatkan < 1 supaya kemajuan awal
+	# sudah terasa.
+	_night_target = 1.0 - pow(clampf(sim.access_ratio(), 0.0, 1.0), 0.7)
+	if not _night_ready:  # pertama kali (mis. memuat simpanan): langsung ke suasana yang benar
+		_night_ready = true
+		set_night(_night_target)
 	for id in nodes:
 		var s: Simulation.ProvinceState = sim.provinces[id]
 		nodes[id].refresh(s, Game.db.ui, sim.is_reachable(s))
@@ -425,6 +437,8 @@ func _push_cells() -> void:
 
 
 func _process(delta: float) -> void:
+	if not is_equal_approx(night, _night_target):
+		set_night(move_toward(night, _night_target, delta * 0.15))
 	if not _animating:
 		return
 	_animating = false
@@ -444,8 +458,19 @@ func _process(delta: float) -> void:
 	_geom_tex.update(_geom_img)
 
 
+func set_night(v: float) -> void:
+	night = v
+	if _sea:
+		(_sea.material as ShaderMaterial).set_shader_parameter("night", v)
+	for id in _regions:
+		(_regions[id].material as ShaderMaterial).set_shader_parameter("night", v)
+	if _ambient:
+		_ambient.modulate = Color.WHITE.lerp(NIGHT_AMBIENT, v)
+
+
 ## Selesaikan semua animasi sebaran seketika (dipakai tes/screenshot).
 func finish_spread_animation() -> void:
+	set_night(_night_target)
 	for k in _cell_count:
 		_r_now[k] = _r_target[k]
 		var g := _geom_img.get_pixel(k, 0)

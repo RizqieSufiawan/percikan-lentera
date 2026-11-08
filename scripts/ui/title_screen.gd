@@ -28,6 +28,15 @@ const LAKE1 := Color8(40, 62, 116)
 const LAKE2 := Color8(72, 96, 156)
 const PALMS := preload("res://assets/ui/title_palms.png")
 const CREDITS := preload("res://scripts/ui/credits_panel.gd")
+const CLOUD_TRANSITION := preload("res://scripts/ui/cloud_transition.gd")
+## Langit di atas title_sky.png (tools/make_title_sky_high.py), terlihat saat kamera naik.
+const SKY_HIGH := preload("res://assets/ui/title_sky_high.png")
+const HIGH_H := 220  # tinggi SKY_HIGH dalam piksel seni
+## Seberapa jauh tiap lapisan turun saat kamera naik (dikali jarak naik). Lapisan jauh bergerak
+## lebih sedikit, jadi gunung dan desa tertinggal di bawah sementara langit berbintang terbuka.
+const PAN_DEPTH := [0.5, 0.72, 0.88, 1.0]
+const PAN_TIME := 2.0  # lama kamera naik (detik)
+const PAN_CLOUDS_AT := 1.5  # awan mulai menutup layar (detik sejak klik)
 const PALM_FRAMES := 16
 const PALM_BOX := Rect2(0, 52, 108, 128)  # piksel seni, sama dengan make_title_bg.py
 const PALM_FPS := 7.0
@@ -71,6 +80,10 @@ var _birds := {}  # rombongan burung melintasi bulan: {x, y, sp, n}
 var _next_birds := 14.0
 var _next_shooting := 4.0
 var _par := Vector2.ZERO
+var _pan := 0.0  # jarak kamera naik (piksel layar); 0 = posisi menu biasa
+var _leaving := false
+var _hisky: TextureRect
+var _hi_stars: Array = []  # bintang berkelip di langit atas: {p (piksel gambar, y negatif), ph, sp, big}
 var _time := 0.0
 var _rng := RandomNumberGenerator.new()
 
@@ -92,6 +105,11 @@ func _ready() -> void:
 		_stars.append({"p": g * 4.0, "ph": _rng.randf() * TAU, "sp": _rng.randf_range(0.6, 2.2),
 			"lvl": 0.55 if roll < 0.55 else (0.85 if roll < 0.9 else 1.0), "big": roll >= 0.9,
 			"col": Color(1, 0.98, 0.9) if _rng.randf() < 0.7 else Color(0.8, 0.86, 1.0)})
+	for i in 110:
+		var big := _rng.randf() < 0.12
+		_hi_stars.append({"p": Vector2(_rng.randi_range(0, 319), -_rng.randi_range(2, HIGH_H - 2)) * 4.0,
+			"ph": _rng.randf() * TAU, "sp": _rng.randf_range(0.5, 2.0), "big": big,
+			"col": Color(1, 0.97, 0.88) if _rng.randf() < 0.65 else Color(0.78, 0.85, 1.0)})
 	_spawn_cloud_groups()
 	# Asap gunung sudah mengepul sejak awal (tidak mulai dari kosong).
 	for i in 20:
@@ -128,6 +146,14 @@ func _build_scenery() -> void:
 		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		%Scenery.add_child(tr)
 		if i == 0:
+			_hisky = TextureRect.new()
+			_hisky.texture = SKY_HIGH
+			_hisky.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			_hisky.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			_hisky.stretch_mode = TextureRect.STRETCH_SCALE
+			_hisky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_hisky.draw.connect(_draw_high_stars)
+			tr.add_child(_hisky)
 			_rays = ColorRect.new()
 			_rays.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			var rm := ShaderMaterial.new()
@@ -150,7 +176,13 @@ func _layout_layers() -> void:
 		var tr := _layers[i]
 		var d: float = LAYERS[i][1]
 		tr.size = vs + Vector2.ONE * MARGIN * 2.0
-		tr.position = (Vector2(-MARGIN, -MARGIN) - _par * MARGIN * d).round()
+		tr.position = (Vector2(-MARGIN, -MARGIN) - _par * MARGIN * d + Vector2(0, _pan * PAN_DEPTH[i])).round()
+	if _hisky:
+		# Tepat di atas gambar langit, dengan skala yang sama.
+		var tr0 := _layers[0]
+		var k0 := maxf(tr0.size.x / IMG.x, tr0.size.y / IMG.y)
+		_hisky.size = Vector2(IMG.x, HIGH_H * 4.0) * k0
+		_hisky.position = _map(tr0, Vector2.ZERO) - Vector2(0, _hisky.size.y)
 	if _rays:
 		# Tepat menutup gambar langit di dalam lapisannya (gambar diperbesar & dipotong "cover").
 		var tr0 := _layers[0]
@@ -367,6 +399,9 @@ func _process(delta: float) -> void:
 	_update_houses(delta)
 	for fx in _fx:
 		fx.queue_redraw()
+	if _pan > 0.0:
+		_hisky.queue_redraw()
+		%Margin.position.y = _pan
 
 
 func _draw_sky_fx() -> void:
@@ -887,11 +922,50 @@ func _draw_near_fx() -> void:
 		c.draw_rect(Rect2((p / px).floor() * px, Vector2(px, px)), Color(0.85, 1.0, 0.55, a))
 
 
+func _draw_high_stars() -> void:
+	var px := _pix(_layers[0])
+	var k := _hisky.size.x / IMG.x
+	for st in _hi_stars:
+		var w := 0.5 + 0.5 * sin(_time * st["sp"] + st["ph"])
+		var a: float = 0.3 + 0.7 * w
+		var p: Vector2 = Vector2(st["p"].x, st["p"].y + HIGH_H * 4.0) * k
+		_hisky.draw_rect(Rect2(p, Vector2(px, px)), Color(st["col"], a))
+		if st["big"] and a > 0.75:
+			var arm := Color(0.75, 0.78, 0.98, (a - 0.75) * 3.0)
+			for o in [Vector2(px, 0), Vector2(-px, 0), Vector2(0, px), Vector2(0, -px)]:
+				_hisky.draw_rect(Rect2(p + o, Vector2(px, px)), arm)
+
+
+## Permainan Baru: kamera naik ke langit berbintang (menu dan pemandangan tertinggal di bawah),
+## lalu awan menutup layar dan membuka ke layar berikutnya.
 func _on_start() -> void:
+	if _leaving:
+		return
+	_leaving = true
 	Audio.sfx(&"click")
-	if Game.intro_seen:
-		Game.goto("setup")
-	else:
-		Game.slides_mode = "intro"
-		Game.slides_next = "setup"
-		Game.goto("slides")
+	for b in _buttons:
+		b.disabled = true
+		b.focus_mode = Control.FOCUS_NONE
+		b.release_focus()
+	var dist := get_viewport_rect().size.y * 1.1
+	var tw := create_tween()
+	tw.tween_method(func(v: float): _pan = v, 0.0, dist, PAN_TIME) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	# Teks dan tombol memudar satu per satu (dari bawah ke atas) sambil ikut turun.
+	var fade := create_tween().set_parallel(true)
+	var items: Array = [%GameTitle, %Subtitle, %Tagline]
+	items.append_array(_buttons)
+	items.reverse()
+	for i in items.size():
+		fade.tween_property(items[i], "modulate:a", 0.0, 0.45).set_delay(0.15 + 0.06 * i)
+	fade.tween_property(%Shade, "modulate:a", 0.0, 1.2)
+	get_tree().create_timer(PAN_CLOUDS_AT).timeout.connect(func():
+		# Intro belum dilihat: awan tetap menutup dan jadi latar slide intro, baru membuka ke peta
+		# setelah slide selesai (lihat slides_screen.gd).
+		CLOUD_TRANSITION.play(get_tree(), func():
+			if Game.intro_seen:
+				Game.goto("setup")
+			else:
+				Game.slides_mode = "intro"
+				Game.slides_next = "setup"
+				Game.goto("slides"), not Game.intro_seen))
