@@ -624,6 +624,7 @@ func _add_spread(gains: Dictionary, pools: Dictionary, src_pool: Array[StringNam
 	var c := spread_compat(dst, src_pool + used_energies(dst))
 	var amount := src_share * c * readiness(dst) * cfg.spread_rate * spread_mult * factor
 	amount *= dst.data.spread_mod * dst.data.island.base_spread
+	amount *= 1.0 - cfg.last_villages_drag * (1.0 - float(dst.unclean()) / dst.total())
 	gains[dst.data.id] = gains.get(dst.data.id, 0.0) + amount
 
 

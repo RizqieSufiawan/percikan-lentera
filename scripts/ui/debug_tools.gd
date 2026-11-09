@@ -13,12 +13,13 @@ F6   nyalakan 1 desa di provinsi terpilih  (Shift: 5 desa)
 F7   jadikan provinsi terpilih mandiri
 F8   krisis di provinsi terpilih
 F9   resistensi biru +15  (Shift: merah +15, Ctrl: reset ke 0)
-F10  buka semua upgrade gratis
+F10  buka semua upgrade gratis  (Shift: SETENGAH upgrade, acak tapi tetap memenuhi syarat)
 F11  benih di provinsi terpilih  (Shift: buka rute pesawat semua pulau)
 F12  menang  (Shift: kalah resistensi, Ctrl: kalah padam)
 Delete    isi PETA SETENGAH: separuh desa bersih, semua energi & upgrade terbuka, tahap 4
           (Shift: PENUH, semua desa bersih campur semua energi, 1 desa sengaja disisakan
           supaya belum menang; tekan F12 untuk layar menang)
+          (Ctrl: SEPEREMPAT, 25% desa bersih, setengah upgrade, tahap 3)
 Insert    lompat 1 tahun (berhenti jika ada kartu)
 Home      naik tahap
 End       munculkan gelembung aksi sekarang
@@ -154,11 +155,19 @@ func handle_key(key: Key, shift: bool = false, ctrl: bool = false) -> bool:
 				sim.blue = clampf(sim.blue + 15, 0, 100)
 				msg = "resistensi biru +15"
 		KEY_F10:
-			_unlock_all(sim)
-			msg = "semua upgrade terbuka"
+			if shift:
+				msg = _unlock_half(sim)
+			else:
+				_unlock_all(sim)
+				msg = "semua upgrade terbuka"
 		KEY_DELETE:
-			_unlock_all(sim)
-			msg = _fill_map(sim, 1.0 if shift else 0.5)
+			if ctrl:
+				# Seperempat jalan: setengah upgrade saja, supaya masih ada yang bisa dibeli.
+				var up := _unlock_half(sim)
+				msg = _fill_map(sim, 0.25) + ", " + up
+			else:
+				_unlock_all(sim)
+				msg = _fill_map(sim, 1.0 if shift else 0.5)
 		KEY_F11:
 			if shift:
 				sim._open_air_routes(99)
@@ -227,6 +236,39 @@ func _unlock_all(sim: Simulation) -> void:
 	sim._recompute_mods()
 
 
+## Beri setengah dari semua upgrade gratis. Dipilih acak (tetap sama tiap dipanggil) dan hanya
+## yang syarat upgrade-nya sudah dimiliki, jadi pohon upgrade tetap masuk akal. Upgrade yang
+## sudah dimiliki dihitung. Syarat flag (post_kkn dll.) tidak dipaksa, seperti _unlock_all.
+func _unlock_half(sim: Simulation) -> String:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2026
+	var target := ceili(Game.db.upgrades.size() / 2.0)
+	while sim.owned_upgrades.size() < target:
+		var eligible: Array[UpgradeData] = []
+		for u in Game.db.upgrades:
+			if sim.owned_upgrades.has(u.id):
+				continue
+			var ok := true
+			for r in u.requires:
+				if not sim.owned_upgrades.has(r):
+					ok = false
+					break
+			if ok:
+				eligible.append(u)
+		if eligible.is_empty():
+			break
+		var pick: UpgradeData = eligible[rng.randi_range(0, eligible.size() - 1)]
+		sim.owned_upgrades[pick.id] = true
+		if pick.unlock_energy != &"" and not sim.energies.has(pick.unlock_energy):
+			sim.energies.append(pick.unlock_energy)
+		for f in pick.flags:
+			sim.flags[f] = true
+		if pick.id == &"rute_udara":
+			sim._open_air_routes(99)
+	sim._recompute_mods()
+	return "%d dari %d upgrade terbuka" % [sim.owned_upgrades.size(), Game.db.upgrades.size()]
+
+
 ## Isi peta: share = bagian desa yang bersih di tiap provinsi (0.5 = setengah, 1.0 = penuh).
 ## Energi dipilih paling cocok dari SEMUA energi, jadi petanya campuran. Sebagian besar rapuh,
 ## sebagian mandiri. Pada 1.0 satu desa disisakan supaya permainan belum langsung menang.
@@ -258,6 +300,6 @@ func _fill_map(sim: Simulation, share: float) -> String:
 			done += 1
 		s.community = maxf(s.community, 70.0 if share >= 1.0 else 45.0)
 		s.recount()
-	sim._set_stage(6 if share >= 1.0 else 4)
+	sim._set_stage(6 if share >= 1.0 else (4 if share >= 0.5 else 3))
 	sim.kkn_active = false
 	return "peta terisi %d%%, semua energi terbuka" % roundi(share * 100)

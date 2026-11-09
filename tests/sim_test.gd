@@ -127,7 +127,9 @@ func _is_rush(u: UpgradeData) -> bool:
 
 func _has_rush(sim: Simulation, db: GameDatabase) -> bool:
 	for u in db.upgrades:
-		if _is_rush(u) and (sim.upgrade_state(u) in ["", "Poin Dukungan kurang"] or sim.upgrade_state(u).begins_with("Ekonomi kurang")):
+		# Hanya upgrade penyebar yang bisa dibeli dengan menabung Poin; yang terhalang Ekonomi
+		# tidak ditunggu (dulu bot macet menabung Poin selamanya).
+		if _is_rush(u) and sim.upgrade_state(u) in ["", "Poin Dukungan kurang"]:
 			return true
 	return false
 

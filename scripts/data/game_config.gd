@@ -66,8 +66,8 @@ const MODIFIER_KEYS := [
 
 @export_group("Poin & Ekonomi")
 @export var kkn_points_per_tick: float = 1.4
-@export var points_per_lit: float = 0.02
-@export var points_per_independent: float = 0.10
+@export var points_per_lit: float = 0.015
+@export var points_per_independent: float = 0.06
 ## Per provinsi dengan komunitas 100.
 @export var points_per_community: float = 0.06
 @export var money_base_per_tick: float = 0.05
@@ -96,12 +96,16 @@ const MODIFIER_KEYS := [
 ## Sebaran & bangun otomatis hanya ke kloter yang paling jauh sekian langkah (sel tetangga di peta)
 ## dari kloter yang sudah berenergi bersih. Warga meniru tetangga yang hasilnya sudah terbukti.
 @export var spread_max_hops: int = 2
-## Momentum gaya Plague Inc: sebaran & bangun otomatis lambat di awal lalu makin cepat seiring
-## makin banyak desa berenergi bersih (bukti sosial). Pengali sebaran bergerak dari
-## spread_early_mult (0% desa bersih) ke spread_late_mult (saat momentum_full_access tercapai).
-@export var spread_early_mult: float = 0.35
-@export var spread_late_mult: float = 2.0
-@export_range(0.05, 1.0) var momentum_full_access: float = 0.5
+## Pengali sebaran bergerak dari spread_early_mult (0% desa bersih) ke spread_late_mult (saat
+## momentum_full_access tercapai). Sebaran sudah makin cepat dengan sendirinya karena makin banyak
+## provinsi yang menularkan, jadi pengalinya justru turun di akhir supaya paruh kedua permainan
+## tidak melompat (diuji dengan tests/balance_probe.gd, 8 Nov 2026).
+@export var spread_early_mult: float = 1.0
+@export var spread_late_mult: float = 0.45
+@export_range(0.05, 1.0) var momentum_full_access: float = 0.7
+## Desa terakhir di sebuah provinsi paling sulit diyakinkan (terpencil, paling jauh): sebaran ke
+## provinsi yang hampir penuh melambat sampai (1 - nilai ini) kali. 0 = tanpa perlambatan.
+@export_range(0.0, 0.9) var last_villages_drag: float = 0.6
 ## Jeda (tik) antar bangun otomatis: sebesar ini di awal, turun ke 0 saat momentum penuh.
 @export var auto_build_cooldown_early: int = 8
 ## Tampilan peta: warna energi memenuhi sel kloter perlahan (desa demi desa) selama sekian tik
@@ -121,9 +125,9 @@ const MODIFIER_KEYS := [
 
 @export_group("Kecocokan per desa")
 ## Kecocokan dasar setiap desa sebelum ciri dan pulau dihitung.
-@export var village_base_compat: float = 0.2
+@export var village_base_compat: float = 0.1
 ## Seberapa besar kecocokan pulau ikut menentukan kecocokan desa.
-@export var village_island_weight: float = 0.35
+@export var village_island_weight: float = 0.5
 
 ## Peluang per minggu desa rapuh gagal sendiri karena energinya kurang cocok
 ## (dikali 1 - kecocokan, dan dikurangi oleh komunitas yang kuat).
@@ -190,7 +194,7 @@ const MODIFIER_KEYS := [
 @export_group("Pohon upgrade")
 ## Gaya Plague Inc: setiap upgrade yang dibeli membuat Poin upgrade berikutnya naik sekian persen
 ## (0.05 = +5% per upgrade). Energi bawaan tim KKN tidak dihitung.
-@export var upgrade_cost_growth: float = 0.05
+@export var upgrade_cost_growth: float = 0.06
 
 @export_group("Bangun otomatis")
 ## Warga membangun sendiri kloter berikutnya saat Poin cukup (bisa dimatikan pemain).

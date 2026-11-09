@@ -865,7 +865,7 @@ func _hint_steps() -> Array:
 			func(): return (province_panel.village_index >= 0 and province_panel.village_index != _hint_v0) or _hint_timer > 15.0),
 		_step("8/%d  SEBARAN OTOMATIS. Kamu tidak membangun sendiri. Setelah pembangkit pertama menyala, warga kloter tetangga (paling jauh 2 kloter) yang energinya cocok ikut membangun. Awalnya lambat, makin banyak desa bersih makin cepat." % n,
 			func(up: bool): return Rect2() if up else map.province_rect(sim.start_province)),
-		_step("9/%d  POHON UPGRADE adalah keputusan utamamu. Buka (U) dan beli satu upgrade. HARGA NAIK: tiap upgrade yang kamu beli membuat semua upgrade berikutnya 5%% lebih mahal (hanya Poin; Ekonomi tetap). Jadi pilih yang paling berguna dulu, jangan borong." % n,
+		_step("9/%d  POHON UPGRADE adalah keputusan utamamu. Buka (U) dan beli satu upgrade. HARGA NAIK: tiap upgrade yang kamu beli membuat semua upgrade berikutnya %d%% lebih mahal (hanya Poin; Ekonomi tetap). Jadi pilih yang paling berguna dulu, jangan borong." % [n, roundi(100.0 * Game.db.config.upgrade_cost_growth)],
 			func(up: bool): return Rect2() if up else %UpgradeBtn.get_global_rect(),
 			func(): return int(sim.counters.get(&"upgrades_bought", 0)) >= 1),
 		_step("10/%d  Tab Sumber Energi: perkuat energi yang kamu pakai, atau buka energi baru." % n,
